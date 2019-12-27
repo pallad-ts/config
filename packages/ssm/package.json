@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "SSM dependency for @pallad/config",
   "main": "compiled/index.js",
+  "types": "compiled/index.d.ts",
   "keywords": [
     "config",
     "ssm",
@@ -36,5 +37,9 @@
     "aws-sdk": "^2.596.0",
     "dataloader": "^2.0.0",
     "split-array": "^1.0.1"
-  }
+  },
+  "gitHead": "09b63225ab7348f640610ede7db53f3f69990200",
+  "files": [
+    "compiled"
+  ]
 }
