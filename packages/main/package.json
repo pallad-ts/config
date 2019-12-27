@@ -7,6 +7,9 @@
   "directories": {
     "test": "test"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "pallad-scripts test",
     "compile": "pallad-scripts compile",
@@ -37,5 +40,5 @@
   "files": [
     "compiled"
   ],
-  "gitHead": "e1253af342b58a8fc620845c287ecdde290593a0"
+  "gitHead": "108646ea0a60d04d766bf47ccaf560a3c0c7b6c5"
 }
