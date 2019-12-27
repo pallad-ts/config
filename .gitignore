@@ -6,3 +6,4 @@ compiled
 *.tfstate.backup
 .env
 .terraform
+*.log
