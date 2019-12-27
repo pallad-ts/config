@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "Simple tool to create config structures in imperative way",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",
