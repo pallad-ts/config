@@ -1,0 +1,37 @@
+{
+  "name": "@pallad/config",
+  "version": "1.0.0",
+  "description": "Simple tool to create config structures in imperative way",
+  "main": "compiled/index.js",
+  "types": "compiled/index.d.ts",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "pallad-scripts test",
+    "compile": "pallad-scripts compile",
+    "lint": "pallad-scripts lint",
+    "prepare": "npm run compile",
+    "prepublish": "npm run compile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pallad-ts/config.git"
+  },
+  "keywords": [
+    "config",
+    "typescript",
+    "pallad",
+    "env"
+  ],
+  "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pallad-ts/config/issues"
+  },
+  "homepage": "https://github.com/pallad-ts/config#readme",
+  "dependencies": {
+    "predicates": "^2.0.3",
+    "yn": "^4.0.0"
+  }
+}

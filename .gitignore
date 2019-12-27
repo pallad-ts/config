@@ -1,0 +1,8 @@
+secrets.auto.tfvars
+node_modules
+coverage
+compiled
+*.tfstate
+*.tfstate.backup
+.env
+.terraform

@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SSMDependency getting description 1`] = `"SSM (foo)"`;
+
+exports[`SSMDependency getting value failure 1`] = `"Config value not available: SSM (foo)"`;

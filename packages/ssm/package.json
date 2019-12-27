@@ -1,0 +1,40 @@
+{
+  "name": "@pallad/config-ssm",
+  "version": "1.0.0",
+  "description": "SSM dependency for @pallad/config",
+  "main": "compiled/index.js",
+  "keywords": [
+    "config",
+    "ssm",
+    "aws",
+    "parameter",
+    "store"
+  ],
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "pallad-scripts test",
+    "compile": "pallad-scripts compile",
+    "lint": "pallad-scripts lint",
+    "prepare": "npm run compile",
+    "prepublish": "npm run compile"
+  },
+  "peerDependencies": {
+    "@pallad/config": "*"
+  },
+  "devDependencies": {
+    "@pallad/config": "*"
+  },
+  "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pallad-ts/config.git"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.596.0",
+    "dataloader": "^2.0.0",
+    "split-array": "^1.0.1"
+  }
+}
