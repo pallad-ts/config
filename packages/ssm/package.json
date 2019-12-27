@@ -38,7 +38,6 @@
     "dataloader": "^2.0.0",
     "split-array": "^1.0.1"
   },
-  "gitHead": "09b63225ab7348f640610ede7db53f3f69990200",
   "files": [
     "compiled"
   ]
