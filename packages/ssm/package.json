@@ -24,7 +24,7 @@
     "@pallad/config": "*"
   },
   "devDependencies": {
-    "@pallad/config": "*"
+    "@pallad/config": "^1.0.0"
   },
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
   "license": "MIT",
