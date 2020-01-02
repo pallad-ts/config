@@ -6,8 +6,7 @@
     "compile": "../../node_modules/.bin/pallad-scripts compile",
     "lint": "../../node_modules/.bin/pallad-scripts lint",
     "prepare": "npm run compile",
-    "prepublish": "npm run compile",
-    "prepack": "npm run compile && ../../node_modules/.bin/oclif-dev readme"
+    "prepublish": "npm run compile"
   },
   "bin": {
     "config-check": "./bin/run"
@@ -44,5 +43,6 @@
     "pallad"
   ],
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
-  "license": "MIT"
+  "license": "MIT",
+  "gitHead": "53e1b1049b23e64ed1c61d79115014981b52a678"
 }

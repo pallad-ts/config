@@ -2,7 +2,6 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "@oclif/dev-cli": "^1.22.2",
     "@pallad/scripts": "^1.1.4",
     "@types/jest": "^24.0.23",
     "@types/listr": "^0.14.2",
