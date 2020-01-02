@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CLI command that allows to verify current configuration",
   "scripts": {
     "compile": "../../node_modules/.bin/pallad-scripts compile",
@@ -27,7 +27,7 @@
     "@pallad/config": "*"
   },
   "devDependencies": {
-    "@pallad/config": "^1.0.2"
+    "@pallad/config": "^1.0.3"
   },
   "oclif": {
     "bin": "config-check"
