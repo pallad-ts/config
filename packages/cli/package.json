@@ -12,16 +12,23 @@
   "bin": {
     "config-check": "./bin/run"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "types": "compiled/index.d.ts",
   "main": "compiled/index.js",
   "dependencies": {
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.13.3",
     "@oclif/plugin-help": "^2.2.3",
-    "@pallad/config": "*",
     "listr": "^0.14.3",
-    "predicates": "^2.0.3",
-    "tslib": "^1.10.0"
+    "predicates": "^2.0.3"
+  },
+  "peerDependencies": {
+    "@pallad/config": "*"
+  },
+  "devDependencies": {
+    "@pallad/config": "*"
   },
   "oclif": {
     "bin": "config-check"
