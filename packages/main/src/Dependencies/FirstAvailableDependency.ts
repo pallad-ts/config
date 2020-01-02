@@ -31,7 +31,7 @@ export class FirstAvailableDependency<T> extends Dependency<T> {
 
     getDescription(): string {
         const desc = this.dependencies.map(x => x.getDescription()).join(', ');
-        return `First available (${desc})`;
+        return `First available - ${desc}`;
     }
 
     async retrieveValue(): Promise<T> {

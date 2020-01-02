@@ -5,6 +5,7 @@ export * from './helpers';
 export * from './Config';
 export * from './ConfigError';
 export * from './Dependency';
+export * from './getDependencies';
 export * from './load';
 
 export {type};

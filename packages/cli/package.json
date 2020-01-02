@@ -1,0 +1,41 @@
+{
+  "name": "@pallad/config-cli",
+  "version": "1.0.0",
+  "description": "CLI command that allows to verify current configuration",
+  "scripts": {
+    "compile": "../../node_modules/.bin/pallad-scripts compile",
+    "lint": "../../node_modules/.bin/pallad-scripts lint",
+    "prepare": "npm run compile",
+    "prepublish": "npm run compile",
+    "prepack": "npm run compile && ../../node_modules/.bin/oclif-dev readme"
+  },
+  "bin": {
+    "config-check": "./bin/run"
+  },
+  "types": "compiled/index.d.ts",
+  "main": "compiled/index.js",
+  "dependencies": {
+    "@oclif/command": "^1.5.19",
+    "@oclif/config": "^1.13.3",
+    "@oclif/plugin-help": "^2.2.3",
+    "@pallad/config": "*",
+    "listr": "^0.14.3",
+    "predicates": "^2.0.3",
+    "tslib": "^1.10.0"
+  },
+  "oclif": {
+    "bin": "config-check"
+  },
+  "files": [
+    "compiled",
+    "bin"
+  ],
+  "keywords": [
+    "config",
+    "cli",
+    "verify",
+    "pallad"
+  ],
+  "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
+  "license": "MIT"
+}

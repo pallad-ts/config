@@ -18,9 +18,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "pallad-scripts test",
-    "compile": "pallad-scripts compile",
-    "lint": "pallad-scripts lint",
+    "test": "../../node_modules/.bin/pallad-scripts test",
+    "compile": "../../node_modules/.bin/pallad-scripts compile",
+    "lint": "../../node_modules/.bin/pallad-scripts lint",
     "prepare": "npm run compile",
     "prepublish": "npm run compile"
   },

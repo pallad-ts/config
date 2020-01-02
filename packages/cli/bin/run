@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+require(`../compiled`).run()
+    .catch(require('@oclif/errors/handle'))
