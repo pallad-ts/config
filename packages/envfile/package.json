@@ -11,6 +11,9 @@
     "prepare": "npm run compile",
     "prepublish": "npm run compile"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "config",
     "env",
@@ -29,5 +32,6 @@
   },
   "dependencies": {
     "dotenv": "^8.2.0"
-  }
+  },
+  "gitHead": "611b64b0584b7dafc81fdfb8f34f97544e24ff55"
 }
