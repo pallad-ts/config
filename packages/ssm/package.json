@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-ssm",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "SSM dependency for @pallad/config",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",
