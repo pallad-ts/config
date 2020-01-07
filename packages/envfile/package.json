@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-envfile",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Envfile handling for @pallad/config",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",
