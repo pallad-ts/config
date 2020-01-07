@@ -11,6 +11,9 @@
     "prepare": "npm run compile",
     "prepublish": "npm run compile"
   },
+  "directories": {
+    "test": "test"
+  },
   "publishConfig": {
     "access": "public"
   },
