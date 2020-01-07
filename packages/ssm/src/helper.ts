@@ -48,7 +48,6 @@ export function createSSMHelper(options?: SSMHelper.Options) {
     };
 }
 
-
 export const ssm = createSSMHelper();
 
 export namespace SSMHelper {
