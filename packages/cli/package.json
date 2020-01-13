@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-cli",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "CLI command that allows to verify current configuration",
   "scripts": {
     "compile": "../../node_modules/.bin/pallad-scripts compile",
