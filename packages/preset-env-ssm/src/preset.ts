@@ -13,7 +13,7 @@ export function createPreset(presetOptions: Options) {
     const ssmHelper = presetOptions.ssm ? createSSMHelper(presetOptions.ssm) : undefined;
 
 
-    return function <T = any>(key: PresetHelper.Key, options?: PresetHelper.HelperOptions<T>) {
+    return function <T = any>(key: PresetHelper.Key, options?: PresetHelper.HelperOptions<T>): Dependency<T> {
         const deps: Array<Dependency<T>> = [];
 
         const transformer = options?.transformer;
@@ -28,7 +28,7 @@ export function createPreset(presetOptions: Options) {
             deps.push(ssmHelper(key.ssmKey, {transformer}));
         }
 
-        return DefaultValueDependency.create(
+        return DefaultValueDependency.create<T>(
             new FirstAvailableDependency(...deps),
             options?.defaultValue
         );
