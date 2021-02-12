@@ -7,6 +7,7 @@
     "@types/listr": "^0.14.2",
     "@types/node": "^12.12.14",
     "@types/sinon": "^7.5.1",
+    "conditional-type-checks": "^1.0.5",
     "dotenv": "^8.2.0",
     "lerna": "^3.18.4",
     "sinon": "^7.5.0"

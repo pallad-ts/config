@@ -90,7 +90,7 @@ describe('types', () => {
 
     describe('url', () => {
         describe('validation', () => {
-            const validator = validations.url({requiresHost: true});
+            const validator = validations.url({});
 
             it('success', () => {
                 expect(validator('http://9marshals.com'))
