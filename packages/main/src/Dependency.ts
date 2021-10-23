@@ -1,18 +1,33 @@
+import {OptionalPromise} from './utils';
+import * as is from 'predicates';
+
 export abstract class Dependency<TType> {
-    protected abstract retrieveValue(): Promise<any>;
+    protected abstract retrieveValue(): OptionalPromise<TType>;
 
     abstract getDescription(): string;
 
-    abstract isAvailable(): Promise<boolean>;
+    abstract isAvailable(): OptionalPromise<boolean>;
 
-    async getValue(): Promise<TType> {
-        await this.assertAvailable();
+    getValue(): OptionalPromise<TType> {
+        const isAvailable = this.assertAvailable();
+
+        if (is.promiseLike(isAvailable)) {
+            return isAvailable.then(() => {
+                return this.retrieveValue();
+            })
+        }
         return this.retrieveValue();
     }
 
-    private async assertAvailable() {
-        const isAvailable = await this.isAvailable();
-        if (!isAvailable) {
+    private assertAvailable() {
+        const isAvailable = this.isAvailable();
+        if (is.promiseLike(isAvailable)) {
+            return isAvailable.then((result) => {
+                if (!result) {
+                    throw new Error(`Config value not available: ${this.getDescription()}`);
+                }
+            })
+        } else {
             throw new Error(`Config value not available: ${this.getDescription()}`);
         }
     }

@@ -1,7 +1,9 @@
 import {Dependency} from "../Dependency";
+import * as is from 'predicates';
+import {OptionalPromise} from '../utils';
 
-export class DefaultValueDependency<T> extends Dependency<T> {
-    constructor(private dependency: Dependency<T>, private defaultValue: T) {
+export class DefaultValueDependency<T, TOriginal> extends Dependency<T | TOriginal> {
+    constructor(private dependency: Dependency<TOriginal>, private defaultValue: T) {
         super();
     }
 
@@ -9,12 +11,21 @@ export class DefaultValueDependency<T> extends Dependency<T> {
         return `${this.dependency.getDescription()} - default: ${this.defaultValue}`;
     }
 
-    async isAvailable() {
+    isAvailable() {
         return true;
     }
 
-    protected async retrieveValue(): Promise<T> {
-        const isAvailable = await this.dependency.isAvailable();
+    protected retrieveValue(): OptionalPromise<T | TOriginal> {
+        const isAvailable = this.dependency.isAvailable();
+
+        if (is.promiseLike(isAvailable)) {
+            return isAvailable.then(result => {
+                if (result) {
+                    return this.dependency.getValue();
+                }
+                return this.defaultValue;
+            })
+        }
 
         if (isAvailable) {
             return this.dependency.getValue();
@@ -22,9 +33,9 @@ export class DefaultValueDependency<T> extends Dependency<T> {
         return this.defaultValue;
     }
 
-    static create<T>(dependency: Dependency<T>, defaultValue?: T) {
+    static create<T, TOriginal>(dependency: Dependency<TOriginal>, defaultValue?: T) {
         if (defaultValue !== undefined) {
-            return new DefaultValueDependency(dependency, defaultValue);
+            return new DefaultValueDependency<T, TOriginal>(dependency, defaultValue);
         }
         return dependency;
     }

@@ -23,7 +23,9 @@
     "envfile"
   ],
   "files": [
-    "compiled"
+    "compiled",
+    "docs",
+    "assets"
   ],
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
   "license": "MIT",
