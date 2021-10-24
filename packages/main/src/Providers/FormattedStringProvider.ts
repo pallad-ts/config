@@ -1,4 +1,4 @@
-import {Dependency} from "../Dependency";
+import {Provider} from "../Provider";
 
 function produce(strings: readonly string[], values: any[]) {
     let str = '';
@@ -8,13 +8,13 @@ function produce(strings: readonly string[], values: any[]) {
     return str;
 }
 
-export class FormattedStringDependency extends Dependency<string> {
+export class FormattedStringProvider extends Provider<string> {
     constructor(private strings: readonly string[], private values: any[]) {
         super();
     }
 
     getDescription(): string {
-        const desc = produce(this.strings, this.values.map(x => Dependency.is(x) ? `\${${x.getDescription()}}` : x));
+        const desc = produce(this.strings, this.values.map(x => Provider.is(x) ? `\${${x.getDescription()}}` : x));
         return `Formatted string ("${desc}")`;
     }
 
@@ -26,20 +26,20 @@ export class FormattedStringDependency extends Dependency<string> {
         return results.every(x => x);
     }
 
-    getDependencies(): Array<Dependency<any>> {
-        return this.values.filter(Dependency.is);
+    getDependencies(): Array<Provider<any>> {
+        return this.values.filter(Provider.is);
     }
 
     async retrieveValue(): Promise<any> {
         const values = await Promise.all(
-            this.values.map(x => Dependency.is(x) ? x.getValue() : x)
+            this.values.map(x => Provider.is(x) ? x.getValue() : x)
         );
         return produce(this.strings, values);
     }
 
     static create(strings: readonly string[], ...values: any[]) {
-        if (values.some(Dependency.is)) {
-            return new FormattedStringDependency(strings, values);
+        if (values.some(Provider.is)) {
+            return new FormattedStringProvider(strings, values);
         }
         return produce(strings, values);
     }

@@ -1,18 +1,17 @@
-import {ENVDependency} from "@src/Dependencies/ENVDependency";
-import * as sinon from 'sinon';
+import {EnvProvider} from "@src/Providers";
 
 describe('ENVDependency', () => {
     describe('isAvailable', () => {
         describe('not available', () => {
             it('not defined', () => {
-                const dependency = new ENVDependency('key', undefined, {key2: ''});
+                const dependency = new EnvProvider('key', {key2: ''});
                 return expect(dependency.isAvailable())
                     .resolves
                     .toEqual(false);
             });
 
             it('empty string', () => {
-                const dependency = new ENVDependency('key', undefined, {key: ''});
+                const dependency = new EnvProvider('key', {key: ''});
                 return expect(dependency.isAvailable())
                     .resolves
                     .toEqual(false);
@@ -20,7 +19,7 @@ describe('ENVDependency', () => {
         });
 
         it('available', () => {
-            const dependency = new ENVDependency('key', undefined, {key: 'test'});
+            const dependency = new EnvProvider('key', {key: 'test'});
             return expect(dependency.isAvailable())
                 .resolves
                 .toEqual(true);
@@ -28,7 +27,7 @@ describe('ENVDependency', () => {
     });
 
     it('getting description', () => {
-        const dependency = new ENVDependency('key');
+        const dependency = new EnvProvider('key');
 
         expect(dependency.getDescription())
             .toEqual('ENV: key');
@@ -36,29 +35,15 @@ describe('ENVDependency', () => {
 
     describe('getting value', () => {
         it('not available', () => {
-            const dependency = new ENVDependency('key', undefined, {});
+            const dependency = new EnvProvider('key', {});
             return expect(dependency.getValue())
                 .rejects
                 .toMatchSnapshot();
         });
 
-        it('transformed', () => {
-            const value = 'bar';
-            const envValue = 'foo';
-            const transformer = sinon.stub()
-                .withArgs(envValue)
-                .returns(value);
-
-            const dependency = new ENVDependency('key', transformer, {key: envValue});
-
-            return expect(dependency.getValue())
-                .resolves
-                .toEqual(value);
-        });
-
         it('raw', () => {
             const value = 'bar';
-            const dependency = new ENVDependency('key', undefined, {key: value});
+            const dependency = new EnvProvider('key', {key: value});
 
             return expect(dependency.getValue())
                 .resolves

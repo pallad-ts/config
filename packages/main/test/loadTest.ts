@@ -1,11 +1,11 @@
 import {load} from "@src/load";
-import {ENVDependency, FormattedStringDependency} from "@src/Dependencies";
+import {DummyProvider} from "./dummies/DummyProvider";
+import {TransformProvider} from "@src/Providers";
 
 describe('load', () => {
-
     describe('loading', () => {
-        const DEP1 = new ENVDependency('foo', undefined, {foo: 'bar'});
-        const DEP2 = new ENVDependency('foo', undefined, {foo: 'world'});
+        const DEP1 = new DummyProvider({value: 'foo', isAsync: true, isAvailable: true});
+        const DEP2 = new DummyProvider({value: 'bar', isAsync: false, isAvailable: true});
 
         it.each<[string, object, object]>([
             [
@@ -17,7 +17,10 @@ describe('load', () => {
                 'with few dependencies',
                 {
                     database: {
-                        url: FormattedStringDependency.create`http://${DEP1}`
+                        url: new TransformProvider(
+                            DEP1,
+                            value => value.toUpperCase()
+                        )
                     },
                     schedulers: {
                         hello: DEP2,
@@ -31,16 +34,15 @@ describe('load', () => {
                 },
                 {
                     database: {
-                        url: 'http://bar'
+                        url: 'FOO'
                     },
                     schedulers: {
-                        hello: 'world',
+                        hello: 'bar',
                         values: [10],
-                        // tslint:disable-next-line:no-null-keyword
                         empty: null
                     },
                     schedulers2: {
-                        hello: 'world'
+                        hello: 'bar'
                     }
                 }
             ]

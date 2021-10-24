@@ -1,10 +1,10 @@
-import {Dependency} from "../Dependency";
+import {Provider} from "../Provider";
 
-export class FirstAvailableDependency<T> extends Dependency<T> {
-    private dependencies: Array<Dependency<T>>;
-    private cache?: Promise<Dependency<T> | undefined>;
+export class FirstAvailableProvider<T> extends Provider<T> {
+    private dependencies: Array<Provider<T>>;
+    private cache?: Promise<Provider<T> | undefined>;
 
-    constructor(...dependencies: Array<Dependency<T>>) {
+    constructor(...dependencies: Array<Provider<T>>) {
         super();
         this.dependencies = dependencies;
     }

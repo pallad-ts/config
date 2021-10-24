@@ -1,26 +1,26 @@
 import {ConfigError} from '../ConfigError';
-import {Dependency} from '../Dependency';
-import {getDependencies} from '../getDependencies';
+import {Provider} from '../Provider';
+import {extractProvidersFromConfig} from '../common/extractProvidersFromConfig';
 import {Config} from '../Config';
 import {load} from '../load';
 
-export class PickByTypeDependency<T> extends Dependency<T> {
+export class PickByTypeProvider<T> extends Provider<T> {
     private options = new Map<string, any>();
 
     private resolvedType?: string;
 
-    private constructor(private typeDependency: Dependency<string>) {
+    private constructor(private typeDependency: Provider<string>) {
         super();
     }
 
-    static create(typeDependency: Dependency<string>) {
-        return new PickByTypeDependency<undefined>(typeDependency);
+    static create(typeDependency: Provider<string>) {
+        return new PickByTypeProvider<undefined>(typeDependency);
     }
 
     registerOptions<TType extends string, TValue>(
         type: TType,
         value: TValue
-    ): PickByTypeDependency<NonNullable<T> | PickByTypeDependency.Value<TType, Config.ResolvedValue<TValue>>> {
+    ): PickByTypeProvider<NonNullable<T> | PickByTypeProvider.Value<TType, Config.ResolvedValue<TValue>>> {
         if (this.options.has(type)) {
             throw new ConfigError(`Type "${type}" already exists`);
         }
@@ -58,7 +58,7 @@ export class PickByTypeDependency<T> extends Dependency<T> {
     private async getDependencies() {
         const options = await this.getOptions();
 
-        const optionsDependencies = Dependency.is(options) ? [options] : getDependencies(options);
+        const optionsDependencies = Provider.is(options) ? [options] : extractProvidersFromConfig(options);
         return [
             this.typeDependency,
             ...optionsDependencies
@@ -76,7 +76,7 @@ export class PickByTypeDependency<T> extends Dependency<T> {
     }
 }
 
-export namespace PickByTypeDependency {
+export namespace PickByTypeProvider {
     export interface Value<TType extends string, TOptions> {
         type: TType;
         options: TOptions;

@@ -1,10 +1,10 @@
-import {getDependencies} from "@src/getDependencies";
-import {Dependency} from "@src/Dependency";
-import {ENVDependency} from "@src/Dependencies/ENVDependency";
+import {Provider} from "@src/Provider";
+import {extractProvidersFromConfig} from "@src/common/extractProvidersFromConfig";
 import {string} from "@src/types";
+import {DummyProvider} from "../dummies/DummyProvider";
 
-describe('getDependencies', () => {
-    describe('no dependencies', () => {
+describe('extractProvidersFromConfig', () => {
+    describe('no providers', () => {
         it.each<[string, any]>([
             ['empty object', {}],
             // tslint:disable-next-line:no-null-keyword
@@ -16,16 +16,16 @@ describe('getDependencies', () => {
             ['deep object', {test: {still: {no: {deps: []}}}}],
             ['deep object with array', {noDeps: [{}]}]
         ])('%s', (_name: string, config: any) => {
-            expect(getDependencies(config))
+            expect(extractProvidersFromConfig(config))
                 .toEqual([]);
         });
     });
 
-    describe('with dependencies', () => {
-        const dep1 = new ENVDependency('someKey', string, {});
-        const dep2 = new ENVDependency('someKey2', string, {});
+    describe('with providers', () => {
+        const dep1 = new DummyProvider({isAvailable: true, isAsync: true, value: 1, description: 'someKey1'});
+        const dep2 = new DummyProvider({isAvailable: true, isAsync: true, value: 1, description: 'someKey2'});
 
-        it.each<[any, Array<Dependency<any>>]>([
+        it.each<[any, Array<Provider<any>>]>([
             [
                 {
                     simple: dep1,
@@ -54,7 +54,7 @@ describe('getDependencies', () => {
                 [dep2]
             ]
         ])('Case: %#', (value, deps) => {
-            expect(getDependencies(value))
+            expect(extractProvidersFromConfig(value))
                 .toEqual(deps)
         });
     })

@@ -1,6 +1,6 @@
-import {Dependency} from "./Dependency";
+import {Provider} from "./Provider";
 
-export interface Config { [key: string]: any }
+export type Config = Record<string, any>;
 
 export namespace Config {
     export type Resolved<T> = {
@@ -8,7 +8,7 @@ export namespace Config {
     }
 
     export type ResolvedValue<TType> =
-        TType extends Dependency<infer U> ? U : (
+        TType extends Provider<infer U> ? U : (
             TType extends object ? Resolved<TType> : TType
             );
 }

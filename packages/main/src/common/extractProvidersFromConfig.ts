@@ -1,7 +1,7 @@
 import * as is from 'predicates';
-import {Dependency} from "./Dependency";
+import {Provider} from "../Provider";
 
-export function getDependencies(config: object): Array<Dependency<any>> {
+export function extractProvidersFromConfig(config: object): Array<Provider<any>> {
     if (config === null || config === undefined) {
         return [];
     }
@@ -10,13 +10,13 @@ export function getDependencies(config: object): Array<Dependency<any>> {
         return [];
     }
 
-    let deps: Array<Dependency<any>> = [];
+    let deps: Array<Provider<any>> = [];
     for (const key of Object.keys(config)) {
         const value: any = (config as any)[key];
-        if (value instanceof Dependency) {
+        if (value instanceof Provider) {
             deps.push(value);
         } else if (is.object(value)) {
-            const extraDeps = getDependencies(value);
+            const extraDeps = extractProvidersFromConfig(value);
             if (extraDeps.length > 0) {
                 deps = deps.concat(extraDeps);
             }
