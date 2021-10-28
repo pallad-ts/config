@@ -1,35 +1,37 @@
 import {Provider} from "../Provider";
-import {OptionalPromise} from "../utils";
+import {OptionalPromise, UnwrapProvider} from "../utils";
 import {isPromise} from "../common/isPromise";
 
 export class TransformProvider<TType, TSource> extends Provider<TType> {
-    constructor(private dependency: Provider<TSource>,
+    constructor(private provider: Provider<TSource>,
                 private transformer: TransformProvider.Transformer<TType, TSource>) {
         super();
     }
 
     getDescription(): string {
-        return this.dependency.getDescription();
+        return this.provider.getDescription();
     }
 
     isAvailable(): OptionalPromise<boolean> {
-        return this.dependency.isAvailable();
+        return this.provider.isAvailable();
     }
 
     protected retrieveValue(): OptionalPromise<TType> {
-        const value = this.dependency.getValue();
+        const value = this.provider.getValue();
         if (isPromise(value)) {
             return value.then(this.transformer);
         }
         return this.transformer(value);
     }
 
-    static optionalWrap<TSource extends Provider<any>, TType>(dependency: TSource,
-                                                              transformer?: TransformProvider.Transformer<any, any>) {
+    static optionalWrap<TType, TProvider extends Provider<any>>(
+        provider: TProvider,
+        transformer?: TransformProvider.Transformer<TType, UnwrapProvider<TProvider>>
+    ): TransformProvider<TType, UnwrapProvider<TProvider>> | TProvider {
         if (transformer) {
-            return new TransformProvider(dependency, transformer);
+            return new TransformProvider(provider, transformer);
         }
-        return dependency;
+        return provider;
     }
 }
 

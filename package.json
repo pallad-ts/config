@@ -3,11 +3,14 @@
   "private": true,
   "devDependencies": {
     "@pallad/scripts": "^2",
+    "@types/chalk": "^2",
     "@types/listr": "^0.14.2",
+    "@types/object-path": "^0.11",
     "@types/sinon": "^9",
     "conditional-type-checks": "^1.0.5",
     "dotenv": "^8.2.0",
     "lerna": "^4",
-    "sinon": "^9"
+    "sinon": "^9",
+    "ts-node": "^10.4.0"
   }
 }

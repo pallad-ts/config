@@ -1,15 +1,16 @@
-import {ConfigError} from '../ConfigError';
 import {Provider} from '../Provider';
 import {extractProvidersFromConfig} from '../common/extractProvidersFromConfig';
 import {Config} from '../Config';
-import {load} from '../load';
+import {runOnOptionalPromise} from '../common/runOnOptionalPromise';
+import {ERRORS} from '../errors';
+import {isPromise} from '../common/isPromise';
+import {loadConfig} from '../common/loadConfig';
+import {OptionalPromise} from '../utils';
 
 export class PickByTypeProvider<T> extends Provider<T> {
     private options = new Map<string, any>();
 
-    private resolvedType?: string;
-
-    private constructor(private typeDependency: Provider<string>) {
+    private constructor(private typeProvider: Provider<string>) {
         super();
     }
 
@@ -22,57 +23,101 @@ export class PickByTypeProvider<T> extends Provider<T> {
         value: TValue
     ): PickByTypeProvider<NonNullable<T> | PickByTypeProvider.Value<TType, Config.ResolvedValue<TValue>>> {
         if (this.options.has(type)) {
-            throw new ConfigError(`Type "${type}" already exists`);
+            throw ERRORS.PICK_PROVIDER_TYPE_ALREADY_EXISTS.format(type);
         }
         this.options.set(type, value);
         return this as any;
     }
 
-    private async getType() {
-        if (this.resolvedType) {
-            return this.resolvedType;
-        }
-        const type = this.resolvedType = await this.typeDependency.getValue();
-        if (!this.options.has(type)) {
-            throw new ConfigError(`Type "${type}" is not supported. Supported values: ${Array.from(this.options.keys()).join(', ')}`);
-        }
-        return type;
+    private getType(): OptionalPromise<string> {
+        return runOnOptionalPromise(
+            this.typeProvider.getValue(),
+            resolvedType => {
+                if (!this.options.has(resolvedType)) {
+                    throw ERRORS.PICK_PROVIDER_UNREGISTERED_TYPE.format(
+                        resolvedType,
+                        Array.from(this.options.keys()).join(', ')
+                    );
+                }
+                return resolvedType;
+            }
+        );
     }
 
-    private async getOptions() {
-        const type = await this.getType();
-        return this.options.get(type)!;
+    private getOptions() {
+        return runOnOptionalPromise(this.getType(), type => this.options.get(type)!);
     }
 
-    protected async retrieveValue() {
-        return {
-            type: await this.getType(),
-            options: await load(await this.getOptions())
-        };
+    protected retrieveValue() {
+        return runOnOptionalPromise(this.getType(), type => {
+            return runOnOptionalPromise(this.getOptions(), options => {
+                const finalOptions = Provider.is(options) ? options.getValue() : loadConfig(options);
+                return runOnOptionalPromise(finalOptions, result => {
+                    return {
+                        type,
+                        options: result
+                    } as any as T;
+                })
+            });
+        });
     }
 
     getDescription() {
-        return `Pick by type from ${this.typeDependency.getDescription()}`;
+        return `Pick by type from ${this.typeProvider.getDescription()}`;
     }
 
-    private async getDependencies() {
-        const options = await this.getOptions();
-
-        const optionsDependencies = Provider.is(options) ? [options] : extractProvidersFromConfig(options);
-        return [
-            this.typeDependency,
-            ...optionsDependencies
-        ];
-    }
-
-    async isAvailable() {
-        for (const dep of await this.getDependencies()) {
-            const isAvailable = await dep.isAvailable();
-            if (!isAvailable) {
-                return false;
+    private getDependentProviders() {
+        return runOnOptionalPromise(
+            this.getOptions(),
+            options => {
+                const optionsDependencies = Provider.is(options) ? [options] : extractProvidersFromConfig(options);
+                return [
+                    this.typeProvider,
+                    ...optionsDependencies
+                ];
             }
-        }
-        return true;
+        );
+    }
+
+    isAvailable(): OptionalPromise<boolean> {
+        return runOnOptionalPromise<boolean, OptionalPromise<boolean>>(
+            this.typeProvider.isAvailable(),
+            isTypeAvailable => {
+                if (!isTypeAvailable) {
+                    return false;
+                }
+
+                return runOnOptionalPromise(
+                    this.getDependentProviders(),
+                    dependentProviders => {
+                        const iterator = dependentProviders[Symbol.iterator]();
+                        for (const provider of iterator) {
+                            const isAvailable = provider.isAvailable();
+                            if (isPromise(isAvailable)) {
+                                return isAvailable.then(result => {
+                                    if (!result) {
+                                        return false;
+                                    }
+
+                                    return (async () => {
+                                        for (const provider of iterator) {
+                                            const isAvailable = await provider.isAvailable();
+                                            if (!isAvailable) {
+                                                return false;
+                                            }
+                                        }
+                                        return true;
+                                    })();
+                                })
+                            } else if (!isAvailable) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                )
+            }
+        );
     }
 }
 

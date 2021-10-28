@@ -1,18 +1,17 @@
-import {createEnvOrSSMHelper, createSSMHelper, SSMHelper} from "@src/helper";
-import {createEnvHelper, type} from '@pallad/config';
 import * as sinon from 'sinon';
-import DataLoader = require("dataloader");
+import {type} from '@pallad/config';
+import {ssmProviderFactory} from '@src/ssmProviderFactory';
 
-describe('helper', () => {
+describe('ssmProviderFactory', () => {
     describe('ssm', () => {
-        let helper: ReturnType<typeof createSSMHelper>;
+        let helper: ReturnType<typeof ssmProviderFactory>;
 
         const CONFIG = {
             prefix: 'pallad-config-'
         };
 
         beforeEach(() => {
-            helper = createSSMHelper({
+            helper = ssmProviderFactory({
                 ...CONFIG
             });
         });
@@ -28,7 +27,7 @@ describe('helper', () => {
 
 
             it('success with default value', () => {
-                const dependency = helper('var100', {defaultValue: 'bar'});
+                const dependency = helper('var100', {default: 'bar'});
                 return expect(dependency.getValue())
                     .resolves
                     .toEqual('bar');
@@ -63,7 +62,7 @@ describe('helper', () => {
                 const stub = sinon.stub()
                     .resolves(dataLoader);
 
-                createSSMHelper({
+                ssmProviderFactory({
                     ...CONFIG,
                     createDataLoader: stub,
                 });
@@ -75,7 +74,7 @@ describe('helper', () => {
                 const stub = sinon.stub()
                     .resolves(1000);
 
-                const helper = createSSMHelper({
+                const helper = ssmProviderFactory({
                     ...CONFIG,
                     parameterDeserializer: stub,
                 });
@@ -122,49 +121,6 @@ describe('helper', () => {
                         "DRJeSQn6CmLVuo5eXHGkVABTsgy",
                     ]);
             })
-        });
-    });
-
-    describe('envOrSSM', () => {
-        let helper: ReturnType<typeof createEnvOrSSMHelper>;
-
-        const ENVS = {
-            var1: 'foo',
-        };
-        const CONFIG: SSMHelper.EnvOrOptions = {
-            prefix: 'pallad-config-',
-            envHelper: createEnvHelper(ENVS)
-        };
-
-        beforeEach(() => {
-            helper = createEnvOrSSMHelper({
-                ...CONFIG
-            });
-        });
-
-        it('takes env variable since it is defined', () => {
-            const dependency = helper('var1');
-
-            return expect(dependency.getValue())
-                .resolves
-                .toEqual('foo');
-        });
-
-        it('takes ssm value since env is not defined', () => {
-            const dependency = helper('var2');
-
-            return expect(dependency.getValue())
-                .resolves
-                .toEqual(['foo', 'bar']);
-        });
-
-        it('takes ssm value under different name since env is not defined', () => {
-            const dependency = helper('var2', {
-                ssmName: 'var3'
-            });
-            return expect(dependency.getValue())
-                .resolves
-                .toEqual('world');
         });
     });
 });

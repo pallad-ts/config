@@ -1,6 +1,8 @@
 import {DefaultValueProvider} from "@src/Providers";
 import {DummyProvider} from "../dummies/DummyProvider";
 import {Provider} from "@src/Provider";
+import {assert, IsExact} from 'conditional-type-checks';
+import {OptionalPromise} from '@src/utils';
 
 describe('DefaultValueProvider', () => {
     const DEFAULT_VALUE = {default: 'value'} as const;
@@ -101,7 +103,51 @@ describe('DefaultValueProvider', () => {
         });
     });
 
-    // TODO description
+    it('description', () => {
+        expect(
+            createProvider(
+                new DummyProvider({value: RAW_VALUE, isAsync: false, isAvailable: true, description: 'Test'})
+            )
+                .getDescription()
+        )
+            .toMatchSnapshot();
 
-    // TODO optionalWrap
+        expect(
+            createProvider(
+                new DummyProvider({value: RAW_VALUE, isAsync: false, isAvailable: true, description: 'Random description'})
+            )
+                .getDescription()
+        )
+            .toMatchSnapshot();
+    })
+
+    describe('optionalWrap', () => {
+        const dep = new DummyProvider({
+            value: RAW_VALUE,
+            isAsync: false,
+            isAvailable: true
+        });
+
+        it('returns original provider if default value is undefined', () => {
+            const provider = DefaultValueProvider.optionalWrap(dep, undefined);
+            expect(provider)
+                .toStrictEqual(dep);
+        });
+
+        it('wraps provided provider with TransformerProvider', () => {
+            const provider = DefaultValueProvider.optionalWrap(dep, DEFAULT_VALUE);
+            expect(provider)
+                .toStrictEqual(new DefaultValueProvider(dep, DEFAULT_VALUE));
+        });
+    });
+
+    it('types', () => {
+        const provider = new DefaultValueProvider(
+            DummyProvider.sync<'foo'>({value: 'foo', isAvailable: true}),
+            'bar' as const
+        );
+
+        const value = provider.getValue();
+        assert<IsExact<typeof value, OptionalPromise<'foo' | 'bar'>>>(true);
+    });
 });

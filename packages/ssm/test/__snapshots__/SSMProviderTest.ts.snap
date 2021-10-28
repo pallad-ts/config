@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SSMProviderTest getting description 1`] = `"SSM (foo)"`;
+
+exports[`SSMProviderTest getting value failure 1`] = `"Config value not available: SSM (foo)"`;

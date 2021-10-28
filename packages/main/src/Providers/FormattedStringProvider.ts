@@ -1,4 +1,6 @@
 import {Provider} from "../Provider";
+import {OptionalPromise} from '../utils';
+import {isPromise} from '../common/isPromise';
 
 function produce(strings: readonly string[], values: any[]) {
     let str = '';
@@ -18,22 +20,32 @@ export class FormattedStringProvider extends Provider<string> {
         return `Formatted string ("${desc}")`;
     }
 
-    async isAvailable(): Promise<boolean> {
-        const results = await Promise.all(
-            this.getDependencies()
-                .map(x => x.isAvailable())
-        );
-        return results.every(x => x);
+    isAvailable(): OptionalPromise<boolean> {
+        const providersAvailability = this.getDependentProviders().map(x => x.isAvailable());
+        const hasPromises = providersAvailability.some(isPromise);
+        if (hasPromises) {
+            return Promise.all(providersAvailability)
+                .then(x => {
+                    return x.every(x => x);
+                })
+        }
+        return providersAvailability.every(x => x);
     }
 
-    getDependencies(): Array<Provider<any>> {
+    getDependentProviders(): Array<Provider<any>> {
         return this.values.filter(Provider.is);
     }
 
-    async retrieveValue(): Promise<any> {
-        const values = await Promise.all(
-            this.values.map(x => Provider.is(x) ? x.getValue() : x)
-        );
+    retrieveValue(): OptionalPromise<string> {
+        const values = this.values.map(x => Provider.is(x) ? x.getValue() : x)
+
+        const hasPromises = values.some(isPromise);
+        if (hasPromises) {
+            return Promise.all(values)
+                .then(x => {
+                    return produce(this.strings, x);
+                })
+        }
         return produce(this.strings, values);
     }
 

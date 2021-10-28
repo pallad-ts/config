@@ -1,3 +1,3 @@
-import {FormattedStringDependency} from "../Dependencies";
+import {FormattedStringProvider} from '../Providers';
 
-export const format = FormattedStringDependency.create;
+export const format = FormattedStringProvider.create;

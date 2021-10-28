@@ -1,30 +1,17 @@
 import {Config} from "./Config";
-import {extractProvidersFromConfig} from "./common/extractProvidersFromConfig";
-import {replaceObject} from "./common/replaceObject";
-import * as is from 'predicates'
-import {Provider} from "./Provider";
-import {ConfigError} from "./ConfigError";
+import {ERRORS} from './errors';
+import {loadConfig} from './common/loadConfig';
+import {isPromise} from './common/isPromise';
 
+/**
+ * Loads config synchronously
+ *
+ * If config contains any asynchronous provider then loading fails
+ */
 export function loadSync<T extends Config>(config: T): Config.Resolved<T> {
-    const dependencies = extractProvidersFromConfig(config);
-
-    const resolvedDependencies = new Map<Provider<any>, any>();
-
-    for (const dependency of dependencies) {
-        const value = dependency.getValue();
-        if (is.promiseLike(value)) {
-            const msg = `Cannot load config synchronously since provider "${dependency.getDescription()}" is asynchronous (returns Promise).`;
-            throw new ConfigError(msg);
-        }
+    const result = loadConfig(config);
+    if (isPromise(result)) {
+        throw ERRORS.SYNC_LOADING_NOT_AVAILABLE();
     }
-    dependencies.map(dependency => {
-        return [dependency, dependency.getValue()];
-    });
-
-
-    const mapOfResolvedDependencies = new Map();
-    for (const [dependency, value] of resolvedDependencies) {
-        mapOfResolvedDependencies.set(dependency, value);
-    }
-    return replaceObject(config, mapOfResolvedDependencies);
+    return result;
 }

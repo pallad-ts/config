@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PickByTypeDependency async + sync getting value fails if resolved type is not registered 1`] = `"Unregistered type \\"test\\". Registered values: foo, bar"`;
+
+exports[`PickByTypeDependency async + sync getting value fails if type is not available 1`] = `"Config value not available: Pick by type from DummyProvider"`;
+
+exports[`PickByTypeDependency async getting value fails if resolved type is not registered 1`] = `"Unregistered type \\"test\\". Registered values: foo, bar"`;
+
+exports[`PickByTypeDependency async getting value fails if type is not available 1`] = `"Config value not available: Pick by type from DummyProvider"`;
+
+exports[`PickByTypeDependency description 1`] = `"Pick by type from Type description"`;
+
+exports[`PickByTypeDependency registering fails if register type that is already registered 1`] = `"Type \\"foo\\" already registered"`;
+
+exports[`PickByTypeDependency sync getting value fails if resolved type is not registered 1`] = `"Unregistered type \\"test\\". Registered values: foo, bar"`;
+
+exports[`PickByTypeDependency sync getting value fails if type is not available 1`] = `"Config value not available: Pick by type from DummyProvider"`;

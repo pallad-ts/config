@@ -1,128 +1,166 @@
 import {Command, flags} from '@oclif/command'
 import * as fs from 'fs';
 import * as is from 'predicates';
-import {Dependency, getDependencies} from "@pallad/config";
-import {Validation} from "monet";
-import chalk = require('chalk');
+import {Either, Validation} from "monet";
+import {cosmiconfig} from 'cosmiconfig';
+import {get as getProperty} from 'object-path';
+import {Provider, extractProvidersFromConfig, replaceProvidersInConfig} from '@pallad/config';
+import {Secret} from '@pallad/secret';
+import * as chalk from 'chalk';
+import {format as prettyFormat} from 'pretty-format'
+import {Config, Plugin, Printer, Refs} from 'pretty-format/build/types';
 
 class ConfigCheck extends Command {
-    static description = 'Checks config created with @pallad/config';
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    static description = 'Display config created with @pallad/config';
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     static flags = {
-        property: flags.string({
-            char: 'p',
-            description: `name of module's property that exports config`
-        }),
         failsOnly: flags.boolean({
             char: 'f',
             description: `display only failed dependencies`,
             default: false
+        }),
+        revealSecrets: flags.boolean({
+            default: false
         })
     };
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     static args = [{
-        name: 'file',
+        name: 'configPath',
         required: false,
-        description: 'path to module that exports a function returning config'
+        description: 'config path to display'
     }];
 
     async run() {
         const {args, flags} = this.parse(ConfigCheck);
-        const filePath = args.file || this.findFileCandidate();
+        const configuration = await this.getConfiguration();
+        const config = this.getConfig(configuration);
 
-        if (!filePath) {
-            this.error('No config file defined');
-            return;
-        }
+        const finalConfig = args.configPath ? getProperty(config, args.configPath) : config;
 
-        if (!fs.existsSync(filePath)) {
-            this.error(`File "${filePath}" does not exist`);
-            return;
-        }
+        const resolvedConfig = await this.loadConfig(finalConfig);
 
-        const config = await this.getConfig(filePath, flags.property);
-        const deps = getDependencies(config);
-
-        await this.displayDependencies(deps, flags.failsOnly);
+        this.displayConfig(resolvedConfig, {
+            revealSecrets: flags.revealSecrets
+        });
     }
 
-    private getConfig(filePath: string, property?: string) {
-        const module = require(fs.realpathSync(filePath));
+    private async getConfiguration(): Promise<Configuration> {
+        const explorer = cosmiconfig('pallad-config');
+        const result = await explorer.search();
 
-        const func = property ? module[property] : module;
+        if (!result || !result.config) {
+            throw new Error('Missing configuration for pallad-config');
+        }
+
+        if (!is.string(result.config.file)) {
+            throw new Error('"file" config value must be a string');
+        }
+
+        if (result.config.property && !is.string(result.config.property)) {
+            throw new Error('"property" config value must be a string');
+        }
+
+        return {
+            file: result.config.file,
+            property: result.config.property
+        };
+    }
+
+    private getConfig(configuration: Configuration) {
+        const module = require(fs.realpathSync(configuration.file));
+
+        const func = configuration.property ? module[configuration.property] : module;
 
         if (!is.func(func)) {
-            if (property) {
-                throw new Error(`Property "${property}" from module "${filePath}" is not a function`);
+            if (configuration.property) {
+                throw new Error(`Property "${configuration.property}" from module "${configuration.file}" is not a function`);
             }
-            throw new Error(`Module "${filePath}" does not export a function`)
+            throw new Error(`Module "${configuration.file}" does not export a function`)
         }
 
         return func();
     }
 
-    private async displayDependencies(deps: Array<Dependency<any>>, failsOnly: boolean) {
-        if (deps.length === 0) {
-            this.log('No config dependencies found');
-            this.exit(0);
-            return;
+    private async loadConfig(config: any) {
+        if (is.primitive(config)) {
+            return config;
         }
-
-        async function loadDependencyResult(dep: Dependency<any>): Promise<[Dependency<any>, Validation<Error, any>]> {
-            return [
-                dep,
-                await (
-                    dep.getValue()
-                        .then(x => Validation.Success<Error, any>(x))
-                        .catch(e => Validation.Fail<Error, any>(e))
-                )
-            ]
-        }
-
-        let results = await Promise.all(
-            deps.map(loadDependencyResult)
+        const providers = extractProvidersFromConfig(config);
+        const map = new Map<Provider<any>, ResolvedProviderValue>();
+        await Promise.all(
+            providers.map(async x => {
+                try {
+                    const value = await x.getValue();
+                    map.set(x, Validation.Success({
+                        value,
+                        provider: x
+                    }));
+                } catch (e) {
+                    map.set(x, Validation.Fail({
+                        error: e as any,
+                        provider: x
+                    }));
+                }
+            })
         );
 
-        if (failsOnly) {
-            results = results.filter(([, result]) => result.isFail());
+        return replaceProvidersInConfig(config, map);
+    }
+
+    private displayConfig(config: any, options: { revealSecrets: boolean }) {
+        function renderSecret(secret: Secret<any>) {
+            if (options.revealSecrets) {
+                return secret.getValue();
+            }
+            return secret.getDescription();
         }
 
-        for (const [dep, result] of results) {
-            const resultString = result.isSuccess() ? chalk.green('success') : chalk.red('failure');
-            this.log(`%s\t- %s`, resultString, dep.getDescription());
-            if (result.isFail()) {
-                this.log(chalk.red(result.fail().message));
+        const secretPlugin: Plugin = {
+            test(value: any) {
+                return Secret.is(value);
+            },
+            serialize(val: Secret<any>, config: Config, indentation: string, depth: number, refs: Refs, printer: Printer) {
+                return printer(renderSecret(val), config, indentation, depth, refs, true)
+                    + ' '
+                    + chalk.yellow('(secret)');
+            }
+        };
+
+        const providerPlugin: Plugin = {
+            test(value: any) {
+                return Validation.isInstance(value)
+            },
+            serialize(val: ResolvedProviderValue, config: Config, indentation: string, depth: number, refs: Refs, printer: Printer) {
+                if (val.isSuccess()) {
+                    return printer(val.success().value, config, indentation, depth, refs, false)
+                        + ' '
+                        + chalk.green('(' + val.success().provider.getDescription() + ')');
+                }
+
+                return chalk.red(val.fail().error.message);
             }
         }
-
-        const hasFails = results.some(([, result]) => result.isFail());
-        if (hasFails) {
-            this.log(chalk.red('Some configuration dependencies have failed to load'));
-            this.exit(1)
-        } else {
-            this.log('Configuration looks fine!');
-            this.exit(0)
-        }
+        console.log(
+            prettyFormat(
+                config, {
+                    plugins: [
+                        secretPlugin,
+                        providerPlugin
+                    ]
+                }
+            )
+        );
     }
+}
 
-    private findFileCandidate() {
-        const commonFile = this.findCommonConfigFiles();
-        if (commonFile) {
-            return commonFile;
-        }
-    }
+type ResolvedProviderValue = Validation<{ error: Error, provider: Provider<any> }, { value: any, provider: Provider<any> }>;
 
-    private findCommonConfigFiles() {
-        const candidates = [
-            './pallad.config.js'
-        ];
-
-        for (const candidate of candidates) {
-            if (fs.existsSync(candidate)) {
-                return candidate;
-            }
-        }
-    }
+interface Configuration {
+    file: string;
+    property?: string;
 }
 
 export = ConfigCheck;

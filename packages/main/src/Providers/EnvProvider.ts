@@ -10,14 +10,14 @@ export class EnvProvider<T> extends Provider<string> {
         return 'ENV: ' + this.key;
     }
 
-    async isAvailable() {
+    isAvailable() {
         if (this.key in this.envs) {
             return this.envs[this.key] !== '';
         }
         return false;
     }
 
-    protected async retrieveValue() {
+    protected retrieveValue() {
         return this.envs[this.key]!;
     }
 }

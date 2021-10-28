@@ -3,7 +3,6 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "../compiled",
-    "noImplicitOverride": true,
     "composite": true
   },
   "include": [

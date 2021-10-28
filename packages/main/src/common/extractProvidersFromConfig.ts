@@ -2,20 +2,23 @@ import * as is from 'predicates';
 import {Provider} from "../Provider";
 
 export function extractProvidersFromConfig(config: object): Array<Provider<any>> {
-    if (config === null || config === undefined) {
-        return [];
-    }
-
-    if (!is.object(config)) {
+    if (is.primitive(config)) {
         return [];
     }
 
     let deps: Array<Provider<any>> = [];
-    for (const key of Object.keys(config)) {
-        const value: any = (config as any)[key];
-        if (value instanceof Provider) {
-            deps.push(value);
-        } else if (is.object(value)) {
+
+    if (Provider.is(config)) {
+        deps.push(config);
+    } else if (is.array(config)) {
+        for (const value of config) {
+            const extraDeps = extractProvidersFromConfig(value);
+            if (extraDeps.length > 0) {
+                deps = deps.concat(extraDeps);
+            }
+        }
+    } else if (is.plainObject(config)) {
+        for (const value of Object.values(config)) {
             const extraDeps = extractProvidersFromConfig(value);
             if (extraDeps.length > 0) {
                 deps = deps.concat(extraDeps);

@@ -1,5 +1,4 @@
 import {OptionalPromise} from './utils';
-import * as is from 'predicates';
 import {ERRORS} from "./errors";
 import {isPromise} from "./common/isPromise";
 
@@ -26,7 +25,7 @@ export abstract class Provider<TType> {
      */
     getValue(): OptionalPromise<TType> {
         const isAvailable = this.assertAvailable();
-        if (is.promiseLike(isAvailable)) {
+        if (isPromise(isAvailable)) {
             return isAvailable.then(() => {
                 return this.retrieveValue();
             })

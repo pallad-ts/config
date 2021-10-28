@@ -2,9 +2,9 @@
 
 exports[`types bool throws error if cannot be converted to bool 1`] = `"Value \\"some strange value\\" cannot be converted to bool"`;
 
-exports[`types int fails if not a number 1`] = `"Value \\"foo\\" cannot be converted to Int"`;
+exports[`types int fails if not a number 1`] = `"Value \\"foo\\" cannot be converted to int"`;
 
-exports[`types number fails if not a number 1`] = `"Value \\"foo\\" cannot be converted to Number"`;
+exports[`types number fails if not a number 1`] = `"Value \\"foo\\" cannot be converted to number"`;
 
 exports[`types url requiring protocol failure 1`] = `"Protocol \\"ftp\\" is not allowed. Allowed: http"`;
 

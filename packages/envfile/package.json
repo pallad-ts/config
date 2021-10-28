@@ -32,10 +32,11 @@
     "@pallad/config": "*"
   },
   "devDependencies": {
-    "@pallad/config": "^1.1.0"
+    "@pallad/config": "*"
   },
   "dependencies": {
-    "dotenv": "^8.2.0"
+    "dotenv": "^10.0.0",
+    "alpha-errors": "^0.4.0"
   },
   "gitHead": "611b64b0584b7dafc81fdfb8f34f97544e24ff55"
 }

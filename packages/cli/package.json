@@ -8,7 +8,7 @@
     "prepublishOnly": "npm run compile"
   },
   "bin": {
-    "config-check": "./bin/run"
+    "pallad-config": "./bin/run"
   },
   "publishConfig": {
     "access": "public"
@@ -16,34 +16,42 @@
   "types": "compiled/index.d.ts",
   "main": "compiled/index.js",
   "dependencies": {
-    "@oclif/command": "^1.5.19",
-    "@oclif/config": "^1.13.3",
-    "@oclif/plugin-help": "^2.2.3",
-    "chalk": "^3.0.0",
-    "monet": "^0.9.0",
-    "predicates": "^2.0.3"
+    "@oclif/command": "^1",
+    "@oclif/config": "^1",
+    "@oclif/plugin-help": "^3",
+    "chalk": "^4",
+    "monet": "^0.9.2",
+    "object-path": "^0.11.8",
+    "predicates": "^2.0.3",
+    "pretty-format": "^27.3.1"
   },
   "peerDependencies": {
-    "@pallad/config": "*"
+    "@pallad/config": "*",
+    "@pallad/secret": "^1"
   },
   "devDependencies": {
-    "@pallad/config": "^1.1.0",
-    "@types/chalk": "^2.2.0"
+    "@pallad/config": "*",
+    "@pallad/secret": "^1"
   },
   "oclif": {
-    "bin": "config-check"
+    "bin": "pallad-config"
   },
   "files": [
     "compiled",
-    "bin"
+    "bin",
+    "docs",
+    "assets"
   ],
+  "pallad-config": {
+    "file": "./test/testConfig.js"
+  },
   "keywords": [
     "config",
     "cli",
+    "secret",
     "verify",
     "pallad"
   ],
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
-  "license": "MIT",
-  "gitHead": "53e1b1049b23e64ed1c61d79115014981b52a678"
+  "license": "MIT"
 }

@@ -1,6 +1,7 @@
 import {Provider} from "../Provider";
 import {OptionalPromise} from '../utils';
-import {isPromise} from "../common/isPromise";
+import {isPromise} from '../common/isPromise';
+import {runOnOptionalPromise} from '../common/runOnOptionalPromise';
 
 /**
  * Wrapper for other provider. Returns default value if given provider has no available value.
@@ -8,12 +9,12 @@ import {isPromise} from "../common/isPromise";
  * @public
  */
 export class DefaultValueProvider<T, TOriginal> extends Provider<T | TOriginal> {
-    constructor(private dependency: Provider<TOriginal>, private defaultValue: T) {
+    constructor(private provider: Provider<TOriginal>, private defaultValue: T) {
         super();
     }
 
     getDescription(): string {
-        return `${this.dependency.getDescription()} - default: ${this.defaultValue}`;
+        return `${this.provider.getDescription()} - default: ${this.defaultValue}`;
     }
 
     isAvailable() {
@@ -21,21 +22,15 @@ export class DefaultValueProvider<T, TOriginal> extends Provider<T | TOriginal> 
     }
 
     protected retrieveValue(): OptionalPromise<T | TOriginal> {
-        const isAvailable = this.dependency.isAvailable();
-
-        if (isPromise(isAvailable)) {
-            return isAvailable.then(result => {
-                if (result) {
-                    return this.dependency.getValue();
+        return runOnOptionalPromise(
+            this.provider.isAvailable(),
+            isAvailable => {
+                if (isAvailable) {
+                    return this.provider.getValue() as any;
                 }
                 return this.defaultValue;
-            })
-        }
-
-        if (isAvailable) {
-            return this.dependency.getValue();
-        }
-        return this.defaultValue;
+            }
+        );
     }
 
     static optionalWrap<T, TOriginal>(provider: Provider<TOriginal>, defaultValue?: T) {

@@ -1,14 +1,14 @@
 import * as sinon from 'sinon';
 import DataLoader = require("dataloader");
-import {SSMDependency} from "@src/SSMDependency";
+import {SSMProvider} from "@src/SSMProvider";
 
-describe('SSMDependency', () => {
-    let dataLoader: sinon.SinonStubbedInstance<DataLoader<string, SSMDependency.Value>>;
+describe('SSMProviderTest', () => {
+    let dataLoader: sinon.SinonStubbedInstance<DataLoader<string, SSMProvider.Value | undefined>>;
 
     const KEY = 'foo';
     const RESULT = 'bar';
 
-    function stubSSMResult(key: string, result: SSMDependency.Value) {
+    function stubSSMResult(key: string, result: SSMProvider.Value) {
         dataLoader.load
             .withArgs(key)
             .resolves(result);
@@ -18,10 +18,9 @@ describe('SSMDependency', () => {
         dataLoader = sinon.createStubInstance(DataLoader);
     });
 
-
     describe('is available', () => {
         it('true if given ssm key exists', () => {
-            const dep = new SSMDependency(KEY, undefined, dataLoader);
+            const dep = new SSMProvider(KEY, dataLoader);
             stubSSMResult(KEY, RESULT);
 
             return expect(dep.isAvailable())
@@ -30,7 +29,7 @@ describe('SSMDependency', () => {
         });
 
         it('false if given ssm key does not exist', () => {
-            const dep = new SSMDependency(KEY, undefined, dataLoader);
+            const dep = new SSMProvider(KEY, dataLoader);
             return expect(dep.isAvailable())
                 .resolves
                 .toEqual(false);
@@ -38,14 +37,14 @@ describe('SSMDependency', () => {
     });
 
     it('getting description', () => {
-        const dep = new SSMDependency(KEY, undefined, dataLoader);
+        const dep = new SSMProvider(KEY, dataLoader);
         expect(dep.getDescription())
             .toMatchSnapshot();
     });
 
     describe('getting value', () => {
         it('success', () => {
-            const dep = new SSMDependency(KEY, undefined, dataLoader);
+            const dep = new SSMProvider(KEY, dataLoader);
             stubSSMResult(KEY, RESULT);
             return expect(dep.getValue())
                 .resolves
@@ -53,26 +52,11 @@ describe('SSMDependency', () => {
         });
 
         it('failure', () => {
-            const dep = new SSMDependency(KEY, undefined, dataLoader);
+            const dep = new SSMProvider(KEY, dataLoader);
 
             return expect(dep.getValue())
                 .rejects
                 .toThrowErrorMatchingSnapshot()
-        });
-
-        it('success with transformer', () => {
-            const SSM_RESULT = 'world';
-
-            const transformer = sinon.stub()
-                .withArgs(SSM_RESULT)
-                .returns(RESULT);
-
-            const dep = new SSMDependency(KEY, transformer, dataLoader);
-            stubSSMResult(KEY, SSM_RESULT);
-
-            return expect(dep.getValue())
-                .resolves
-                .toEqual(RESULT);
         });
     });
 });

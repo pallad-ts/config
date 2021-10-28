@@ -20,17 +20,14 @@ describe('types', () => {
     });
 
     describe('int', () => {
-        it('converts to int', () => {
-            expect(validations.int('10'))
-                .toEqual(10);
-
-            expect(validations.int(10))
-                .toEqual(10);
-
-            expect(validations.int(10.5))
-                .toEqual(10);
-
-            expect(validations.int('10.5'))
+        it.each([
+            ['10'],
+            [10],
+            [10.5],
+            ['10.5'],
+            ['10px']
+        ])('converts to int: %s', (input) => {
+            expect(validations.int(input))
                 .toEqual(10);
         });
 
@@ -43,18 +40,15 @@ describe('types', () => {
     });
 
     describe('number', () => {
-        it('converts to number', () => {
-            expect(validations.number('10'))
-                .toEqual(10);
-
-            expect(validations.number(10))
-                .toEqual(10);
-
-            expect(validations.number(10.5))
-                .toEqual(10.5);
-
-            expect(validations.number('10.5'))
-                .toEqual(10.5);
+        it.each([
+            ['10', 10],
+            [10, 10],
+            [10.5, 10.5],
+            ['10.5', 10.5],
+            ['10.5px', 10.5]
+        ])('converts to number: %s', (input, expected) => {
+            expect(validations.number(input))
+                .toEqual(expected);
         });
 
         it('fails if not a number', () => {
