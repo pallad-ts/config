@@ -39,9 +39,7 @@ export interface Options {
     ssm?: ssmProviderFactory.Options;
 }
 
-export type PresetHelper = ReturnType<typeof createPreset>;
-
-export namespace PresetHelper {
+export namespace Preset {
     export interface Key {
         env?: string;
         ssmKey?: string;

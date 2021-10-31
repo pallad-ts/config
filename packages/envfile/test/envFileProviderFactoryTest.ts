@@ -1,5 +1,6 @@
-import * as path from 'path';
 import {envFileProviderFactory} from '@src/envFileProviderFactory';
+import {Validation} from 'monet';
+import {ValueNotAvailable} from '@pallad/config';
 
 describe('envFileProviderFactory', () => {
     it('simple case', () => {
@@ -9,10 +10,10 @@ describe('envFileProviderFactory', () => {
         });
 
         expect(factory('FOO').getValue())
-            .toEqual('bar');
+            .toStrictEqual(Validation.Success('bar'));
 
         expect(factory('HELLO').getValue())
-            .toEqual('world');
+            .toStrictEqual(Validation.Success('world'));
     });
 
     it('overriding env from previous files', () => {
@@ -25,7 +26,7 @@ describe('envFileProviderFactory', () => {
         });
 
         expect(factory('FOO').getValue())
-            .toEqual('world');
+            .toStrictEqual(Validation.Success('world'));
     });
 
     it('using with transformer', () => {
@@ -38,7 +39,7 @@ describe('envFileProviderFactory', () => {
             factory('FOO', {transformer: value => value.toUpperCase()})
                 .getValue()
         )
-            .toEqual('BAR');
+            .toStrictEqual(Validation.Success('BAR'));
     });
 
     it('fails if env file does not exist and ignoring is disabled', () => {
@@ -57,7 +58,20 @@ describe('envFileProviderFactory', () => {
             cwd: __dirname
         });
 
-        expect(factory('FOO').isAvailable())
-            .toBe(false);
-    })
+        expect(factory('FOO').getValue())
+            .toStrictEqual(
+                Validation.Fail(new ValueNotAvailable('"FOO" from ENV file(s)'))
+            )
+    });
+
+    it('populates process env if set', () => {
+        const factory = envFileProviderFactory({
+            paths: './example/populate.env',
+            cwd: __dirname,
+            populateToEnv: true
+        })
+
+        expect(process.env.PALLAD_CONFIG_TEST_VALUE)
+            .toStrictEqual('test');
+    });
 });

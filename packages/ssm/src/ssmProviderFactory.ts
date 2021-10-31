@@ -16,7 +16,9 @@ function createDataLoader(batchFN: ssmProviderFactory.BatchFunction) {
     return new DataLoader<string, SSMProvider.Value | undefined>(batchFN);
 }
 
-export function ssmProviderFactory(options?: ssmProviderFactory.Options) {
+export function ssmProviderFactory<TTransformed, TDefault>(
+    options?: ssmProviderFactory.Options
+) {
     const ssm = options?.ssm ?? new SSM();
     const paramDeserializer = options?.parameterDeserializer ?? parameterDeserializer;
 

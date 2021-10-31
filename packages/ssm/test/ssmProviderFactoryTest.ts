@@ -1,6 +1,7 @@
 import * as sinon from 'sinon';
-import {type} from '@pallad/config';
+import {type, ValueNotAvailable} from '@pallad/config';
 import {ssmProviderFactory} from '@src/ssmProviderFactory';
+import {Validation} from 'monet';
 
 describe('ssmProviderFactory', () => {
     describe('ssm', () => {
@@ -18,27 +19,28 @@ describe('ssmProviderFactory', () => {
 
         describe('loading', () => {
             it('success', () => {
-                const dependency = helper('var1');
+                const provider = helper('var1');
 
-                return expect(dependency.getValue())
+                return expect(provider.getValue())
                     .resolves
-                    .toEqual('bar')
+                    .toEqual(Validation.Success('bar'))
             });
 
-
             it('success with default value', () => {
-                const dependency = helper('var100', {default: 'bar'});
-                return expect(dependency.getValue())
+                const provider = helper('var100', {default: 'bar'});
+                return expect(provider.getValue())
                     .resolves
-                    .toEqual('bar');
+                    .toEqual(Validation.Success('bar'));
             });
 
             it('failure due to lack of parameter', () => {
                 const dependency = helper('var1000');
 
                 return expect(dependency.getValue())
-                    .rejects
-                    .toMatchSnapshot();
+                    .resolves
+                    .toStrictEqual(
+                        Validation.Fail(new ValueNotAvailable('SSM: pallad-config-var1000'))
+                    );
             });
 
             it('loading with type conversion', () => {
@@ -46,18 +48,17 @@ describe('ssmProviderFactory', () => {
 
                 return expect(dependency.getValue())
                     .resolves
-                    .toEqual(10);
+                    .toEqual(Validation.Success(10));
             });
 
             it('loading array of strings', () => {
                 const dependency = helper('var2');
                 return expect(dependency.getValue())
                     .resolves
-                    .toEqual(['foo', 'bar']);
+                    .toEqual(Validation.Success(['foo', 'bar']));
             });
 
             it('uses custom dataLoader factory', () => {
-
                 const dataLoader = {};
                 const stub = sinon.stub()
                     .resolves(dataLoader);
@@ -83,7 +84,7 @@ describe('ssmProviderFactory', () => {
 
                 return expect(dependency.getValue())
                     .resolves
-                    .toEqual(1000);
+                    .toEqual(Validation.Success(1000));
             });
 
             it('loading many variables', () => {
@@ -119,7 +120,7 @@ describe('ssmProviderFactory', () => {
                         "u97tvnLBUOurP3FcpUWRqbO81GqqH",
                         "HMZNkhmMOxZsylqOaxfNwjeAf9Ju",
                         "DRJeSQn6CmLVuo5eXHGkVABTsgy",
-                    ]);
+                    ].map(Validation.Success));
             })
         });
     });

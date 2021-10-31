@@ -14,9 +14,9 @@
     "test": "test"
   },
   "dependencies": {
-    "@pallad/config": "^1.1.0",
-    "@pallad/config-envfile": "^1.1.0",
-    "@pallad/config-ssm": "^1.1.0"
+    "@pallad/config": "*",
+    "@pallad/config-envfile": "*",
+    "@pallad/config-ssm": "*"
   },
   "scripts": {
     "test": "../../node_modules/.bin/pallad-scripts test",

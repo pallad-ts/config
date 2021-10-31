@@ -1,8 +1,8 @@
 import {createPreset, PresetHelper} from "@src/preset";
-import {DefaultValueDependency, ENVDependency, FirstAvailableDependency, TransformableDependency} from "@pallad/config";
+import {DefaultValueProvider, env, EnvProvider, FirstAvailableProvider, TransformProvider} from "@pallad/config";
 import * as sinon from 'sinon';
-import {EnvFileDependency, EnvFileHelper, EnvFileLoader} from "@pallad/config-envfile";
-import {SSMDependency, SSMHelper, DataLoader} from "@pallad/config-ssm";
+import {EnvFileProvider, envFileProviderFactory} from "@pallad/config-envfile";
+import {DataLoader, SSMProvider, ssmProviderFactory} from "@pallad/config-ssm";
 
 describe('preset', () => {
     const ENV_OPTIONS = {
@@ -26,15 +26,12 @@ describe('preset', () => {
 
     const KEY = {env: 'FOO', ssmKey: 'foo'};
 
-    function envDependency(key: string, transformer?: TransformableDependency.Transformer<any>) {
-        return new ENVDependency(key, transformer, ENV_OPTIONS);
+
+    function envFileDependency(key: string) {
+        return new EnvFileProvider(key, expect.any());
     }
 
-    function envFileDependency(key: string, transformer?: TransformableDependency.Transformer<any>) {
-        return new EnvFileDependency(key, transformer, expect.any(EnvFileLoader));
-    }
-
-    function ssmDependency(key: string, transformer?: TransformableDependency.Transformer<any>) {
+    function ssmDependency(key: string, transformer?: TransformProvider.Transformer<any>) {
         return new SSMDependency(key, transformer, expect.any(DataLoader));
     }
 
@@ -51,8 +48,8 @@ describe('preset', () => {
 
             expect(config)
                 .toMatchObject(
-                    new FirstAvailableDependency(
-                        envDependency('FOO')
+                    new FirstAvailableProvider(
+                        env('FOO')
                     )
                 );
         });
@@ -63,19 +60,22 @@ describe('preset', () => {
 
             expect(config)
                 .toMatchObject(
-                    new FirstAvailableDependency(
-                        envDependency('FOO', transformer)
+                    new TransformProvider(
+                        new FirstAvailableProvider(
+                            env('FOO'),
+                        ),
+                        transformer
                     )
                 );
         });
 
         it('with default value', () => {
-            const config = preset(KEY, {defaultValue: DEFAULT_VALUE});
+            const config = preset(KEY, {default: DEFAULT_VALUE});
             expect(config)
                 .toMatchObject(
-                    new DefaultValueDependency(
-                        new FirstAvailableDependency(
-                            envDependency('FOO'),
+                    new DefaultValueProvider(
+                        new FirstAvailableProvider(
+                            new EnvProvider('FOO'),
                         ),
                         DEFAULT_VALUE
                     )
@@ -118,7 +118,7 @@ describe('preset', () => {
         });
 
         it('with default value', () => {
-            const config = preset(KEY, {defaultValue: DEFAULT_VALUE});
+            const config = preset(KEY, {default: DEFAULT_VALUE});
             expect(config)
                 .toMatchObject(
                     new DefaultValueDependency(

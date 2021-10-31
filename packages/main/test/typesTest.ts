@@ -1,4 +1,6 @@
 import * as validations from '@src/types';
+import {split} from '@src/types';
+import * as sinon from 'sinon';
 
 describe('types', () => {
     describe('string', () => {
@@ -113,5 +115,40 @@ describe('types', () => {
                     .toThrowErrorMatchingSnapshot();
             });
         })
+    });
+
+    describe('split', function () {
+        it('trims values and removed empty ones', () => {
+            const result = split('foo,bar  , baz,,');
+            expect(result)
+                .toEqual(['foo', 'bar', 'baz']);
+        });
+
+        it('ignored empty string', () => {
+            const result = split('');
+            expect(result)
+                .toEqual([]);
+        });
+
+        it('applies transformer if provided', () => {
+            const transformer = sinon.stub().callsFake(value => `${value}!`);
+
+            const result = split.by({
+                transform: transformer
+            })('foo,bar, ,');
+
+            expect(result)
+                .toEqual(['foo!', 'bar!'])
+        });
+
+        it('uses provided separator', () => {
+
+            const result = split.by({
+                separator: ':'
+            })('foo,bar:baz ');
+
+            expect(result)
+                .toEqual(['foo,bar', 'baz'])
+        });
     });
 });

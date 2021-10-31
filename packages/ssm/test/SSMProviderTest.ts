@@ -1,6 +1,8 @@
 import * as sinon from 'sinon';
 import DataLoader = require("dataloader");
 import {SSMProvider} from "@src/SSMProvider";
+import {Validation} from 'monet';
+import {ValueNotAvailable} from '@pallad/config';
 
 describe('SSMProviderTest', () => {
     let dataLoader: sinon.SinonStubbedInstance<DataLoader<string, SSMProvider.Value | undefined>>;
@@ -8,7 +10,7 @@ describe('SSMProviderTest', () => {
     const KEY = 'foo';
     const RESULT = 'bar';
 
-    function stubSSMResult(key: string, result: SSMProvider.Value) {
+    function stubSSMResult(key: string, result: SSMProvider.Value | undefined) {
         dataLoader.load
             .withArgs(key)
             .resolves(result);
@@ -18,45 +20,33 @@ describe('SSMProviderTest', () => {
         dataLoader = sinon.createStubInstance(DataLoader);
     });
 
-    describe('is available', () => {
-        it('true if given ssm key exists', () => {
-            const dep = new SSMProvider(KEY, dataLoader);
-            stubSSMResult(KEY, RESULT);
+    it('not available if ssm key does not exist', () => {
+        const provider = new SSMProvider(KEY, dataLoader);
+        stubSSMResult(KEY, undefined);
 
-            return expect(dep.isAvailable())
-                .resolves
-                .toEqual(true);
-        });
-
-        it('false if given ssm key does not exist', () => {
-            const dep = new SSMProvider(KEY, dataLoader);
-            return expect(dep.isAvailable())
-                .resolves
-                .toEqual(false);
-        });
+        return expect(provider.getValue())
+            .resolves
+            .toEqual(Validation.Fail(new ValueNotAvailable(`SSM: ${KEY}`)));
     });
 
-    it('getting description', () => {
-        const dep = new SSMProvider(KEY, dataLoader);
-        expect(dep.getDescription())
-            .toMatchSnapshot();
+    it('success', () => {
+        const provider = new SSMProvider(KEY, dataLoader);
+        stubSSMResult(KEY, RESULT);
+
+        return expect(provider.getValue())
+            .resolves
+            .toEqual(Validation.Success(RESULT));
     });
 
-    describe('getting value', () => {
-        it('success', () => {
-            const dep = new SSMProvider(KEY, dataLoader);
-            stubSSMResult(KEY, RESULT);
-            return expect(dep.getValue())
-                .resolves
-                .toEqual(RESULT);
-        });
+    it('forwards error from dataloader', () => {
+        const error = new Error('test');
+        dataLoader.load
+            .withArgs(KEY)
+            .rejects(error);
+        const provider = new SSMProvider(KEY, dataLoader);
 
-        it('failure', () => {
-            const dep = new SSMProvider(KEY, dataLoader);
-
-            return expect(dep.getValue())
-                .rejects
-                .toThrowErrorMatchingSnapshot()
-        });
+        return expect(provider.getValue())
+            .resolves
+            .toEqual(Validation.Fail(error));
     });
 });

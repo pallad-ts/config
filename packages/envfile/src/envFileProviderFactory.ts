@@ -30,7 +30,7 @@ export function envFileProviderFactory(options: envFileProviderFactory.Options) 
         Object.assign(envs, result);
     }
 
-    if (options?.populateToEnv ?? false) {
+    if (options?.populateToEnv) {
         Object.assign(process.env, envs);
     }
 

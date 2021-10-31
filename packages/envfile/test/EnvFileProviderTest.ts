@@ -1,36 +1,27 @@
 import {EnvFileProvider} from '@src/EnvFileProvider';
+import {Validation} from 'monet';
+import {ValueNotAvailable} from '@pallad/config';
 
 describe('EnvFileProvider', () => {
-    describe('availability', () => {
-        it('is available if ENV exists and is not empty', () => {
-            const provider = new EnvFileProvider('FOO', {FOO: 'test'});
+    describe('not available', () => {
 
-            expect(provider.isAvailable())
-                .toBe(true);
-        });
-
-        it('not available if ENV does not exist', () => {
+        it('if ENV does not exist', () => {
             const provider = new EnvFileProvider('FOO', {});
 
-            expect(provider.isAvailable())
-                .toBe(false);
+            expect(provider.getValue())
+                .toStrictEqual(Validation.Fail(new ValueNotAvailable('"FOO" from ENV file(s)')));
         });
 
-        it('not available if ENV exists but is empty', () => {
+        it('if ENV exists but is empty', () => {
             const provider = new EnvFileProvider('FOO', {FOO: ''});
 
-            expect(provider.isAvailable())
-                .toBe(false);
+            expect(provider.getValue())
+                .toStrictEqual(Validation.Fail(new ValueNotAvailable('"FOO" from ENV file(s)')));
         });
     });
 
-    it('description', () => {
-        expect(new EnvFileProvider('FOO', {}).getDescription())
-            .toMatchSnapshot();
-    });
-
-    it('getting value', () => {
+    it('success', () => {
         expect(new EnvFileProvider('FOO', {FOO: 'bar'}).getValue())
-            .toEqual('bar');
+            .toStrictEqual(Validation.Success('bar'));
     });
 });

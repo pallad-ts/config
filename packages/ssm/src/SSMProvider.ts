@@ -1,32 +1,30 @@
-import {Provider} from '@pallad/config';
+import {Provider, ValueNotAvailable} from '@pallad/config';
 import {DataLoader} from './index';
+import {Validation} from 'monet';
 
-export class SSMProvider extends Provider<string | string[]> {
+export class SSMProvider extends Provider<SSMProvider.Value> {
 
-    private cache?: Promise<SSMProvider.Value | undefined>;
+    private cache?: Promise<Provider.Value<SSMProvider.Value>>;
 
     constructor(private key: string,
                 private dataLoader: DataLoader<string, SSMProvider.Value | undefined>) {
         super()
     }
 
-    getDescription(): string {
-        return `SSM (${this.key})`;
-    }
-
-    async isAvailable(): Promise<boolean> {
-        return (await this.loadValue()) !== undefined;
-    }
-
-    private loadValue() {
+    getValue(): Promise<Provider.Value<SSMProvider.Value>> {
         if (!this.cache) {
-            this.cache = this.dataLoader.load(this.key);
+            this.cache = this.dataLoader.load(this.key)
+                .then(value => {
+                    if (value === undefined) {
+                        return Validation.Fail<Provider.Fail, SSMProvider.Value>(new ValueNotAvailable(`SSM: ${this.key}`));
+                    }
+                    return Validation.Success<Provider.Fail, SSMProvider.Value>(value);
+                })
+                .catch(x => {
+                    return Validation.Fail<Provider.Fail, SSMProvider.Value>(x);
+                });
         }
-        return this.cache;
-    }
-
-    protected retrieveValue(): Promise<any> {
-        return this.loadValue();
+        return this.cache!;
     }
 }
 
