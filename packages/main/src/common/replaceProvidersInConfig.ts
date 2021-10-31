@@ -1,12 +1,16 @@
 import {Provider} from "../Provider";
 import * as is from "predicates";
 import {Config} from "../Config";
+import {Validation} from 'monet';
 
-export function replaceProvidersInConfig<T>(config: T, resolvedDependencies: Map<Provider<any>, any>): Config.Resolved<T> {
+/**
+ * @internal
+ */
+export function replaceProvidersInConfig<T>(config: T, resolvedDependencies: Map<Provider<any>, Validation<Provider.Fail, any>>): Config.Resolved<T> {
     if (is.primitive(config)) {
         return config as any as Config.Resolved<T>;
     } else if (Provider.is(config)) {
-        return resolvedDependencies.get(config);
+        return resolvedDependencies.get(config)!.success();
     } else if (is.array(config)) {
         const newObject = [];
         for (const value of config) {

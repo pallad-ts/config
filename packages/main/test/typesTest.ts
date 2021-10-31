@@ -84,7 +84,7 @@ describe('types', () => {
 
     describe('url', () => {
         describe('validation', () => {
-            const validator = validations.url({});
+            const validator = validations.url;
 
             it('success', () => {
                 expect(validator('http://9marshals.com'))
@@ -100,7 +100,7 @@ describe('types', () => {
         });
 
         describe('requiring protocol', () => {
-            const validator = validations.url({protocols: ['http']});
+            const validator = validations.url.options({protocols: ['http']});
             it('success', () => {
                 expect(validator('http://9marshals.com'))
                     .toEqual('http://9marshals.com');

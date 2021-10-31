@@ -35,8 +35,9 @@
     "@pallad/config": "*"
   },
   "dependencies": {
+    "alpha-errors": "^0.4.0",
     "dotenv": "^10.0.0",
-    "alpha-errors": "^0.4.0"
+    "monet": "^0.9.2"
   },
   "gitHead": "611b64b0584b7dafc81fdfb8f34f97544e24ff55"
 }

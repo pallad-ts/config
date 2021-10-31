@@ -15,7 +15,8 @@ module.exports = () => {
             env('SCHEDULER_TYPE')
         )
             .registerOptions('static', {
-                value: env('SCHEDULER_STATIC_VALUE')
+                value: env('SCHEDULER_STATIC_VALUE'),
+                value2: env('SCHEDULER_STATIC_VALUE_2')
             })
             .registerOptions('dynamic', {
                 dns: env('SCHEDULER_DYNAMIC_ADDRESS')

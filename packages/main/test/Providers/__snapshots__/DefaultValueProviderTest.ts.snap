@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`DefaultValueProvider description 1`] = `"Test - default: [object Object]"`;
-
-exports[`DefaultValueProvider description 2`] = `"Random description - default: [object Object]"`;

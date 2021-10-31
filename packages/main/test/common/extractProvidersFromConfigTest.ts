@@ -7,7 +7,7 @@ describe('extractProvidersFromConfig', () => {
     describe('no providers', () => {
         it.each<[string, any]>([
             ['empty object', {}],
-            // tslint:disable-next-line:no-null-keyword
+            // eslint-disable-next-line no-null/no-null
             ['null', null],
             ['undefined', undefined],
             ['empty array', []],
@@ -15,15 +15,15 @@ describe('extractProvidersFromConfig', () => {
             ['number', 1],
             ['deep object', {test: {still: {no: {deps: []}}}}],
             ['deep object with array', {noDeps: [{}]}]
-        ])('%s', (_name: string, config: any) => {
+        ])('%s', (name: string, config: any) => {
             expect(extractProvidersFromConfig(config))
                 .toEqual([]);
         });
     });
 
     describe('with providers', () => {
-        const dep1 = new DummyProvider({isAvailable: true, isAsync: true, value: 1, description: 'someKey1'});
-        const dep2 = new DummyProvider({isAvailable: true, isAsync: true, value: 1, description: 'someKey2'});
+        const dep1 = new DummyProvider({isAsync: true, value: 1, description: 'someKey1'});
+        const dep2 = new DummyProvider({isAsync: true, value: 1, description: 'someKey2'});
 
         it.each<[any, Array<Provider<any>>]>([
             [
@@ -45,7 +45,7 @@ describe('extractProvidersFromConfig', () => {
                 {
                     strings: ['str1', 'str2'],
                     numbers: [1, 2, 3],
-                    // tslint:disable-next-line:no-null-keyword
+                    // eslint-disable-next-line no-null/no-null
                     mixed: [true, false, null, undefined],
                     arrays: [
                         [dep2]

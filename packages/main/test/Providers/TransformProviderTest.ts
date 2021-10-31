@@ -2,8 +2,11 @@ import {TransformProvider} from "@src/Providers";
 import * as sinon from 'sinon';
 import {assert, IsExact} from "conditional-type-checks";
 import {OptionalPromise} from "@src/utils";
-import {ERRORS} from "@src/errors";
 import {DummyProvider} from "../dummies/DummyProvider";
+import {Provider} from '@src/Provider';
+import {assertProviderValue} from '../common/assertProviderValue';
+import {assertNotAvailable} from '../common/assertNotAvailable';
+import {assertProviderError} from '../common/assertProviderError';
 
 describe('TransformProvider', () => {
     const RAW_VALUE = {raw: 'value'};
@@ -13,87 +16,63 @@ describe('TransformProvider', () => {
         return sinon.stub().returns(TRANSFORMED_VALUE)
     }
 
-    describe('sync', () => {
-        describe('if available', () => {
+    describe.each([
+        ['sync'],
+        ['async']
+    ])('%s', desc => {
+        const isAsync = desc.includes('async');
+
+        it('types', () => {
             const transformer = createTransformer()
-            const dep = new TransformProvider(
-                new DummyProvider({isAvailable: true, isAsync: false, value: RAW_VALUE}),
+            const provider = new TransformProvider(
+                new DummyProvider({isAsync: isAsync, value: RAW_VALUE}),
                 transformer
             );
-
-            const value = dep.getValue();
-            it('passes raw value through transformer and returns transformed value', () => {
-                expect(value)
-                    .toStrictEqual(TRANSFORMED_VALUE);
-
-                sinon.assert.calledOnce(transformer as any);
-                sinon.assert.calledWithExactly(transformer as any, sinon.match.same(RAW_VALUE));
-            });
-
-            it('check types', () => {
-                assert<IsExact<typeof value, OptionalPromise<typeof TRANSFORMED_VALUE>>>(true);
-            });
+            const value = provider.getValue();
+            assert<IsExact<typeof value, OptionalPromise<Provider.Value<typeof TRANSFORMED_VALUE>>>>(true);
         });
 
-        describe('if not available', () => {
+        it('returns value transformed by transformer', async () => {
             const transformer = createTransformer()
-            const dep = new TransformProvider(
-                new DummyProvider({isAvailable: false, isAsync: false, value: RAW_VALUE}),
+            const provider = new TransformProvider(
+                new DummyProvider({isAsync: isAsync, value: RAW_VALUE}),
                 transformer
             );
 
-            it('throws an error', () => {
-                const error = ERRORS.PROVIDER_VALUE_NOT_AVAILABLE.format(dep.getDescription());
-                expect(() => {
-                    dep.getValue();
-                }).toThrowError(error.message);
-                sinon.assert.notCalled(transformer as any);
-            });
-        });
-    });
+            const value = provider.getValue();
+            await assertProviderValue(isAsync, value, TRANSFORMED_VALUE);
 
-    describe('async', () => {
-        describe('if available', () => {
+            sinon.assert.calledOnce(transformer as any);
+            sinon.assert.calledWithExactly(transformer as any, sinon.match.same(RAW_VALUE));
+        })
+
+        it('forwards original error', async () => {
+            const error = new Error('foo');
             const transformer = createTransformer()
-            const dep = new TransformProvider(
-                DummyProvider.async({isAvailable: true, value: RAW_VALUE}),
+            const provider = new TransformProvider(
+                new DummyProvider({isAsync: isAsync, error}),
                 transformer
             );
 
-            const value = dep.getValue();
-            it('passes raw value through transformer and returns transformed value', async () => {
-                await expect(value)
-                    .resolves
-                    .toStrictEqual(TRANSFORMED_VALUE);
+            const value = provider.getValue();
+            await assertProviderError(isAsync, value, error);
 
-                sinon.assert.calledOnce(transformer as any);
-                sinon.assert.calledWithExactly(transformer as any, sinon.match.same(RAW_VALUE));
-            });
-
-            it('check types', () => {
-                assert<IsExact<typeof value, OptionalPromise<typeof TRANSFORMED_VALUE>>>(true);
-            });
+            sinon.assert.notCalled(transformer as any);
         });
 
-        describe('if not available', () => {
+        it('not available if provider is not available', () => {
             const transformer = createTransformer()
-            const dep = new TransformProvider(
-                DummyProvider.async({isAvailable: false, value: RAW_VALUE}),
+            const provider = new TransformProvider(
+                new DummyProvider({isAsync: isAsync, description: 'test'}),
                 transformer
             );
 
-            it('throws an error', async () => {
-                const error = ERRORS.PROVIDER_VALUE_NOT_AVAILABLE.format(dep.getDescription());
-                await expect(dep.getValue())
-                    .rejects
-                    .toThrowError(error.message);
-                sinon.assert.notCalled(transformer as any);
-            });
+            return assertNotAvailable(isAsync, provider.getValue(), 'test');
         });
     });
 
     describe('optionalWrap', () => {
-        const dummy = DummyProvider.sync<'foo'>({value: 'foo', isAvailable: true});
+        const dummy = DummyProvider.sync<'foo'>({value: 'foo'});
         it('wraps provided provider with TransformProvider if transform function gets provided', () => {
             const transformer = createTransformer();
             const provider = TransformProvider.optionalWrap(dummy, transformer);

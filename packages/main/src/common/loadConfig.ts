@@ -5,38 +5,58 @@ import {extractProvidersFromConfig} from './extractProvidersFromConfig';
 import {replaceProvidersInConfig} from './replaceProvidersInConfig';
 import {Provider} from '../Provider';
 import {isPromise} from './isPromise';
+import {Validation} from 'monet';
 
-
-export function loadConfig<T extends Config>(config: T): OptionalPromise<Config.Resolved<T>> {
+/**
+ * @internal
+ */
+export function loadConfig<T extends Config>(config: T): OptionalPromise<Validation<Provider.Fail, Config.Resolved<T>>> {
     return runOnOptionalPromise(
         resolveProviders(extractProvidersFromConfig(config)),
         resolved => {
-            const mapOfResolvedDependencies = new Map();
-            for (const [dependency, value] of resolved) {
-                mapOfResolvedDependencies.set(dependency, value);
+            if (resolved.size === 0) {
+                return Validation.Success(config);
             }
-            return replaceProvidersInConfig(config, mapOfResolvedDependencies);
+
+            const fails = Array.from(resolved.values())
+                .reduce((result, entry) => {
+                    if (entry.isFail()) {
+                        const fail = entry.fail();
+                        return result.concat(Array.isArray(fail) ? fail : [fail]);
+                    }
+                    return result;
+                }, [] as Provider.Fail.Entry[]);
+
+            if (fails.length) {
+                return Validation.Fail(fails);
+            }
+            return Validation.Success(replaceProvidersInConfig(config, resolved));
         }
     );
 }
 
 function resolveProviders(providers: Array<Provider<any>>) {
-    const resolvedProviders: Array<[Provider<any>, any]> = [];
+    const resolvedProviders: Map<Provider<any>, Provider.Value<any>> = new Map();
 
-    const iterator = providers[Symbol.iterator]();
-    for (const provider of iterator) {
-        const value = provider.getValue();
-        if (isPromise(value)) {
-            return value.then(async value => {
-                resolvedProviders.push([provider, value]);
-                for (const provider of iterator) {
-                    const value = await provider.getValue();
-                    resolvedProviders.push([provider, value]);
+    const resolvedValues = providers.map(
+        provider => {
+            return runOnOptionalPromise(
+                provider.getValue(),
+                value => {
+                    return [provider, value];
                 }
-                return resolvedProviders;
-            })
+            )
         }
-        resolvedProviders.push([provider, value]);
-    }
-    return resolvedProviders;
+    );
+    const hasPromise = resolvedValues.some(isPromise);
+
+    return runOnOptionalPromise<Array<[Provider<any>, Provider.Value<any>]>, typeof resolvedProviders>(
+        hasPromise ? Promise.all(resolvedValues) as any : resolvedValues,
+        values => {
+            for (const [provider, value] of values) {
+                resolvedProviders.set(provider, value);
+            }
+            return resolvedProviders;
+        }
+    )
 }

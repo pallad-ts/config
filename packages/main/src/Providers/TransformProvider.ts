@@ -1,6 +1,7 @@
 import {Provider} from "../Provider";
 import {OptionalPromise, UnwrapProvider} from "../utils";
-import {isPromise} from "../common/isPromise";
+import {runOnOptionalPromise} from '../common/runOnOptionalPromise';
+import {Either} from 'monet';
 
 export class TransformProvider<TType, TSource> extends Provider<TType> {
     constructor(private provider: Provider<TSource>,
@@ -8,20 +9,16 @@ export class TransformProvider<TType, TSource> extends Provider<TType> {
         super();
     }
 
-    getDescription(): string {
-        return this.provider.getDescription();
-    }
-
-    isAvailable(): OptionalPromise<boolean> {
-        return this.provider.isAvailable();
-    }
-
-    protected retrieveValue(): OptionalPromise<TType> {
-        const value = this.provider.getValue();
-        if (isPromise(value)) {
-            return value.then(this.transformer);
-        }
-        return this.transformer(value);
+    getValue(): OptionalPromise<Provider.Value<TType>> {
+        return runOnOptionalPromise(
+            this.provider.getValue(),
+            value => {
+                return value.flatMap(value => {
+                    return Either.fromTry(() => this.transformer(value))
+                        .toValidation();
+                })
+            }
+        )
     }
 
     static optionalWrap<TType, TProvider extends Provider<any>>(

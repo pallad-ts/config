@@ -1,0 +1,4 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadSync fails if contains async provider 1`] = `"Cannot loadConfig config synchronously since one of your config value provider is asynchronous"`;
+

@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`EnvProvider getting value not available 1`] = `"Config value not available: ENV: key"`;

@@ -3,129 +3,68 @@ import {DummyProvider} from "../dummies/DummyProvider";
 import {Provider} from "@src/Provider";
 import {assert, IsExact} from 'conditional-type-checks';
 import {OptionalPromise} from '@src/utils';
+import {Validation} from 'monet';
+import {assertProviderValue} from '../common/assertProviderValue';
+import {assertProviderError} from '../common/assertProviderError';
 
 describe('DefaultValueProvider', () => {
     const DEFAULT_VALUE = {default: 'value'} as const;
 
     const RAW_VALUE = {raw: 'value'} as const;
 
-    function createProvider(provider: Provider<any>) {
+    function createProvider<T>(provider: Provider<T>) {
         return new DefaultValueProvider(provider, DEFAULT_VALUE);
     }
 
+
     describe('getting value', () => {
-        describe('from sync provider', () => {
-            describe('where value is available', () => {
-                const dep = createProvider(
-                    new DummyProvider({isAvailable: true, value: RAW_VALUE, isAsync: false})
+        describe.each([
+            ['sync'],
+            ['async']
+        ])('%s', type => {
+            const isAsync = type === 'async';
+            it('uses default value if provider value not available', () => {
+                const provider = createProvider(
+                    DummyProvider.notAvailable({isAsync})
                 );
-                const value = dep.getValue();
-                it('then returns provided provider value', () => {
-                    expect(value)
-                        .toStrictEqual(RAW_VALUE);
-                });
-            });
-
-            describe('where value is not available', () => {
-                const dep = createProvider(
-                    new DummyProvider({isAvailable: false, value: RAW_VALUE, isAsync: false})
+                return assertProviderValue(
+                    isAsync,
+                    provider.getValue(),
+                    DEFAULT_VALUE
                 );
-                const value = dep.getValue();
-
-                it('then returns default value', () => {
-                    expect(value)
-                        .toStrictEqual(DEFAULT_VALUE);
-                });
             });
-        });
 
-        describe('from async provider', () => {
-            describe('where value is available', () => {
-                const dep = createProvider(
-                    new DummyProvider({isAvailable: true, value: RAW_VALUE, isAsync: true})
+            it('uses provider value if available', () => {
+                const provider = createProvider(
+                    new DummyProvider({value: RAW_VALUE, isAsync})
                 );
-                const value = dep.getValue();
-                it('then returns provided provider value', () => {
-                    return expect(value)
-                        .resolves
-                        .toStrictEqual(RAW_VALUE);
-                });
-            });
 
-            describe('where value is not available', () => {
-                const dep = createProvider(
-                    new DummyProvider({isAvailable: false, value: RAW_VALUE, isAsync: true})
+                return assertProviderValue(
+                    isAsync,
+                    provider.getValue(),
+                    RAW_VALUE
                 );
-                const value = dep.getValue();
-
-                it('then returns default value', () => {
-                    return expect(value)
-                        .resolves
-                        .toStrictEqual(DEFAULT_VALUE);
-                });
-            });
-        });
-    });
-
-    describe('checking availability', () => {
-        describe('is always available', () => {
-            it('for sync providers', () => {
-                expect(
-                    createProvider(
-                        new DummyProvider({value: RAW_VALUE, isAsync: false, isAvailable: true}),
-                    ).isAvailable()
-                )
-                    .toBe(true);
-
-                expect(
-                    createProvider(
-                        new DummyProvider({value: RAW_VALUE, isAsync: false, isAvailable: false}),
-                    ).isAvailable()
-                )
-                    .toBe(true);
             });
 
-            it('for async providers', () => {
-                expect(
-                    createProvider(
-                        new DummyProvider({value: RAW_VALUE, isAsync: true, isAvailable: true}),
-                    ).isAvailable()
-                )
-                    .toBe(true);
+            it('forwards provider error', () => {
+                const error = new Error('test');
+                const provider = createProvider(
+                    new DummyProvider({error, isAsync})
+                );
 
-                expect(
-                    createProvider(
-                        new DummyProvider({value: RAW_VALUE, isAsync: true, isAvailable: false}),
-                    ).isAvailable()
-                )
-                    .toBe(true);
-            });
-        });
-    });
-
-    it('description', () => {
-        expect(
-            createProvider(
-                new DummyProvider({value: RAW_VALUE, isAsync: false, isAvailable: true, description: 'Test'})
-            )
-                .getDescription()
-        )
-            .toMatchSnapshot();
-
-        expect(
-            createProvider(
-                new DummyProvider({value: RAW_VALUE, isAsync: false, isAvailable: true, description: 'Random description'})
-            )
-                .getDescription()
-        )
-            .toMatchSnapshot();
+                return assertProviderError(
+                    isAsync,
+                    provider.getValue(),
+                    error
+                );
+            })
+        })
     })
 
     describe('optionalWrap', () => {
         const dep = new DummyProvider({
             value: RAW_VALUE,
             isAsync: false,
-            isAvailable: true
         });
 
         it('returns original provider if default value is undefined', () => {
@@ -143,11 +82,11 @@ describe('DefaultValueProvider', () => {
 
     it('types', () => {
         const provider = new DefaultValueProvider(
-            DummyProvider.sync<'foo'>({value: 'foo', isAvailable: true}),
+            DummyProvider.sync<'foo'>({value: 'foo'}),
             'bar' as const
         );
 
         const value = provider.getValue();
-        assert<IsExact<typeof value, OptionalPromise<'foo' | 'bar'>>>(true);
+        assert<IsExact<typeof value, OptionalPromise<Provider.Value<'foo' | 'bar'>>>>(true);
     });
 });

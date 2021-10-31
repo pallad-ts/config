@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`FormattedStringProvider getting description with dependencies 1`] = `"Formatted string (\\"Hello \${DummyProvider} and \${DummyProvider}\\")"`;
-
-exports[`FormattedStringProvider getting description with dependencies and simple values 1`] = `"Formatted string (\\"Hello world and \${DummyProvider}\\")"`;
-
-exports[`FormattedStringProvider with async providers getting value throws an error if one of dependent providers is not available 1`] = `"Config value not available: Formatted string (\\"Hello \${DummyProvider}\\")"`;
-
-exports[`FormattedStringProvider with sync providers getting value throws an error if one of dependent providers is not available 1`] = `"Config value not available: Formatted string (\\"Hello \${DummyProvider}\\")"`;

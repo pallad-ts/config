@@ -7,8 +7,7 @@ export namespace Config {
         [P in keyof T]: ResolvedValue<T[P]>
     }
 
-    export type ResolvedValue<TType> =
-        TType extends Provider<infer U> ? U : (
-            TType extends object ? Resolved<TType> : TType
-            );
+    export type ResolvedValue<TType> = TType extends Provider<infer U> ? U : (
+        TType extends object ? Resolved<TType> : TType
+        );
 }

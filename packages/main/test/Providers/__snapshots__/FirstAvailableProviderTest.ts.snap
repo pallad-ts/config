@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`FirstAvailableProvider async getting value throw an error if none is available 1`] = `"Config value not available: First available - DummyProvider, DummyProvider"`;
-
-exports[`FirstAvailableProvider description 1`] = `"First available - desc1, desc2, desc3"`;
-
-exports[`FirstAvailableProvider sync getting value throw an error if none is available 1`] = `"Config value not available: First available - DummyProvider, DummyProvider"`;

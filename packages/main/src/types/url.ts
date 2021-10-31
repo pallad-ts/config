@@ -1,8 +1,15 @@
 import {ConfigError} from '../ConfigError';
+import {ERRORS} from '../errors';
 
-export function url(options: url.Options = {}) {
-    if (options.protocols) {
-        options.protocols = options.protocols.map(x => x.toLowerCase());
+
+function factory(options?: { protocols?: string[] | string }) {
+    const finalOptions: { protocols: string[] | undefined } = {
+        protocols: undefined
+    };
+
+    if (options?.protocols) {
+        finalOptions.protocols = (Array.isArray(options.protocols) ? options.protocols : [options.protocols])
+            .map(x => x.toLowerCase());
     }
 
     return (x: any): string => {
@@ -13,18 +20,27 @@ export function url(options: url.Options = {}) {
             throw new ConfigError(e.message);
         }
 
-        if (options.protocols) {
+        if (finalOptions.protocols) {
             const protocol = url.protocol.replace(/:$/, '');
-            if (!options.protocols.includes(protocol)) {
-                throw new ConfigError(`Protocol "${protocol}" is not allowed. Allowed: ${options.protocols.join(', ')}`);
+            if (!finalOptions.protocols.includes(protocol)) {
+                throw ERRORS.TYPE_URL_INVALID_PROTOCOL.format(
+                    protocol,
+                    finalOptions.protocols.join(', ')
+                );
             }
         }
         return x;
     }
 }
 
-export namespace url {
-    export interface Options {
-        protocols?: string[];
-    }
+export interface Url {
+    (value: any): string
+
+    options: typeof factory
 }
+
+export const url = (() => {
+    const result = factory() as any;
+    result.options = factory;
+    return result as Url;
+})();

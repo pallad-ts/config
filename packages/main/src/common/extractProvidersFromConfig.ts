@@ -1,6 +1,9 @@
 import * as is from 'predicates';
 import {Provider} from "../Provider";
 
+/**
+ * @internal
+ */
 export function extractProvidersFromConfig(config: object): Array<Provider<any>> {
     if (is.primitive(config)) {
         return [];

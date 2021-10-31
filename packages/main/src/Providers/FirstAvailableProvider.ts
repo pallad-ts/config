@@ -1,7 +1,8 @@
 import {Provider} from "../Provider";
 import {isPromise} from '../common/isPromise';
 import {OptionalPromise} from '../utils';
-import {runOnOptionalPromise} from '../common/runOnOptionalPromise';
+import {Validation} from 'monet';
+import {ValueNotAvailable} from '../ValueNotAvailable';
 
 export class FirstAvailableProvider<T extends Array<Provider<any>>> extends Provider<FirstAvailableProvider.Unwrap<T>> {
     private providers: Array<Provider<T>>;
@@ -11,45 +12,41 @@ export class FirstAvailableProvider<T extends Array<Provider<any>>> extends Prov
         this.providers = providers;
     }
 
-    isAvailable() {
-        return runOnOptionalPromise(this.getFirstAvailableProvider(), provider => !!provider);
-    }
-
-    private getFirstAvailableProvider(): OptionalPromise<Provider<any> | undefined> {
+    getValue(): OptionalPromise<Provider.Value<FirstAvailableProvider.Unwrap<T>>> {
         const iterator = this.providers[Symbol.iterator]();
+        const descriptions: string[] = [];
         for (const provider of iterator) {
-            const isAvailable = provider.isAvailable();
-            if (isPromise(isAvailable)) {
-                return isAvailable.then(x => {
-                    if (x) {
-                        return provider;
-                    }
-                    return (async () => {
-                        for (const provider of iterator) {
-                            const isAvailable = await provider.isAvailable();
-                            if (isAvailable) {
-                                return provider;
+            const value = provider.getValue();
+            if (isPromise(value)) {
+                return value.then(x => {
+                    if (x.isFail() && ValueNotAvailable.is(x.fail())) {
+                        descriptions.push((x.fail() as ValueNotAvailable).description);
+                        return (async () => {
+                            for (const provider of iterator) {
+                                const value = await provider.getValue();
+                                if (value.isFail() && ValueNotAvailable.is(value.fail())) {
+                                    descriptions.push((value.fail() as ValueNotAvailable).description);
+                                    continue;
+                                }
+                                return value as Provider.Value<FirstAvailableProvider.Unwrap<T>>;
                             }
-                        }
-                    })();
+
+                            return Validation.Fail(
+                                new ValueNotAvailable(`First available: ${descriptions.join(', ')}`)
+                            ) as Provider.Value<FirstAvailableProvider.Unwrap<T>>
+                        })();
+                    }
+                    return x as Provider.Value<FirstAvailableProvider.Unwrap<T>>;
                 });
-            } else if (isAvailable) {
-                return provider;
+            } else if (value.isFail() && ValueNotAvailable.is(value.fail())) {
+                descriptions.push((value.fail() as ValueNotAvailable).description);
+                continue;
             }
+            return value as Provider.Value<FirstAvailableProvider.Unwrap<T>>;
         }
-    }
 
-    getDescription(): string {
-        const desc = this.providers.map(x => x.getDescription()).join(', ');
-        return `First available - ${desc}`;
-    }
-
-    retrieveValue() {
-        return runOnOptionalPromise(
-            this.getFirstAvailableProvider(),
-            provider => {
-                return provider!.getValue()
-            }
+        return Validation.Fail(
+            new ValueNotAvailable(`First available: ${descriptions.join(', ')}`)
         );
     }
 }

@@ -1,12 +1,13 @@
 export * as type from './types';
 
-export * from './Providers';
 export * from './helpers';
-export * from './errors';
+export * from './Providers';
 export * from './Config';
 export * from './ConfigError';
-export * from './Provider';
+export * from './errors';
 export * from './loadAsync';
 export * from './loadSync';
+export * from './Provider';
 export * from './common/replaceProvidersInConfig';
 export * from './common/extractProvidersFromConfig';
+export * from './ValueNotAvailable';

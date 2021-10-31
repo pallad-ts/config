@@ -1,10 +1,10 @@
 import {Command, flags} from '@oclif/command'
 import * as fs from 'fs';
 import * as is from 'predicates';
-import {Either, Validation} from "monet";
+import {Validation} from "monet";
 import {cosmiconfig} from 'cosmiconfig';
 import {get as getProperty} from 'object-path';
-import {Provider, extractProvidersFromConfig, replaceProvidersInConfig} from '@pallad/config';
+import {Provider, extractProvidersFromConfig, replaceProvidersInConfig, ERRORS, ValueNotAvailable} from '@pallad/config';
 import {Secret} from '@pallad/secret';
 import * as chalk from 'chalk';
 import {format as prettyFormat} from 'pretty-format'
@@ -89,31 +89,20 @@ class ConfigCheck extends Command {
             return config;
         }
         const providers = extractProvidersFromConfig(config);
-        const map = new Map<Provider<any>, ResolvedProviderValue>();
-        await Promise.all(
-            providers.map(async x => {
-                try {
-                    const value = await x.getValue();
-                    map.set(x, Validation.Success({
-                        value,
-                        provider: x
-                    }));
-                } catch (e) {
-                    map.set(x, Validation.Fail({
-                        error: e as any,
-                        provider: x
-                    }));
-                }
-            })
-        );
+        const map = new Map<Provider<any>, Provider.Value<any>>();
 
+        for (const provider of providers) {
+            const value = await provider.getValue();
+
+            map.set(provider, Validation.Success(value));
+        }
         return replaceProvidersInConfig(config, map);
     }
 
     private displayConfig(config: any, options: { revealSecrets: boolean }) {
-        function renderSecret(secret: Secret<any>) {
+        function renderSecret(secret: Secret<any>, printer: (value: any) => string) {
             if (options.revealSecrets) {
-                return secret.getValue();
+                return printer(secret.getValue());
             }
             return secret.getDescription();
         }
@@ -123,7 +112,7 @@ class ConfigCheck extends Command {
                 return Secret.is(value);
             },
             serialize(val: Secret<any>, config: Config, indentation: string, depth: number, refs: Refs, printer: Printer) {
-                return printer(renderSecret(val), config, indentation, depth, refs, true)
+                return renderSecret(val, value => printer(value, config, indentation, depth, refs, true))
                     + ' '
                     + chalk.yellow('(secret)');
             }
@@ -133,14 +122,20 @@ class ConfigCheck extends Command {
             test(value: any) {
                 return Validation.isInstance(value)
             },
-            serialize(val: ResolvedProviderValue, config: Config, indentation: string, depth: number, refs: Refs, printer: Printer) {
+            serialize(val: Provider.Value<any>, config: Config, indentation: string, depth: number, refs: Refs, printer: Printer) {
                 if (val.isSuccess()) {
-                    return printer(val.success().value, config, indentation, depth, refs, false)
-                        + ' '
-                        + chalk.green('(' + val.success().provider.getDescription() + ')');
+                    return printer(val.success(), config, indentation, depth, refs, false);
                 }
-
-                return chalk.red(val.fail().error.message);
+                const fail = val.fail();
+                const errors = (Array.isArray(fail) ? fail : [fail])
+                    .map(x => {
+                        if (ValueNotAvailable.is(x)) {
+                            return ERRORS.PROVIDER_VALUE_NOT_AVAILABLE.format(x.description);
+                        }
+                        return x;
+                    })
+                    .map(x => x.message);
+                return chalk.red(errors.join(', '));
             }
         }
         console.log(
@@ -156,7 +151,10 @@ class ConfigCheck extends Command {
     }
 }
 
-type ResolvedProviderValue = Validation<{ error: Error, provider: Provider<any> }, { value: any, provider: Provider<any> }>;
+interface ProviderValue {
+    provider: Provider<any>,
+    value: Provider.Value<any>
+}
 
 interface Configuration {
     file: string;

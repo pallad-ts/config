@@ -1,6 +1,6 @@
 import {OptionalPromise} from './utils';
-import {ERRORS} from "./errors";
-import {isPromise} from "./common/isPromise";
+import {Validation} from 'monet';
+import {ValueNotAvailable} from './ValueNotAvailable';
 
 /**
  * Describes config value retrievable from other sources (env, env file, external storage etc)
@@ -8,49 +8,24 @@ import {isPromise} from "./common/isPromise";
  * @public
  */
 export abstract class Provider<TType> {
-    protected abstract retrieveValue(): OptionalPromise<TType>;
-
     /**
-     * Describes provider like "ENV variable TEST"
+     * Returns value of provider
      */
-    abstract getDescription(): string;
-
-    /**
-     * Checks if value for provider is available
-     */
-    abstract isAvailable(): OptionalPromise<boolean>;
-
-    /**
-     * Returns value of provider. Throws an error if it is not available
-     */
-    getValue(): OptionalPromise<TType> {
-        const isAvailable = this.assertAvailable();
-        if (isPromise(isAvailable)) {
-            return isAvailable.then(() => {
-                return this.retrieveValue();
-            })
-        }
-        return this.retrieveValue();
-    }
-
-    private assertAvailable() {
-        const isAvailable = this.isAvailable();
-        if (isPromise(isAvailable)) {
-            return isAvailable.then(result => {
-                if (!result) {
-                    throw ERRORS.PROVIDER_VALUE_NOT_AVAILABLE.format(this.getDescription());
-                }
-            })
-        } else if (!isAvailable) {
-            throw ERRORS.PROVIDER_VALUE_NOT_AVAILABLE.format(this.getDescription());
-        }
-    }
+    abstract getValue(): OptionalPromise<Provider.Value<TType>>;
 
     /**
      * Checks if given value is a Provider
-     * @param value
      */
     static is<T>(value: any): value is Provider<T> {
         return value instanceof Provider;
+    }
+}
+
+export namespace Provider {
+    export type Value<T> = Validation<Fail, T>;
+
+    export type Fail = Fail.Entry | Fail.Entry[];
+    export namespace Fail {
+        export type Entry = ValueNotAvailable | Error;
     }
 }

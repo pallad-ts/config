@@ -1,4 +1,7 @@
 module.exports = {
     preset: '@pallad/scripts',
-    coveragePathIgnorePatterns: ['/test/']
+    coveragePathIgnorePatterns: ['/test/'],
+    collectCoverageFrom: [
+        "<rootDir>/src/**/*.ts"
+    ]
 };

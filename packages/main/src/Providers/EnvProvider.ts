@@ -1,23 +1,18 @@
 import {Provider} from "../Provider";
+import {Maybe, Validation} from 'monet';
+import {ValueNotAvailable} from '../ValueNotAvailable';
 
-export class EnvProvider<T> extends Provider<string> {
+export class EnvProvider extends Provider<string> {
     constructor(private key: string,
                 private envs: typeof process['env'] = process.env) {
         super();
     }
 
-    getDescription(): string {
-        return 'ENV: ' + this.key;
-    }
-
-    isAvailable() {
-        if (this.key in this.envs) {
-            return this.envs[this.key] !== '';
-        }
-        return false;
-    }
-
-    protected retrieveValue() {
-        return this.envs[this.key]!;
+    getValue(): Provider.Value<string> {
+        return Maybe.fromUndefined(this.envs[this.key])
+            .filter(value => value !== '')
+            .toValidation(
+                new ValueNotAvailable('ENV: ' + this.key)
+            );
     }
 }

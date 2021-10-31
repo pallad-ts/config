@@ -1,49 +1,33 @@
 import {EnvProvider} from "@src/Providers";
+import {assertNotAvailable} from '../common/assertNotAvailable';
+import {assertProviderValue} from '../common/assertProviderValue';
 
 describe('EnvProvider', () => {
-    describe('availability', () => {
-        describe('not available', () => {
-            it('if not defined', () => {
-                const provider = new EnvProvider('key', {key2: ''});
-                expect(provider.isAvailable())
-                    .toEqual(false);
-            });
-
-            it('if empty string', () => {
-                const provider = new EnvProvider('key', {key: ''});
-                expect(provider.isAvailable())
-                    .toEqual(false);
-            });
-        });
-
-        it('if not and empty string', () => {
-            const provider = new EnvProvider('key', {key: 'test'});
-            expect(provider.isAvailable())
-                .toEqual(true);
-        });
-    });
-
-    it('getting description', () => {
-        const provider = new EnvProvider('key');
-        expect(provider.getDescription())
-            .toEqual('ENV: key');
-    });
-
     describe('getting value', () => {
         it('not available', () => {
             const provider = new EnvProvider('key', {});
-            expect(() => {
-                provider.getValue()
-            })
-                .toThrowErrorMatchingSnapshot();
+            assertNotAvailable(false, provider.getValue(), 'ENV: key')
         });
 
-        it('raw', () => {
+        it('not available if value is empty', () => {
+            const provider = new EnvProvider('key', {key: ''});
+            assertNotAvailable(false, provider.getValue(), 'ENV: key')
+        });
+
+        it('returns value if provided', () => {
             const value = 'bar';
             const provider = new EnvProvider('key', {key: value});
 
-            expect(provider.getValue())
-                .toEqual(value);
+            assertProviderValue(false, provider.getValue(), value);
+        });
+
+        it('by default takes value from process.env', () => {
+            const key = 'PALLAD_CONFIG_TEST_KEY'
+            const value = 'fooo';
+            process.env[key] = value;
+
+            const provider = new EnvProvider(key);
+            assertProviderValue(false, provider.getValue(), value);
         });
     });
 });

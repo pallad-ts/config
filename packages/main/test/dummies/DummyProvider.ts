@@ -1,4 +1,7 @@
 import {Provider} from "@src/Provider";
+import {OptionalPromise} from '@src/utils';
+import {Validation} from 'monet';
+import {ValueNotAvailable} from '@src/ValueNotAvailable';
 
 export class DummyProvider<T> extends Provider<T> {
     private options: DummyProvider.Options<T>;
@@ -6,22 +9,26 @@ export class DummyProvider<T> extends Provider<T> {
     constructor(options: DummyProvider.Options.FromUser<T>) {
         super();
         this.options = {
-            isAvailable: true,
             description: 'DummyProvider',
             ...options
         }
     }
 
-    getDescription(): string {
-        return this.options.description ?? 'DummyProvider';
-    }
+    getValue(): OptionalPromise<Provider.Value<T>> {
+        const value = (() => {
+            if (this.options.error) {
+                return Validation.Fail<Provider.Fail, T>(this.options.error);
+            }
 
-    isAvailable() {
-        return this.options.isAsync ? Promise.resolve(this.options.isAvailable) : this.options.isAvailable;
-    }
+            if (this.options.value) {
+                return Validation.Success<Provider.Fail, T>(this.options.value);
+            }
 
-    protected retrieveValue() {
-        return this.options.isAsync ? Promise.resolve(this.options.value) : this.options.value;
+            return Validation.Fail<Provider.Fail, T>(
+                new ValueNotAvailable(this.options.description)
+            );
+        })();
+        return this.options.isAsync ? Promise.resolve(value) : value;
     }
 
     static sync<T>(options: Omit<DummyProvider.Options.FromUser<T>, 'isAsync'>) {
@@ -31,8 +38,12 @@ export class DummyProvider<T> extends Provider<T> {
         })
     }
 
+    static notAvailable<T>(options: Pick<DummyProvider.Options.FromUser<T>, 'error' | 'isAsync' | 'description'>) {
+        return new DummyProvider(options);
+    }
+
     static syncNotAvailable<T>() {
-        return DummyProvider.sync<T>({value: 'test' as any, isAvailable: false});
+        return DummyProvider.sync<T>({});
     }
 
     static async<T>(options: Omit<DummyProvider.Options.FromUser<T>, 'isAsync'>) {
@@ -43,19 +54,19 @@ export class DummyProvider<T> extends Provider<T> {
     }
 
     static asyncNotAvailable<T>() {
-        return DummyProvider.async<T>({value: 'test' as any, isAvailable: false});
+        return DummyProvider.async<T>({});
     }
 }
 
 export namespace DummyProvider {
     export interface Options<T> {
-        isAvailable: boolean;
-        value: T,
+        value?: T,
+        error?: Error | Error[];
         isAsync: boolean,
         description: string,
     }
 
     export namespace Options {
-        export type FromUser<T> = Partial<Pick<Options<T>, 'isAvailable' | 'description'>> & Omit<Options<T>, 'isAvailable' | 'description'>;
+        export type FromUser<T> = Partial<Pick<Options<T>, | 'description'>> & Omit<Options<T>, 'isAvailable' | 'description'>;
     }
 }
