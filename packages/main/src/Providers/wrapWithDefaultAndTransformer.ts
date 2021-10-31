@@ -29,10 +29,12 @@ export function wrapWithDefaultAndTransformer<TTransformed, TDefault, TProvider 
         'transformer' in options ? options.transformer : undefined
     );
 
-    return DefaultValueProvider.optionalWrap<TDefault, TTransformed | UnwrapProvider<TProvider>>(
-        transformed,
-        'default' in options ? options.default : undefined
-    );
+    if ('default' in options) {
+        return DefaultValueProvider.optionalWrap<TDefault, TTransformed | UnwrapProvider<TProvider>>(
+            transformed, options.default
+        )
+    }
+    return transformed;
 }
 
 export namespace wrapWithDefaultAndTransformer {

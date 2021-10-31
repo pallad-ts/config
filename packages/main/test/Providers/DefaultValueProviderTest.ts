@@ -68,9 +68,15 @@ describe('DefaultValueProvider', () => {
         });
 
         it('returns original provider if default value is undefined', () => {
-            const provider = DefaultValueProvider.optionalWrap(dep, undefined);
+            const provider = DefaultValueProvider.optionalWrap(dep);
             expect(provider)
                 .toStrictEqual(dep);
+        });
+
+        it('allows to use undefined', () => {
+            const provider = DefaultValueProvider.optionalWrap(dep, undefined);
+            expect(provider)
+                .toStrictEqual(new DefaultValueProvider(dep, undefined));
         });
 
         it('wraps provided provider with TransformerProvider', () => {

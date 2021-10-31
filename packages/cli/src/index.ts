@@ -16,13 +16,14 @@ class ConfigCheck extends Command {
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     static flags = {
-        failsOnly: flags.boolean({
-            char: 'f',
-            description: `display only failed dependencies`,
-            default: false
-        }),
         revealSecrets: flags.boolean({
-            default: false
+            default: false,
+            description: 'Whether to reveal secret values from @pallad/secret'
+        }),
+        silent: flags.boolean({
+            default: false,
+            char: 's',
+            description: 'Do not display config'
         })
     };
 
@@ -30,8 +31,17 @@ class ConfigCheck extends Command {
     static args = [{
         name: 'configPath',
         required: false,
-        description: 'config path to display'
+        parse(value: string) {
+            if (is.startsWith('-', value)) {
+                throw new Error(`Property path: ${value} is rather a typo. Please use property path that does not start with "-"`)
+            }
+            return value;
+        },
+        description: 'config property path to display'
     }];
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    static strict = true;
 
     async run() {
         const {args, flags} = this.parse(ConfigCheck);
@@ -40,11 +50,17 @@ class ConfigCheck extends Command {
 
         const finalConfig = args.configPath ? getProperty(config, args.configPath) : config;
 
-        const resolvedConfig = await this.loadConfig(finalConfig);
+        const {config: resolvedConfig, providersMap} = await this.loadConfig(finalConfig);
 
         this.displayConfig(resolvedConfig, {
-            revealSecrets: flags.revealSecrets
+            revealSecrets: flags.revealSecrets,
+            propertyPath: args.configPath
         });
+
+        const hasFailures = Array.from(providersMap.values())
+            .some(x => x.success().isFail());
+
+        process.exit(hasFailures ? 1 : 0);
     }
 
     private async getConfiguration(): Promise<Configuration> {
@@ -80,26 +96,28 @@ class ConfigCheck extends Command {
             }
             throw new Error(`Module "${configuration.file}" does not export a function`)
         }
-
         return func();
     }
 
     private async loadConfig(config: any) {
+        const map = new Map<Provider<any>, Validation<unknown, Provider.Value<any>>>();
         if (is.primitive(config)) {
-            return config;
+            return {config, providersMap: map};
         }
         const providers = extractProvidersFromConfig(config);
-        const map = new Map<Provider<any>, Provider.Value<any>>();
 
         for (const provider of providers) {
             const value = await provider.getValue();
 
             map.set(provider, Validation.Success(value));
         }
-        return replaceProvidersInConfig(config, map);
+        return {
+            config: replaceProvidersInConfig(config, map as any),
+            providersMap: map
+        };
     }
 
-    private displayConfig(config: any, options: { revealSecrets: boolean }) {
+    private displayConfig(config: any, options: { revealSecrets: boolean, propertyPath?: string }) {
         function renderSecret(secret: Secret<any>, printer: (value: any) => string) {
             if (options.revealSecrets) {
                 return printer(secret.getValue());
@@ -120,7 +138,7 @@ class ConfigCheck extends Command {
 
         const providerPlugin: Plugin = {
             test(value: any) {
-                return Validation.isInstance(value)
+                return value && Validation.isInstance(value)
             },
             serialize(val: Provider.Value<any>, config: Config, indentation: string, depth: number, refs: Refs, printer: Printer) {
                 if (val.isSuccess()) {
@@ -138,6 +156,11 @@ class ConfigCheck extends Command {
                 return chalk.red(errors.join(', '));
             }
         }
+
+        if (options.propertyPath) {
+            console.log(`Displaying config at property path: ${chalk.greenBright(options.propertyPath)}`);
+        }
+
         console.log(
             prettyFormat(
                 config, {

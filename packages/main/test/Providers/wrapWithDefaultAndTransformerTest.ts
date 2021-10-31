@@ -44,6 +44,14 @@ describe('wrapWithDefaultAndTransformer', () => {
             assert<IsExact<typeof value, OptionalPromise<Provider.Value<Test | Default | Transformed>>>>(true);
         });
 
+        it('with undefined as default', () => {
+            const provider = wrapWithDefaultAndTransformer(baseProvider, {
+                default: undefined,
+            });
+            const value = provider.getValue();
+            assert<IsExact<typeof value, OptionalPromise<Provider.Value<Test | undefined>>>>(true);
+        });
+
         it('with transformer and no default value', () => {
             const provider = wrapWithDefaultAndTransformer(baseProvider, {
                 transformer

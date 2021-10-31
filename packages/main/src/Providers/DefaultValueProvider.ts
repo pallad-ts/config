@@ -26,10 +26,10 @@ export class DefaultValueProvider<T, TOriginal> extends Provider<T | TOriginal> 
         )
     }
 
-    static optionalWrap<T, TOriginal>(provider: Provider<TOriginal>, defaultValue?: T) {
-        if (defaultValue !== undefined) {
-            return new DefaultValueProvider<T, TOriginal>(provider, defaultValue);
+    static optionalWrap<T, TOriginal>(...args: [Provider<TOriginal>] | [Provider<TOriginal>, T]) {
+        if (args.length === 2) {
+            return new DefaultValueProvider<T, TOriginal>(args[0], args[1]);
         }
-        return provider;
+        return args[0];
     }
 }
