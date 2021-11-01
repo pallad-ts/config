@@ -1,7 +1,7 @@
 {
   "name": "@pallad/config-ssm",
   "version": "1.1.0",
-  "description": "SSM dependency for @pallad/config",
+  "description": "SSM provider for @pallad/config",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",
   "keywords": [
@@ -33,7 +33,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/pallad-ts/config.git"
+    "url": "git+ssh://git@github.com/pallad-ts/config.git",
+    "directory": "packages/ssm"
   },
   "dependencies": {
     "aws-sdk": "^2.596.0",
@@ -43,6 +44,5 @@
   },
   "files": [
     "compiled"
-  ],
-  "gitHead": "611b64b0584b7dafc81fdfb8f34f97544e24ff55"
+  ]
 }
