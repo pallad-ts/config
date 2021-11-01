@@ -1,7 +1,7 @@
 {
   "name": "@pallad/config",
   "version": "1.1.0",
-  "description": "Create and validate configuration in easy way",
+  "description": "Create and validate configuration",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",
   "directories": {
@@ -18,7 +18,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/pallad-ts/config.git"
+    "url": "git+ssh://git@github.com/pallad-ts/config.git",
+    "directory": "packages/main"
   },
   "keywords": [
     "config",
@@ -42,6 +43,5 @@
     "compiled",
     "docs",
     "assets"
-  ],
-  "gitHead": "53e1b1049b23e64ed1c61d79115014981b52a678"
+  ]
 }

@@ -52,10 +52,12 @@ class ConfigCheck extends Command {
 
         const {config: resolvedConfig, providersMap} = await this.loadConfig(finalConfig);
 
-        this.displayConfig(resolvedConfig, {
-            revealSecrets: flags.revealSecrets,
-            propertyPath: args.configPath
-        });
+        if (!flags.silent) {
+            this.displayConfig(resolvedConfig, {
+                revealSecrets: flags.revealSecrets,
+                propertyPath: args.configPath
+            });
+        }
 
         const hasFailures = Array.from(providersMap.values())
             .some(x => x.success().isFail());
