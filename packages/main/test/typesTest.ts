@@ -28,7 +28,7 @@ describe('types', () => {
             [10.5],
             ['10.5'],
             ['10px']
-        ])('converts to int: %s', (input) => {
+        ])('converts to int: %s', input => {
             expect(validations.int(input))
                 .toEqual(10);
         });
@@ -134,7 +134,7 @@ describe('types', () => {
             const transformer = sinon.stub().callsFake(value => `${value}!`);
 
             const result = split.by({
-                transform: transformer
+                transformer
             })('foo,bar, ,');
 
             expect(result)

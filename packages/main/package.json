@@ -11,7 +11,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "../../node_modules/.bin/pallad-scripts test",
+    "test": "JEST_JUNIT_OUTPUT_DIR=../../test_results/main ../../node_modules/.bin/pallad-scripts test",
     "compile": "../../node_modules/.bin/pallad-scripts compile",
     "lint": "../../node_modules/.bin/pallad-scripts lint",
     "prepublishOnly": "npm run compile"

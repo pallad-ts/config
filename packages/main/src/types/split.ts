@@ -4,8 +4,8 @@ function factory<T>(options?: Split.Options<T>) {
             .map(x => x.trim())
             .filter(x => x);
 
-        if (options?.transform) {
-            tmpResult = tmpResult.map(options.transform).filter(x => x)
+        if (options?.transformer) {
+            tmpResult = tmpResult.map(options.transformer).filter(x => x)
         }
         return tmpResult;
     }
@@ -24,6 +24,6 @@ export interface Split<T = string> {
 export namespace Split {
     export interface Options<T = string> {
         separator?: string;
-        transform?: (value: string) => T;
+        transformer?: (value: string) => T;
     }
 }
