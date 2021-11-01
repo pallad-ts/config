@@ -24,6 +24,11 @@
     "lint": "../../node_modules/.bin/pallad-scripts lint",
     "prepublishOnly": "npm run compile"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pallad-ts/config.git",
+    "directory": "packages/preset-env-ssm"
+  },
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
   "license": "MIT"
 }

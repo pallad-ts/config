@@ -1,7 +1,7 @@
 {
   "name": "@pallad/config-cli",
   "version": "1.1.1",
-  "description": "CLI command that allows to verify current configuration",
+  "description": "CLI command that allows to display and verify current configuration",
   "scripts": {
     "compile": "../../node_modules/.bin/pallad-scripts compile",
     "lint": "../../node_modules/.bin/pallad-scripts lint",
@@ -53,5 +53,10 @@
     "pallad"
   ],
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pallad-ts/config.git",
+    "directory": "packages/cli"
+  }
 }
