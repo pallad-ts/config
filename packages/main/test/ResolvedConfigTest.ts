@@ -1,8 +1,10 @@
 import {assert, IsExact} from 'conditional-type-checks';
-import {Config} from '@src/Config';
+import {ResolvedConfig} from '@src/ResolvedConfig';
 import {DummyProvider} from './dummies/DummyProvider';
+import {Secret, secret} from '@pallad/secret';
+import {env} from '@src/helpers';
 
-describe('Config', () => {
+describe('ResolvedConfig', () => {
     it('primitives', () => {
         const config = {
             string: 'foo',
@@ -11,7 +13,7 @@ describe('Config', () => {
         };
 
         type Input = typeof config;
-        type Output = Config.Resolved<Input>;
+        type Output = ResolvedConfig<Input>;
         assert<IsExact<Input, Output>>(true);
     });
 
@@ -28,7 +30,7 @@ describe('Config', () => {
             bool: boolean
         }
 
-        type Output = Config.Resolved<typeof config>;
+        type Output = ResolvedConfig<typeof config>;
         assert<IsExact<Input, Output>>(true);
     })
 
@@ -51,7 +53,7 @@ describe('Config', () => {
             }
         }
 
-        type Output = Config.Resolved<typeof config>;
+        type Output = ResolvedConfig<typeof config>;
         assert<IsExact<Input, Output>>(true);
     });
 
@@ -67,7 +69,20 @@ describe('Config', () => {
             array: Array<string | number>
         }
 
-        type Output = Config.Resolved<typeof config>;
+        type Output = ResolvedConfig<typeof config>;
+        assert<IsExact<Input, Output>>(true);
+    });
+
+    it('secrets', () => {
+        const config = {
+            secret: env('FOO', {transformer: secret})
+        };
+
+        interface Input {
+            secret: Secret<string>
+        }
+
+        type Output = ResolvedConfig<typeof config>;
         assert<IsExact<Input, Output>>(true);
     });
 });

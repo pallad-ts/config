@@ -1,3 +1,6 @@
+/**
+ * @public
+ */
 export class ValueNotAvailable {
     constructor(readonly description: string) {
         Object.freeze(this);

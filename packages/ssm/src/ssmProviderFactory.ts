@@ -41,16 +41,10 @@ export function ssmProviderFactory<TTransformed, TDefault>(
     };
 
     const dataLoader = (options?.createDataLoader ?? createDataLoader)(batchFn);
-    return function <TTransformed, TDefault>(
-        key: string,
-        opts?: wrapWithDefaultAndTransformer.Options<TTransformed, TDefault, SSMProvider.Value>
-    ) {
-        const finalKey = (options?.prefix ?? '') + key;
-        return wrapWithDefaultAndTransformer(
-            new SSMProvider(finalKey, dataLoader),
-            opts
-        );
-    };
+
+    return wrapWithDefaultAndTransformer.wrap((key: string) => {
+        return new SSMProvider((options?.prefix ?? '') + key, dataLoader)
+    });
 }
 
 export namespace ssmProviderFactory {

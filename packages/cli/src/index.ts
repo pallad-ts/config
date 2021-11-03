@@ -90,15 +90,40 @@ class ConfigCheck extends Command {
     private getConfig(configuration: Configuration) {
         const module = require(fs.realpathSync(configuration.file));
 
-        const func = configuration.property ? module[configuration.property] : module;
 
-        if (!is.func(func)) {
-            if (configuration.property) {
+        if (configuration.property) {
+            const func = module[configuration.property];
+            if (!is.func(func)) {
                 throw new Error(`Property "${configuration.property}" from module "${configuration.file}" is not a function`);
             }
-            throw new Error(`Module "${configuration.file}" does not export a function`)
+            return func;
         }
-        return func();
+
+        const foundFunc = this.findConfigFunctionInModule(module, configuration.file);
+        if (foundFunc.isFail()) {
+            throw new Error(foundFunc.fail())
+        }
+        return foundFunc.success();
+    }
+
+    private findConfigFunctionInModule(module: any, modulePath: string): Validation<string, Function> {
+        if (is.func(module)) {
+            return Validation.Success(module);
+        }
+        const funcs = Array.from(Object.values(module)).filter(is.func);
+        if (funcs.length > 1) {
+            return Validation.Fail(
+                `Found 2 exported functions in module: ${modulePath}.
+                We do not know which one is responsible for generating configuration shape.
+                Please define "property" in config explicitly.`
+            );
+        }
+
+        if (funcs.length === 0) {
+            return Validation.Fail(`No functions generating configuration shape found in module: ${modulePath}`);
+        }
+
+        return Validation.Success(funcs[0]);
     }
 
     private async loadConfig(config: any) {

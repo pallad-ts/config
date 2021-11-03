@@ -33,5 +33,5 @@ export class TransformProvider<TType, TSource> extends Provider<TType> {
 }
 
 export namespace TransformProvider {
-    export type Transformer<T, TSource = unknown> = (x: TSource) => T;
+    export type Transformer<T, TSource = unknown> = (x: TSource, ...args: any[]) => T;
 }

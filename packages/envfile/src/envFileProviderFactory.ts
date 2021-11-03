@@ -34,15 +34,7 @@ export function envFileProviderFactory(options: envFileProviderFactory.Options) 
         Object.assign(process.env, envs);
     }
 
-    return <TTransformed, TDefault>(
-        key: string,
-        options?: wrapWithDefaultAndTransformer.Options<TTransformed, TDefault, string>
-    ) => {
-        return wrapWithDefaultAndTransformer(
-            new EnvFileProvider(key, envs),
-            options
-        );
-    }
+    return wrapWithDefaultAndTransformer.wrap(key => new EnvFileProvider(key, envs));
 }
 
 export namespace envFileProviderFactory {

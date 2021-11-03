@@ -23,7 +23,9 @@
     "monet": "^0.9.2",
     "object-path": "^0.11.8",
     "predicates": "^2.0.3",
-    "pretty-format": "^27.3.1"
+    "pretty-format": "^27.3.1",
+    "cosmiconfig": "^7.0.1",
+    "tslib": "^2"
   },
   "peerDependencies": {
     "@pallad/config": "*",

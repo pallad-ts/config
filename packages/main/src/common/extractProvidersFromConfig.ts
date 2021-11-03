@@ -4,7 +4,7 @@ import {Provider} from "../Provider";
 /**
  * @internal
  */
-export function extractProvidersFromConfig(config: object): Array<Provider<any>> {
+export function extractProvidersFromConfig(config: unknown): Array<Provider<any>> {
     if (is.primitive(config)) {
         return [];
     }

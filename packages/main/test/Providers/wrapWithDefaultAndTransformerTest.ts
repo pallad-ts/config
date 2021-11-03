@@ -41,7 +41,7 @@ describe('wrapWithDefaultAndTransformer', () => {
             });
             const value = provider.getValue();
 
-            assert<IsExact<typeof value, OptionalPromise<Provider.Value<Test | Default | Transformed>>>>(true);
+            assert<IsExact<typeof value, OptionalPromise<Provider.Value<Default | Transformed>>>>(true);
         });
 
         it('with undefined as default', () => {

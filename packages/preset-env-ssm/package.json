@@ -16,7 +16,8 @@
   "dependencies": {
     "@pallad/config": "*",
     "@pallad/config-envfile": "*",
-    "@pallad/config-ssm": "*"
+    "@pallad/config-ssm": "*",
+    "tslib": "^2"
   },
   "scripts": {
     "test": "JEST_JUNIT_OUTPUT_DIR=../../test_results/preset-env-ssm ../../node_modules/.bin/pallad-scripts test",

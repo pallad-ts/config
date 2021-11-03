@@ -1,8 +1,43 @@
 import {envFileProviderFactory} from '@src/envFileProviderFactory';
 import {Validation} from 'monet';
-import {ValueNotAvailable} from '@pallad/config';
+import {DefaultValueProvider, Provider, ValueNotAvailable} from '@pallad/config';
+import {assert, IsAny, IsExact} from 'conditional-type-checks';
+import {EnvFileProvider} from '@src/EnvFileProvider';
+import {int} from '@pallad/config/compiled/types';
 
 describe('envFileProviderFactory', () => {
+
+    describe('types', () => {
+        const factory = envFileProviderFactory({
+            paths: './example/base.env',
+            cwd: __dirname
+        });
+
+        it('no default and transformer', () => {
+            const provider = factory('FOO');
+
+            type Input = typeof provider;
+            type Expected = EnvFileProvider;
+            assert<IsExact<Input, Expected>>(true);
+        });
+
+        it('with default and no transformer', () => {
+            const provider = factory('FOO', {default: 100});
+
+            type Input = typeof provider;
+            type Expected = DefaultValueProvider<number, string>;
+            assert<IsExact<Input, Expected>>(true);
+        });
+
+        it('with default and transformer', () => {
+            const provider = factory('FOO', {default: {foo: 'bar'} as const, transformer: int});
+
+            type Input = typeof provider;
+            type Expected = DefaultValueProvider<{ foo: 'bar' }, string | number>;
+            assert<IsExact<Input, Expected>>(true);
+        });
+    });
+
     it('simple case', () => {
         const factory = envFileProviderFactory({
             paths: './example/base.env',
@@ -65,7 +100,7 @@ describe('envFileProviderFactory', () => {
     });
 
     it('populates process env if set', () => {
-        const factory = envFileProviderFactory({
+        envFileProviderFactory({
             paths: './example/populate.env',
             cwd: __dirname,
             populateToEnv: true

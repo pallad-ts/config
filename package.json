@@ -3,6 +3,7 @@
   "private": true,
   "devDependencies": {
     "@pallad/scripts": "^2",
+    "@pallad/secret": "^1.1.0",
     "@types/chalk": "^2",
     "@types/listr": "^0.14.2",
     "@types/object-path": "^0.11",

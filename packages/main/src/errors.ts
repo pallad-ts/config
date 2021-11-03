@@ -6,9 +6,9 @@ export const ERRORS = new Domain({
     codeGenerator: generators.formatCode('E_CONF_%d')
 }).createErrors(create => {
     return {
-        CONFIG_LOADING_FAILED: create('Config loading failed'),
+        CONFIG_LOADING_FAILED: create('Config loading failed: \s%s'),
         PROVIDER_VALUE_NOT_AVAILABLE: create('Value not available: %s'),
-        SYNC_LOADING_NOT_AVAILABLE: create('Cannot loadConfig config synchronously since one of your config value provider is asynchronous'),
+        SYNC_LOADING_NOT_AVAILABLE: create('Cannot load config synchronously since one of your config value providers is asynchronous'),
         PICK_PROVIDER_UNREGISTERED_TYPE: create('Unregistered type "%s". Registered values: %s'),
         PICK_PROVIDER_TYPE_ALREADY_EXISTS: create('Type "%s" already registered'),
         CANNOT_CONVERT_TO_INT: create(`Value "%s" cannot be converted to int`),

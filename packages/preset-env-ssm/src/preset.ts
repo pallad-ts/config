@@ -9,28 +9,24 @@ export function createPreset(presetOptions: Preset.Options) {
     const envFileHelper = presetOptions.envFile ? envFileProviderFactory(presetOptions.envFile) : undefined;
     const ssmHelper = presetOptions.ssm ? ssmProviderFactory(presetOptions.ssm) : undefined;
 
-    return function <TTransformed, TDefault>(
-        key: Preset.Key,
-        options?: wrapWithDefaultAndTransformer.Options<TTransformed, TDefault, string | string[]>
-    ) {
-        const providers: Array<Provider<any>> = [];
+    return wrapWithDefaultAndTransformer.wrap(
+        (key: Preset.Key) => {
+            const providers: Array<Provider<any>> = [];
 
-        if (key.env) {
-            providers.push(envHelper(key.env));
-            if (envFileHelper) {
-                providers.push(envFileHelper(key.env));
+            if (key.env) {
+                providers.push(envHelper(key.env));
+                if (envFileHelper) {
+                    providers.push(envFileHelper(key.env));
+                }
             }
-        }
 
-        if (key.ssmKey && ssmHelper) {
-            providers.push(ssmHelper(key.ssmKey));
-        }
+            if (key.ssmKey && ssmHelper) {
+                providers.push(ssmHelper(key.ssmKey));
+            }
 
-        return wrapWithDefaultAndTransformer(
-            new FirstAvailableProvider(...providers),
-            options
-        );
-    };
+            return new FirstAvailableProvider(...providers)
+        }
+    );
 }
 
 export namespace Preset {

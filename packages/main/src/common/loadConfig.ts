@@ -1,4 +1,3 @@
-import {Config} from '../Config';
 import {OptionalPromise} from '../utils';
 import {runOnOptionalPromise} from './runOnOptionalPromise';
 import {extractProvidersFromConfig} from './extractProvidersFromConfig';
@@ -6,16 +5,17 @@ import {replaceProvidersInConfig} from './replaceProvidersInConfig';
 import {Provider} from '../Provider';
 import {isPromise} from './isPromise';
 import {Validation} from 'monet';
+import {ResolvedConfig} from '../ResolvedConfig';
 
 /**
  * @internal
  */
-export function loadConfig<T extends Config>(config: T): OptionalPromise<Validation<Provider.Fail, Config.Resolved<T>>> {
+export function loadConfig<T>(config: T): OptionalPromise<Validation<Provider.Fail, ResolvedConfig<T>>> {
     return runOnOptionalPromise(
         resolveProviders(extractProvidersFromConfig(config)),
         resolved => {
             if (resolved.size === 0) {
-                return Validation.Success(config);
+                return Validation.Success<Provider.Fail, ResolvedConfig<T>>(config as any);
             }
 
             const fails = Array.from(resolved.values())

@@ -1,10 +1,10 @@
 import {Provider} from '../Provider';
-import {Config} from '../Config';
 import {runOnOptionalPromise} from '../common/runOnOptionalPromise';
 import {ERRORS} from '../errors';
 import {loadConfig} from '../common/loadConfig';
 import {OptionalPromise} from '../utils';
 import {Validation} from 'monet';
+import {ResolvedConfig} from '../ResolvedConfig';
 
 export class PickByTypeProvider<T> extends Provider<T> {
     private options = new Map<string, any>();
@@ -20,7 +20,7 @@ export class PickByTypeProvider<T> extends Provider<T> {
     registerOptions<TType extends string, TValue>(
         type: TType,
         value: TValue
-    ): PickByTypeProvider<NonNullable<T> | PickByTypeProvider.Value<TType, Config.ResolvedValue<TValue>>> {
+    ): PickByTypeProvider<NonNullable<T> | PickByTypeProvider.Value<TType, ResolvedConfig.Value<TValue>>> {
         if (this.options.has(type)) {
             throw ERRORS.PICK_PROVIDER_TYPE_ALREADY_EXISTS.format(type);
         }

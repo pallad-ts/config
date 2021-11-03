@@ -18,6 +18,7 @@ export function handleConfigLoadResult<T>(result: Validation<Provider.Fail, T>) 
                 return x;
             });
         throw ERRORS.CONFIG_LOADING_FAILED.builder()
+            .formatMessage(errors.map(x => `- ${x.message}`).join('\n'))
             .extraProperties({
                 errors
             })
