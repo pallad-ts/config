@@ -1,3 +1,3 @@
-import {PickByTypeDependency} from '../Dependencies/PickByTypeDependency';
+import {PickByTypeProvider} from '../Providers/PickByTypeProvider';
 
-export const pickByType = PickByTypeDependency.create;
+export const pickByType = PickByTypeProvider.create;

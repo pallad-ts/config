@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PickByTypeProvider registering fails if register type that is already registered 1`] = `"Type \\"foo\\" already registered"`;

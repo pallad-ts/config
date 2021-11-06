@@ -1,7 +1,7 @@
 {
   "name": "@pallad/config",
   "version": "1.1.0",
-  "description": "Simple tool to create config structures in imperative way",
+  "description": "Create and validate configuration",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",
   "directories": {
@@ -11,15 +11,15 @@
     "access": "public"
   },
   "scripts": {
-    "test": "../../node_modules/.bin/pallad-scripts test",
+    "test": "JEST_JUNIT_OUTPUT_DIR=../../test_results/main ../../node_modules/.bin/pallad-scripts test",
     "compile": "../../node_modules/.bin/pallad-scripts compile",
     "lint": "../../node_modules/.bin/pallad-scripts lint",
-    "prepare": "npm run compile",
-    "prepublish": "npm run compile"
+    "prepublishOnly": "npm run compile"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/pallad-ts/config.git"
+    "url": "git+ssh://git@github.com/pallad-ts/config.git",
+    "directory": "packages/main"
   },
   "keywords": [
     "config",
@@ -32,13 +32,17 @@
   "bugs": {
     "url": "https://github.com/pallad-ts/config/issues"
   },
-  "homepage": "https://github.com/pallad-ts/config#readme",
+  "homepage": "https://pallad.dev/config",
   "dependencies": {
+    "alpha-errors": "^0.4.0",
+    "monet": "^0.9.2",
     "predicates": "^2.0.3",
-    "yn": "^4.0.0"
+    "yn": "^4.0.0",
+    "tslib": "^2"
   },
   "files": [
-    "compiled"
-  ],
-  "gitHead": "53e1b1049b23e64ed1c61d79115014981b52a678"
+    "compiled",
+    "docs",
+    "assets"
+  ]
 }

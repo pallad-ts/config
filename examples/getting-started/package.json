@@ -1,0 +1,16 @@
+{
+  "name": "@palla/config-example-getting-started",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
+  "license": "MIT",
+  "dependencies": {
+    "@pallad/config": "^2",
+    "@pallad/config-cli": "^2",
+    "@pallad/secret": "^2"
+  },
+  "pallad-config": {
+    "file": "src/config.js",
+    "property": "createConfig"
+  }
+}

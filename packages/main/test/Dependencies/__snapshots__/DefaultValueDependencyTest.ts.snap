@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`DefaultValueDependency getting description 1`] = `"ENV: foo - default: world"`;
-
-exports[`DefaultValueDependency getting description 2`] = `"ENV: bar - default: world"`;

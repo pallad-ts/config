@@ -1,4 +1,6 @@
 import * as validations from '@src/types';
+import {split} from '@src/types';
+import * as sinon from 'sinon';
 
 describe('types', () => {
     describe('string', () => {
@@ -20,17 +22,14 @@ describe('types', () => {
     });
 
     describe('int', () => {
-        it('converts to int', () => {
-            expect(validations.int('10'))
-                .toEqual(10);
-
-            expect(validations.int(10))
-                .toEqual(10);
-
-            expect(validations.int(10.5))
-                .toEqual(10);
-
-            expect(validations.int('10.5'))
+        it.each([
+            ['10'],
+            [10],
+            [10.5],
+            ['10.5'],
+            ['10px']
+        ])('converts to int: %s', input => {
+            expect(validations.int(input))
                 .toEqual(10);
         });
 
@@ -43,18 +42,15 @@ describe('types', () => {
     });
 
     describe('number', () => {
-        it('converts to number', () => {
-            expect(validations.number('10'))
-                .toEqual(10);
-
-            expect(validations.number(10))
-                .toEqual(10);
-
-            expect(validations.number(10.5))
-                .toEqual(10.5);
-
-            expect(validations.number('10.5'))
-                .toEqual(10.5);
+        it.each([
+            ['10', 10],
+            [10, 10],
+            [10.5, 10.5],
+            ['10.5', 10.5],
+            ['10.5px', 10.5]
+        ])('converts to number: %s', (input, expected) => {
+            expect(validations.number(input))
+                .toEqual(expected);
         });
 
         it('fails if not a number', () => {
@@ -90,7 +86,7 @@ describe('types', () => {
 
     describe('url', () => {
         describe('validation', () => {
-            const validator = validations.url({});
+            const validator = validations.url;
 
             it('success', () => {
                 expect(validator('http://9marshals.com'))
@@ -106,7 +102,7 @@ describe('types', () => {
         });
 
         describe('requiring protocol', () => {
-            const validator = validations.url({protocols: ['http']});
+            const validator = validations.url.options({protocols: ['http']});
             it('success', () => {
                 expect(validator('http://9marshals.com'))
                     .toEqual('http://9marshals.com');
@@ -119,5 +115,40 @@ describe('types', () => {
                     .toThrowErrorMatchingSnapshot();
             });
         })
+    });
+
+    describe('split', function () {
+        it('trims values and removed empty ones', () => {
+            const result = split('foo,bar  , baz,,');
+            expect(result)
+                .toEqual(['foo', 'bar', 'baz']);
+        });
+
+        it('ignored empty string', () => {
+            const result = split('');
+            expect(result)
+                .toEqual([]);
+        });
+
+        it('applies transformer if provided', () => {
+            const transformer = sinon.stub().callsFake(value => `${value}!`);
+
+            const result = split.by({
+                transformer
+            })('foo,bar, ,');
+
+            expect(result)
+                .toEqual(['foo!', 'bar!'])
+        });
+
+        it('uses provided separator', () => {
+
+            const result = split.by({
+                separator: ':'
+            })('foo,bar:baz ');
+
+            expect(result)
+                .toEqual(['foo,bar', 'baz'])
+        });
     });
 });

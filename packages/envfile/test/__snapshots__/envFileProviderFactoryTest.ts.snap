@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`envFileProviderFactory fails if env file does not exist and ignoring is disabled 1`] = `"Env file ./example/test.env does not exist but it is required"`;

@@ -1,56 +1,43 @@
-import {createEnvFileHelper, EnvFileHelper} from '@pallad/config-envfile';
-import {createSSMHelper, SSMHelper} from '@pallad/config-ssm';
-import {createEnvHelper, DefaultValueDependency, Dependency, FirstAvailableDependency, TransformableDependency} from "@pallad/config";
-
-function identity(x: any) {
-    /* istanbul ignore next */
-    return x;
-}
-
-export function createPreset(presetOptions: Options) {
-    const envHelper = createEnvHelper(presetOptions?.env || process.env);
-    const envFileHelper = presetOptions.envFile ? createEnvFileHelper(presetOptions.envFile) : undefined;
-    const ssmHelper = presetOptions.ssm ? createSSMHelper(presetOptions.ssm) : undefined;
+import {envProviderFactory} from '@pallad/config/compiled/providersFactory/envProviderFactory';
+import {envFileProviderFactory} from '@pallad/config-envfile';
+import {ssmProviderFactory} from '@pallad/config-ssm';
+import {FirstAvailableProvider, Provider, wrapWithDefaultAndTransformer} from '@pallad/config';
 
 
-    return function <T = any>(key: PresetHelper.Key, options?: PresetHelper.HelperOptions<T>): Dependency<T> {
-        const deps: Array<Dependency<T>> = [];
+export function createPreset(presetOptions: Preset.Options) {
+    const envHelper = envProviderFactory(presetOptions?.env || process.env);
+    const envFileHelper = presetOptions.envFile ? envFileProviderFactory(presetOptions.envFile) : undefined;
+    const ssmHelper = presetOptions.ssm ? ssmProviderFactory(presetOptions.ssm) : undefined;
 
-        const transformer = options?.transformer;
-        if (key.env) {
-            deps.push(envHelper(key.env, {transformer}));
-            if (envFileHelper) {
-                deps.push(envFileHelper(key.env, {transformer}));
+    return wrapWithDefaultAndTransformer.wrap(
+        (key: Preset.Key) => {
+            const providers: Array<Provider<any>> = [];
+
+            if (key.env) {
+                providers.push(envHelper(key.env));
+                if (envFileHelper) {
+                    providers.push(envFileHelper(key.env));
+                }
             }
-        }
 
-        if (key.ssmKey && ssmHelper) {
-            deps.push(ssmHelper(key.ssmKey, {transformer}));
-        }
+            if (key.ssmKey && ssmHelper) {
+                providers.push(ssmHelper(key.ssmKey));
+            }
 
-        return DefaultValueDependency.create<T>(
-            new FirstAvailableDependency(...deps),
-            options?.defaultValue
-        );
-    };
+            return new FirstAvailableProvider(...providers)
+        }
+    );
 }
 
-export interface Options {
-    envFile?: EnvFileHelper.Options;
-    env?: typeof process['env'];
-    ssm?: SSMHelper.Options;
-}
-
-export type PresetHelper = ReturnType<typeof createPreset>;
-
-export namespace PresetHelper {
+export namespace Preset {
     export interface Key {
         env?: string;
         ssmKey?: string;
     }
 
-    export interface HelperOptions<T> {
-        transformer?: TransformableDependency.Transformer<T>;
-        defaultValue?: T;
+    export interface Options {
+        envFile?: envFileProviderFactory.Options;
+        env?: typeof process['env'];
+        ssm?: ssmProviderFactory.Options;
     }
 }

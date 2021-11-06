@@ -1,0 +1,29 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@4.7
+
+jobs:
+  main_job:
+    executor:
+      name: node/default
+      tag: "14.18"
+    steps:
+      - checkout
+      - run: "npm ci && ./node_modules/.bin/lerna bootstrap"
+      - run:
+          command: ./node_modules/.bin/lerna run compile
+          name: compilation
+      - run:
+          command: ./node_modules/.bin/lerna run lint
+          name: linter
+      - run:
+          command: ./node_modules/.bin/lerna run test
+          name: test
+      - store_test_results:
+          path: ./test_results
+
+workflows:
+  main:
+    jobs:
+      - main_job

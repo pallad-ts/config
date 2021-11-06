@@ -1,24 +1,21 @@
-import {createPreset, PresetHelper} from "@src/preset";
-import {DefaultValueDependency, ENVDependency, FirstAvailableDependency, TransformableDependency} from "@pallad/config";
+import {createPreset} from "@src/preset";
+import {DefaultValueProvider, EnvProvider, FirstAvailableProvider, TransformProvider} from "@pallad/config";
 import * as sinon from 'sinon';
-import {EnvFileDependency, EnvFileHelper, EnvFileLoader} from "@pallad/config-envfile";
-import {SSMDependency, SSMHelper, DataLoader} from "@pallad/config-ssm";
+import {EnvFileProvider, envFileProviderFactory} from "@pallad/config-envfile";
+import {DataLoader, SSMProvider, ssmProviderFactory} from "@pallad/config-ssm";
 
 describe('preset', () => {
     const ENV_OPTIONS = {
         FOO: 'bar'
     };
 
-    const ENV_FILE_OPTIONS: EnvFileHelper.Options = {
+    const ENV_FILE_OPTIONS: envFileProviderFactory.Options = {
         paths: [
-            './envFiles/test.env'
-        ],
-        config: {
-            ignoreNonExisting: true
-        }
+            {path: './envFiles/test.env', required: false}
+        ]
     };
 
-    const SSM_OPTIONS: SSMHelper.Options = {
+    const SSM_OPTIONS: ssmProviderFactory.Options = {
         prefix: '/test/',
     };
 
@@ -26,20 +23,21 @@ describe('preset', () => {
 
     const KEY = {env: 'FOO', ssmKey: 'foo'};
 
-    function envDependency(key: string, transformer?: TransformableDependency.Transformer<any>) {
-        return new ENVDependency(key, transformer, ENV_OPTIONS);
+
+    function env(key: string) {
+        return new EnvProvider(key, ENV_OPTIONS);
     }
 
-    function envFileDependency(key: string, transformer?: TransformableDependency.Transformer<any>) {
-        return new EnvFileDependency(key, transformer, expect.any(EnvFileLoader));
+    function envFile(key: string) {
+        return new EnvFileProvider(key, expect.anything());
     }
 
-    function ssmDependency(key: string, transformer?: TransformableDependency.Transformer<any>) {
-        return new SSMDependency(key, transformer, expect.any(DataLoader));
+    function ssm(key: string) {
+        return new SSMProvider(key, expect.any(DataLoader));
     }
 
     describe('env without envFile due to lack of envFile config', () => {
-        let preset: PresetHelper;
+        let preset: ReturnType<typeof createPreset>;
         beforeEach(() => {
             preset = createPreset({
                 env: ENV_OPTIONS
@@ -51,8 +49,8 @@ describe('preset', () => {
 
             expect(config)
                 .toMatchObject(
-                    new FirstAvailableDependency(
-                        envDependency('FOO')
+                    new FirstAvailableProvider(
+                        env('FOO')
                     )
                 );
         });
@@ -63,19 +61,22 @@ describe('preset', () => {
 
             expect(config)
                 .toMatchObject(
-                    new FirstAvailableDependency(
-                        envDependency('FOO', transformer)
+                    new TransformProvider(
+                        new FirstAvailableProvider(
+                            env('FOO'),
+                        ),
+                        transformer
                     )
                 );
         });
 
         it('with default value', () => {
-            const config = preset(KEY, {defaultValue: DEFAULT_VALUE});
+            const config = preset(KEY, {default: DEFAULT_VALUE});
             expect(config)
                 .toMatchObject(
-                    new DefaultValueDependency(
-                        new FirstAvailableDependency(
-                            envDependency('FOO'),
+                    new DefaultValueProvider(
+                        new FirstAvailableProvider(
+                            env('FOO'),
                         ),
                         DEFAULT_VALUE
                     )
@@ -84,7 +85,7 @@ describe('preset', () => {
     });
 
     describe('env with envFile', () => {
-        let preset: PresetHelper;
+        let preset: ReturnType<typeof createPreset>;
 
         beforeEach(() => {
             preset = createPreset({
@@ -98,9 +99,9 @@ describe('preset', () => {
 
             expect(config)
                 .toMatchObject(
-                    new FirstAvailableDependency(
-                        envDependency('FOO'),
-                        envFileDependency('FOO')
+                    new FirstAvailableProvider(
+                        env('FOO'),
+                        envFile('FOO')
                     )
                 );
         });
@@ -110,21 +111,24 @@ describe('preset', () => {
             const config = preset(KEY, {transformer});
             expect(config)
                 .toMatchObject(
-                    new FirstAvailableDependency(
-                        envDependency('FOO', transformer),
-                        envFileDependency('FOO', transformer)
+                    new TransformProvider(
+                        new FirstAvailableProvider(
+                            env('FOO'),
+                            envFile('FOO')
+                        ),
+                        transformer
                     )
                 );
         });
 
         it('with default value', () => {
-            const config = preset(KEY, {defaultValue: DEFAULT_VALUE});
+            const config = preset(KEY, {default: DEFAULT_VALUE});
             expect(config)
                 .toMatchObject(
-                    new DefaultValueDependency(
-                        new FirstAvailableDependency(
-                            envDependency('FOO'),
-                            envFileDependency('FOO')
+                    new DefaultValueProvider(
+                        new FirstAvailableProvider(
+                            env('FOO'),
+                            envFile('FOO')
                         ),
                         DEFAULT_VALUE
                     )
@@ -133,7 +137,7 @@ describe('preset', () => {
     });
 
     describe('env with envFile and ssm', () => {
-        let preset: PresetHelper;
+        let preset: ReturnType<typeof createPreset>;
 
         beforeEach(() => {
             preset = createPreset({
@@ -147,10 +151,10 @@ describe('preset', () => {
             const config = preset(KEY);
             expect(config)
                 .toMatchObject(
-                    new FirstAvailableDependency(
-                        envDependency('FOO'),
-                        envFileDependency('FOO'),
-                        ssmDependency('/test/foo')
+                    new FirstAvailableProvider(
+                        env('FOO'),
+                        envFile('FOO'),
+                        ssm('/test/foo')
                     )
                 );
         });
@@ -160,10 +164,13 @@ describe('preset', () => {
             const config = preset(KEY, {transformer});
             expect(config)
                 .toMatchObject(
-                    new FirstAvailableDependency(
-                        envDependency('FOO', transformer),
-                        envFileDependency('FOO', transformer),
-                        ssmDependency('/test/foo', transformer)
+                    new TransformProvider(
+                        new FirstAvailableProvider(
+                            env('FOO'),
+                            envFile('FOO'),
+                            ssm('/test/foo')
+                        ),
+                        transformer
                     )
                 );
         });
@@ -172,22 +179,22 @@ describe('preset', () => {
             const config = preset({env: 'FOO'});
             expect(config)
                 .toMatchObject(
-                    new FirstAvailableDependency(
-                        envDependency('FOO'),
-                        envFileDependency('FOO'),
+                    new FirstAvailableProvider(
+                        env('FOO'),
+                        envFile('FOO'),
                     )
                 );
         });
 
         it('default value', () => {
-            const config = preset(KEY, {defaultValue: DEFAULT_VALUE});
+            const config = preset(KEY, {default: DEFAULT_VALUE});
             expect(config)
                 .toMatchObject(
-                    new DefaultValueDependency(
-                        new FirstAvailableDependency(
-                            envDependency('FOO', undefined),
-                            envFileDependency('FOO', undefined),
-                            ssmDependency('/test/foo', undefined)
+                    new DefaultValueProvider(
+                        new FirstAvailableProvider(
+                            env('FOO'),
+                            envFile('FOO'),
+                            ssm('/test/foo')
                         ),
                         DEFAULT_VALUE
                     )
@@ -198,8 +205,8 @@ describe('preset', () => {
             const config = preset({ssmKey: 'foo'});
             expect(config)
                 .toMatchObject(
-                    new FirstAvailableDependency(
-                        ssmDependency('/test/foo', undefined)
+                    new FirstAvailableProvider(
+                        ssm('/test/foo')
                     )
                 );
         })

@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`FormattedStringDependency getting description with dependencies 1`] = `"Formatted string (\\"Hello \${ENV: foo} and \${ENV: foo}\\")"`;
-
-exports[`FormattedStringDependency getting description with dependencies and simple values 1`] = `"Formatted string (\\"Hello world and \${ENV: foo}\\")"`;

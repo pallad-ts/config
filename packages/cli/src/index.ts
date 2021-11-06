@@ -1,128 +1,214 @@
 import {Command, flags} from '@oclif/command'
 import * as fs from 'fs';
 import * as is from 'predicates';
-import {Dependency, getDependencies} from "@pallad/config";
 import {Validation} from "monet";
-import chalk = require('chalk');
+import {cosmiconfig} from 'cosmiconfig';
+import {get as getProperty} from 'object-path';
+import {Provider, extractProvidersFromConfig, replaceProvidersInConfig, ERRORS, ValueNotAvailable} from '@pallad/config';
+import {Secret} from '@pallad/secret';
+import * as chalk from 'chalk';
+import {format as prettyFormat} from 'pretty-format'
+import {Config, Plugin, Printer, Refs} from 'pretty-format/build/types';
 
 class ConfigCheck extends Command {
-    static description = 'Checks config created with @pallad/config';
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    static description = 'Display config created with @pallad/config';
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     static flags = {
-        property: flags.string({
-            char: 'p',
-            description: `name of module's property that exports config`
+        revealSecrets: flags.boolean({
+            default: false,
+            description: 'Whether to reveal secret values from @pallad/secret'
         }),
-        failsOnly: flags.boolean({
-            char: 'f',
-            description: `display only failed dependencies`,
-            default: false
+        silent: flags.boolean({
+            default: false,
+            char: 's',
+            description: 'Do not display config'
         })
     };
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     static args = [{
-        name: 'file',
+        name: 'configPath',
         required: false,
-        description: 'path to module that exports a function returning config'
+        parse(value: string) {
+            if (is.startsWith('-', value)) {
+                throw new Error(`Property path: ${value} is rather a typo. Please use property path that does not start with "-"`)
+            }
+            return value;
+        },
+        description: 'config property path to display'
     }];
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    static strict = true;
 
     async run() {
         const {args, flags} = this.parse(ConfigCheck);
-        const filePath = args.file || this.findFileCandidate();
+        const configuration = await this.getConfiguration();
+        const config = this.getConfig(configuration);
 
-        if (!filePath) {
-            this.error('No config file defined');
-            return;
+        const finalConfig = args.configPath ? getProperty(config, args.configPath) : config;
+
+        const {config: resolvedConfig, providersMap} = await this.loadConfig(finalConfig);
+
+        if (!flags.silent) {
+            this.displayConfig(resolvedConfig, {
+                revealSecrets: flags.revealSecrets,
+                propertyPath: args.configPath
+            });
         }
 
-        if (!fs.existsSync(filePath)) {
-            this.error(`File "${filePath}" does not exist`);
-            return;
-        }
+        const hasFailures = Array.from(providersMap.values())
+            .some(x => x.success().isFail());
 
-        const config = await this.getConfig(filePath, flags.property);
-        const deps = getDependencies(config);
-
-        await this.displayDependencies(deps, flags.failsOnly);
+        process.exit(hasFailures ? 1 : 0);
     }
 
-    private getConfig(filePath: string, property?: string) {
-        const module = require(fs.realpathSync(filePath));
+    private async getConfiguration(): Promise<Configuration> {
+        const explorer = cosmiconfig('pallad-config');
+        const result = await explorer.search();
 
-        const func = property ? module[property] : module;
+        if (!result || !result.config) {
+            throw new Error('Missing configuration for pallad-config');
+        }
 
-        if (!is.func(func)) {
-            if (property) {
-                throw new Error(`Property "${property}" from module "${filePath}" is not a function`);
+        if (!is.string(result.config.file)) {
+            throw new Error('"file" config value must be a string');
+        }
+
+        if (result.config.property && !is.string(result.config.property)) {
+            throw new Error('"property" config value must be a string');
+        }
+
+        return {
+            file: result.config.file,
+            property: result.config.property
+        };
+    }
+
+    private getConfig(configuration: Configuration) {
+        const module = require(fs.realpathSync(configuration.file));
+
+
+        if (configuration.property) {
+            const func = module[configuration.property];
+            if (!is.func(func)) {
+                throw new Error(`Property "${configuration.property}" from module "${configuration.file}" is not a function`);
             }
-            throw new Error(`Module "${filePath}" does not export a function`)
+            return func;
         }
 
-        return func();
+        const foundFunc = this.findConfigFunctionInModule(module, configuration.file);
+        if (foundFunc.isFail()) {
+            throw new Error(foundFunc.fail())
+        }
+        return foundFunc.success();
     }
 
-    private async displayDependencies(deps: Array<Dependency<any>>, failsOnly: boolean) {
-        if (deps.length === 0) {
-            this.log('No config dependencies found');
-            this.exit(0);
-            return;
+    private findConfigFunctionInModule(module: any, modulePath: string): Validation<string, Function> {
+        if (is.func(module)) {
+            return Validation.Success(module);
+        }
+        const funcs = Array.from(Object.values(module)).filter(is.func);
+        if (funcs.length > 1) {
+            return Validation.Fail(
+                `Found 2 exported functions in module: ${modulePath}.
+                We do not know which one is responsible for generating configuration shape.
+                Please define "property" in config explicitly.`
+            );
         }
 
-        async function loadDependencyResult(dep: Dependency<any>): Promise<[Dependency<any>, Validation<Error, any>]> {
-            return [
-                dep,
-                await (
-                    dep.getValue()
-                        .then(x => Validation.Success<Error, any>(x))
-                        .catch(e => Validation.Fail<Error, any>(e))
-                )
-            ]
+        if (funcs.length === 0) {
+            return Validation.Fail(`No functions generating configuration shape found in module: ${modulePath}`);
         }
 
-        let results = await Promise.all(
-            deps.map(loadDependencyResult)
+        return Validation.Success(funcs[0]);
+    }
+
+    private async loadConfig(config: any) {
+        const map = new Map<Provider<any>, Validation<unknown, Provider.Value<any>>>();
+        if (is.primitive(config)) {
+            return {config, providersMap: map};
+        }
+        const providers = extractProvidersFromConfig(config);
+
+        for (const provider of providers) {
+            const value = await provider.getValue();
+
+            map.set(provider, Validation.Success(value));
+        }
+        return {
+            config: replaceProvidersInConfig(config, map as any),
+            providersMap: map
+        };
+    }
+
+    private displayConfig(config: any, options: { revealSecrets: boolean, propertyPath?: string }) {
+        function renderSecret(secret: Secret<any>, printer: (value: any) => string) {
+            if (options.revealSecrets) {
+                return printer(secret.getValue());
+            }
+            return secret.getDescription();
+        }
+
+        const secretPlugin: Plugin = {
+            test(value: any) {
+                return Secret.is(value);
+            },
+            serialize(val: Secret<any>, config: Config, indentation: string, depth: number, refs: Refs, printer: Printer) {
+                return renderSecret(val, value => printer(value, config, indentation, depth, refs, true))
+                    + ' '
+                    + chalk.yellow('(secret)');
+            }
+        };
+
+        const providerPlugin: Plugin = {
+            test(value: any) {
+                return value && Validation.isInstance(value)
+            },
+            serialize(val: Provider.Value<any>, config: Config, indentation: string, depth: number, refs: Refs, printer: Printer) {
+                if (val.isSuccess()) {
+                    return printer(val.success(), config, indentation, depth, refs, false);
+                }
+                const fail = val.fail();
+                const errors = (Array.isArray(fail) ? fail : [fail])
+                    .map(x => {
+                        if (ValueNotAvailable.is(x)) {
+                            return ERRORS.PROVIDER_VALUE_NOT_AVAILABLE.format(x.description);
+                        }
+                        return x;
+                    })
+                    .map(x => x.message);
+                return chalk.red(errors.join(', '));
+            }
+        }
+
+        if (options.propertyPath) {
+            console.log(`Displaying config at property path: ${chalk.greenBright(options.propertyPath)}`);
+        }
+
+        console.log(
+            prettyFormat(
+                config, {
+                    plugins: [
+                        secretPlugin,
+                        providerPlugin
+                    ]
+                }
+            )
         );
-
-        if (failsOnly) {
-            results = results.filter(([, result]) => result.isFail());
-        }
-
-        for (const [dep, result] of results) {
-            const resultString = result.isSuccess() ? chalk.green('success') : chalk.red('failure');
-            this.log(`%s\t- %s`, resultString, dep.getDescription());
-            if (result.isFail()) {
-                this.log(chalk.red(result.fail().message));
-            }
-        }
-
-        const hasFails = results.some(([, result]) => result.isFail());
-        if (hasFails) {
-            this.log(chalk.red('Some configuration dependencies have failed to load'));
-            this.exit(1)
-        } else {
-            this.log('Configuration looks fine!');
-            this.exit(0)
-        }
     }
+}
 
-    private findFileCandidate() {
-        const commonFile = this.findCommonConfigFiles();
-        if (commonFile) {
-            return commonFile;
-        }
-    }
+interface ProviderValue {
+    provider: Provider<any>,
+    value: Provider.Value<any>
+}
 
-    private findCommonConfigFiles() {
-        const candidates = [
-            './pallad.config.js'
-        ];
-
-        for (const candidate of candidates) {
-            if (fs.existsSync(candidate)) {
-                return candidate;
-            }
-        }
-    }
+interface Configuration {
+    file: string;
+    property?: string;
 }
 
 export = ConfigCheck;
