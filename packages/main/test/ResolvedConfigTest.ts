@@ -32,7 +32,7 @@ describe('ResolvedConfig', () => {
 
         type Output = ResolvedConfig<typeof config>;
         assert<IsExact<Input, Output>>(true);
-    })
+    });
 
     it('plain objects', () => {
         const config = {

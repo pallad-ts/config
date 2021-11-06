@@ -52,6 +52,18 @@ Now it is time to retrieve that configuration from app level.
 
 ## Loading configuration
 
+Loading is a process of taking configuration shape and replacing providers with a value resolved by replaced provider.
+If that fails, then whole loading process fails as well.
+
+:::tip
+
+Loading makes a copy of plain objects and arrays before replacing values.
+
+Any objects that are *not* plain objects like instance of custom classes, maps, sets etc are ignored as just moved as it is.
+That means if you have any providers inside of them, they'll not be resolved.
+
+:::
+
 If your configuration shape consist of synchronous providers only then you can load it using `loadSync`.
 
 ```ts
@@ -64,8 +76,6 @@ const config = loadSync(createConfig());
 
 // start your app here
 ```
-
-If any of providers cannot be loaded then `loadSync` throws an error with details what went wrong.
 
 ### Asynchronous loading
 
@@ -86,4 +96,3 @@ Node.js supports top-level await so in there is no need to create async wrapper 
 
 :::
 
-Same as with sync loading. In anything went wrong during configuration load then error will be thrown.
