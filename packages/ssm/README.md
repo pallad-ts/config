@@ -4,4 +4,6 @@
 	<p>Create type-safe configuration</p>
 </div>
 
-Full documentation is [available here](https://pallad.dev/config)
+AWS SSM Parameter Store provider for `@pallad/config`.
+Full documentation is [available here](https://pallad.dev/config/providers/ssm)
+
