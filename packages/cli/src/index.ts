@@ -90,20 +90,19 @@ class ConfigCheck extends Command {
     private getConfig(configuration: Configuration) {
         const module = require(fs.realpathSync(configuration.file));
 
-
         if (configuration.property) {
             const func = module[configuration.property];
             if (!is.func(func)) {
                 throw new Error(`Property "${configuration.property}" from module "${configuration.file}" is not a function`);
             }
-            return func;
+            return func();
         }
 
         const foundFunc = this.findConfigFunctionInModule(module, configuration.file);
         if (foundFunc.isFail()) {
             throw new Error(foundFunc.fail())
         }
-        return foundFunc.success();
+        return foundFunc.success()();
     }
 
     private findConfigFunctionInModule(module: any, modulePath: string): Validation<string, Function> {

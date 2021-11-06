@@ -208,8 +208,7 @@ export function createConfig() {
 export type Config = ResolvedConfig<ReturnType<typeof createConfig>>;
 ```
 
-Then you can use it later in the app
-
+Then use it later in the app
 ```ts
 function connectToDatabase(config: Config['database']) {
     config.hostname // typescript likes 👍
