@@ -18,6 +18,7 @@ and [CI level](./guides/validation-from-ci).
 * 👷 Built with Typescript
 * 🔥 Supports loading configuration from env, envfiles, ssm
 * 👌 Supports asynchronous configuration sources
+* 🎒 Helpful presets to easy config definition
 * 👀 Great CLI for browsing and validating final configuration
 * 👶 Great for continuous integration (CI)
 * 🧑‍🤝‍🧑 Type friendly
