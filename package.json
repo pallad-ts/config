@@ -1,6 +1,11 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "lint": "lerna run lint",
+    "test": "lerna run test",
+    "compile": "lerna run compile"
+  },
   "devDependencies": {
     "@pallad/scripts": "^2",
     "@pallad/secret": "^1.1.0",
