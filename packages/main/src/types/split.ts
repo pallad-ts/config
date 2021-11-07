@@ -1,3 +1,5 @@
+function factory<T>(options: { transformer: (value: string) => T }): (value: string) => T[];
+function factory(options?: Split.Options<string>): (value: string) => string[];
 function factory<T>(options?: Split.Options<T>) {
     return (value: string) => {
         let tmpResult: any[] = (value || '').split(options?.separator ?? ',')
@@ -22,8 +24,13 @@ export interface Split<T = string> {
 }
 
 export namespace Split {
-    export interface Options<T = string> {
+    export interface Options<T = string> extends Partial<Options.Transformer<T>> {
         separator?: string;
-        transformer?: (value: string) => T;
+    }
+
+    export namespace Options {
+        export interface Transformer<T> {
+            transformer: (value: string) => T
+        }
     }
 }
