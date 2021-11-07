@@ -26,3 +26,7 @@ and [CI level](./guides/validation-from-ci).
 ## Community
 
 Join our [discord server](https://discord.gg/KCvnfzhNAq)
+
+## Screenshots
+![Code](./assets/code.png)
+![Shell](./assets/shell.png)
