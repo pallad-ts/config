@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-cli",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "CLI command that allows to display and verify current configuration",
   "scripts": {
     "compile": "../../node_modules/.bin/pallad-scripts compile",
@@ -20,11 +20,11 @@
     "@oclif/config": "^1",
     "@oclif/plugin-help": "^3",
     "chalk": "^4",
+    "cosmiconfig": "^7.0.1",
     "monet": "^0.9.2",
     "object-path": "^0.11.8",
     "predicates": "^2.0.3",
     "pretty-format": "^27.3.1",
-    "cosmiconfig": "^7.0.1",
     "tslib": "^2"
   },
   "peerDependencies": {
@@ -32,7 +32,7 @@
     "@pallad/secret": "^1"
   },
   "devDependencies": {
-    "@pallad/config": "*",
+    "@pallad/config": "^2.0.0",
     "@pallad/secret": "^1"
   },
   "oclif": {
