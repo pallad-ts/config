@@ -9,9 +9,9 @@ title: Introduction
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 ---
-`@pallad/config` is a tool that helps you define configuration shape in type-safe manner, retrieving values
-from [various sources](./providers), validate it from application, [CLI](./cli)
-and [CI level](./guides/validation-from-ci).
+`@pallad/config` is a library that helps you create and maintain configuration objects in a type-safe manner with validation. 
+Define smart configuration objects and initialize its properties from [different sources like](./providers) environment variables, configuration files.
+Easily manage configurations for different environments like CI, production, or development.
 
 ## Features
 
