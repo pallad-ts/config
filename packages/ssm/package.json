@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-ssm",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "SSM provider for @pallad/config",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",
@@ -27,7 +27,7 @@
     "@pallad/config": "*"
   },
   "devDependencies": {
-    "@pallad/config": "^2.0.0"
+    "@pallad/config": "^2.0.1"
   },
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
   "license": "MIT",

@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Create and validate configuration",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",
