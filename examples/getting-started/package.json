@@ -7,7 +7,7 @@
   "dependencies": {
     "@pallad/config": "^2",
     "@pallad/config-cli": "^2",
-    "@pallad/secret": "^2"
+    "@pallad/secret": "^1"
   },
   "pallad-config": {
     "file": "src/config.js",
