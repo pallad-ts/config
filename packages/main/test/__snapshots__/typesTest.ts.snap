@@ -6,6 +6,20 @@ exports[`types int fails if not a number 1`] = `"Value \\"foo\\" cannot be conve
 
 exports[`types number fails if not a number 1`] = `"Value \\"foo\\" cannot be converted to number"`;
 
+exports[`types port default settings: registered + well known 1`] = `"Port \\"50000\\" is invalid. Allowed ranges: well known (1-1023), registered (1024-49151)"`;
+
+exports[`types port invalid ranges options 1`] = `"Port \\"100\\" is invalid. Allowed ranges: None, check your port type settings"`;
+
+exports[`types port valid ranges: ephemeral 1`] = `"Port \\"10\\" is invalid. Allowed ranges: ephemeral (49152-65535)"`;
+
+exports[`types port valid ranges: registered 1`] = `"Port \\"50000\\" is invalid. Allowed ranges: registered (1024-49151)"`;
+
+exports[`types port valid ranges: wellknown + registered 1`] = `"Port \\"50000\\" is invalid. Allowed ranges: well known (1-1023), registered (1024-49151)"`;
+
+exports[`types port valid ranges: wellknown + registered2 1`] = `"Port \\"50000\\" is invalid. Allowed ranges: well known (1-1023), registered (1024-49151)"`;
+
+exports[`types port valid ranges: wellknown 1`] = `"Port \\"2000\\" is invalid. Allowed ranges: well known (1-1023)"`;
+
 exports[`types url requiring protocol failure 1`] = `"Protocol \\"ftp\\" is not allowed. Allowed: http"`;
 
 exports[`types url validation failure 1`] = `"Invalid URL: test"`;

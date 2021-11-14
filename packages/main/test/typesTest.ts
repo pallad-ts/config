@@ -170,4 +170,46 @@ describe('types', () => {
             });
         })
     });
+
+    describe('port', () => {
+        it.each<[string, validations.Port.Options, number, number]>([
+            ['ephemeral', {ephemeral: true}, 50000, 10],
+            ['wellknown', {wellKnown: true}, 500, 2000],
+            ['registered', {registered: true}, 2000, 50000],
+            ['wellknown + registered', {registered: true, wellKnown: true}, 1000, 50000],
+            ['wellknown + registered2', {registered: true, wellKnown: true}, 2000, 50000]
+        ])('valid ranges: %s', (desc, options, validPort, invalidPort) => {
+            const type = validations.port.options(options);
+            expect(type(validPort))
+                .toEqual(validPort);
+
+            expect(() => {
+                type(invalidPort);
+            })
+                .toThrowErrorMatchingSnapshot();
+        });
+
+        it('invalid ranges options', () => {
+            const type = validations.port.options({registered: false, ephemeral: false, wellKnown: false});
+
+            expect(() => {
+                type(100);
+            })
+                .toThrowErrorMatchingSnapshot();
+        });
+
+        it('default settings: registered + well known', () => {
+            const type = validations.port;
+
+            expect(type(1000))
+                .toEqual(1000);
+
+            expect(type(2000))
+                .toEqual(2000);
+            expect(() => {
+                type(50000);
+            })
+                .toThrowErrorMatchingSnapshot();
+        });
+    });
 });

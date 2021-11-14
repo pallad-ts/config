@@ -5,7 +5,9 @@ module.exports = () => {
     return {
         database: {
             hostname: 'hostname',
-            port: 5432,
+            port: env('DATABASE_PORT', {
+                transformer: type.port
+            }),
             username: new Secret('username'),
             password: env('DATABASE_PASSWORD', {
                 transformer: secret
