@@ -14,6 +14,7 @@ export const ERRORS = new Domain({
         CANNOT_CONVERT_TO_INT: create(`Value "%s" cannot be converted to int`),
         CANNOT_CONVERT_TO_NUMBER: create(`Value "%s" cannot be converted to number`),
         CANNOT_CONVERT_TO_BOOL: create(`Value "%s" cannot be converted to bool`),
-        TYPE_URL_INVALID_PROTOCOL: create('Protocol "%s" is not allowed. Allowed: %s')
+        TYPE_URL_INVALID_PROTOCOL: create('Protocol "%s" is not allowed. Allowed: %s'),
+        INVALID_PORT_NUMBER: create('Port "%s" is invalid. Allowed ranges: %s')
     };
 });

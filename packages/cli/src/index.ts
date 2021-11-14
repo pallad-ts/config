@@ -156,6 +156,7 @@ class ConfigCheck extends Command {
                 return Secret.is(value);
             },
             serialize(val: Secret<any>, config: Config, indentation: string, depth: number, refs: Refs, printer: Printer) {
+                // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                 return renderSecret(val, value => printer(value, config, indentation, depth, refs, true))
                     + ' '
                     + chalk.yellow('(secret)');

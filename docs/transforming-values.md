@@ -17,6 +17,30 @@ import {env, type} from '@pallad/config';
 env('FOO', {transformer: type.int});
 ```
 
+## Port
+
+Special type that converts value to int and check whether it is contained in ranges specific to port numbers.
+
+```ts
+import {env, type} from '@pallad/config';
+
+// check if PORT can be converted to int and is in range of well known ports (1-1023) or registered ports (1024-49151)
+env('PORT', {transformer: type.port});
+```
+
+For customization use `type.port.options` that accepts following options:
+
+* `wellKnown` - _boolean_ - whether to allow well known ports (1-1023)
+* `registered` - _boolean_ - whether to allow registered ports (1024-49151)
+* `ephemeral` - _boolean_ - whether to allow ephemeral ports (49152 - 65535)
+
+```ts
+import {env, type} from '@pallad/config';
+
+// check if PORT can be converted to int and is in range of well known ports (1-1023)
+env('PORT', {transformer: type.port.options({wellKnown: true})});
+```
+
 ## Number
 
 Converts value to number. Throws an error if cannot be converted.
@@ -100,8 +124,9 @@ env('FOO', {
 
 ## Protecting from accidental leak via `@pallad/secret`
 
-[`@pallad/secret`](https://www.npmjs.com/package/@pallad/secret) is a tool that wraps any value and prevents it from being logged, converted to string, inspected etc.
-Therefore it will help protect your configuration and secret from accidental leak. 
+[`@pallad/secret`](https://www.npmjs.com/package/@pallad/secret) is a tool that wraps any value and prevents it from
+being logged, converted to string, inspected etc. Therefore it will help protect your configuration and secret from
+accidental leak.
 
 Wrapping value with `Secret`
 
