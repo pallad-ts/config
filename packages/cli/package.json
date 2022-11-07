@@ -31,7 +31,7 @@
     "@pallad/secret": "^1"
   },
   "devDependencies": {
-    "@pallad/config": "^3",
+    "@pallad/config": "^2",
     "@pallad/secret": "^1"
   },
   "oclif": {
