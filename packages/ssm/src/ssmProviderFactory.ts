@@ -1,11 +1,11 @@
-import {SSM} from 'aws-sdk';
 import {SSMProvider} from "./SSMProvider";
 import DataLoader = require("dataloader");
 import {wrapWithDefaultAndTransformer} from '@pallad/config';
+import {SSMClient, Parameter, GetParametersCommand} from '@aws-sdk/client-ssm';
 
 const splitArray = require('split-array');
 
-export function parameterDeserializer(parameter: SSM.Parameter) {
+export function parameterDeserializer(parameter: Parameter) {
     if (parameter.Type === 'StringList') {
         return parameter.Value!.split(',');
     }
@@ -19,17 +19,17 @@ function createDataLoader(batchFN: ssmProviderFactory.BatchFunction) {
 export function ssmProviderFactory<TTransformed, TDefault>(
     options?: ssmProviderFactory.Options
 ) {
-    const ssm = options?.ssm ?? new SSM();
+    const ssm = options?.ssm ?? new SSMClient({});
     const paramDeserializer = options?.parameterDeserializer ?? parameterDeserializer;
 
     const batchFn = async (keys: readonly string[]) => {
         const map = new Map<string, SSMProvider.Value | undefined>();
         const batches = splitArray(keys, 10);
         for (const batch of batches) {
-            const parameters = await ssm.getParameters({
+            const parameters = await ssm.send(new GetParametersCommand({
                 Names: batch,
                 WithDecryption: true
-            }).promise();
+            }));
 
             if (parameters.Parameters) {
                 for (const parameter of parameters.Parameters) {
@@ -49,12 +49,12 @@ export function ssmProviderFactory<TTransformed, TDefault>(
 
 export namespace ssmProviderFactory {
     export interface Options {
-        ssm?: SSM;
+        ssm?: SSMClient;
         createDataLoader?: (batchFn: BatchFunction) => DataLoader<string, SSMProvider.Value | undefined>;
         parameterDeserializer?: ParameterDeserializer;
         prefix?: string;
     }
 
     export type BatchFunction = (key: readonly string[]) => Promise<Array<SSMProvider.Value | undefined>>;
-    export type ParameterDeserializer = (parameter: SSM.Parameter) => Promise<any> | any;
+    export type ParameterDeserializer = (parameter: Parameter) => Promise<any> | any;
 }

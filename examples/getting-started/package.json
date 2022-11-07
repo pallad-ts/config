@@ -5,8 +5,8 @@
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
   "license": "MIT",
   "dependencies": {
-    "@pallad/config": "^2",
-    "@pallad/config-cli": "^2",
+    "@pallad/config": "^3",
+    "@pallad/config-cli": "^3",
     "@pallad/secret": "^1"
   },
   "pallad-config": {

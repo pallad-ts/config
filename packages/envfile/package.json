@@ -41,7 +41,7 @@
     "@pallad/config": "*"
   },
   "devDependencies": {
-    "@pallad/config": "^2.0.1"
+    "@pallad/config": "*"
   },
   "dependencies": {
     "alpha-errors": "^0.4.0",

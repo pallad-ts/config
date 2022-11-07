@@ -37,7 +37,7 @@
     "directory": "packages/ssm"
   },
   "dependencies": {
-    "aws-sdk": "^2.596.0",
+    "@aws-sdk/client-ssm": "^3",
     "dataloader": "^2.0.0",
     "split-array": "^1.0.1",
     "@sweet-monads/either": "^3",

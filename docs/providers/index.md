@@ -35,7 +35,7 @@ Every provider **must** extends common `Provider`, otherwise we will not be able
 
 ```ts
 import {Provider, ValueNotAvailable} from '@pallad/config';
-import {Validation} from 'monet';
+import {left, right} from '@sweet-monads/either';
 
 const VALUES = {
     FOO: 'bar',
@@ -52,11 +52,11 @@ export class CustomProvider extends Provider {
         // if value is available
         if (VALUES[this.key]) {
             // then return it
-            return Validation.Success(VALUES[this.key]);
+            return right(VALUES[this.key]);
         }
 
         // otherwise tells that value is not available along with description
-        return Validation.Fail(new ValueNotAvailable(`Custom provider: ${this.key}`));
+        return left(new ValueNotAvailable(`Custom provider: ${this.key}`));
     }
 }
 ```
