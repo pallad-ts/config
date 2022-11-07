@@ -1,8 +1,8 @@
 import {Provider} from "../Provider";
 import {isPromise} from '../common/isPromise';
 import {OptionalPromise} from '../utils';
-import {Validation} from 'monet';
 import {ValueNotAvailable} from '../ValueNotAvailable';
+import {left} from "@sweet-monads/either";
 
 export class FirstAvailableProvider<T extends Array<Provider<any>>> extends Provider<FirstAvailableProvider.Unwrap<T>> {
     private providers: Array<Provider<T>>;
@@ -19,33 +19,33 @@ export class FirstAvailableProvider<T extends Array<Provider<any>>> extends Prov
             const value = provider.getValue();
             if (isPromise(value)) {
                 return value.then(x => {
-                    if (x.isFail() && ValueNotAvailable.is(x.fail())) {
-                        descriptions.push((x.fail() as ValueNotAvailable).description);
+                    if (x.isLeft() && ValueNotAvailable.is(x.value)) {
+                        descriptions.push((x.value as ValueNotAvailable).description);
                         return (async () => {
                             for (const provider of iterator) {
                                 const value = await provider.getValue();
-                                if (value.isFail() && ValueNotAvailable.is(value.fail())) {
-                                    descriptions.push((value.fail() as ValueNotAvailable).description);
+                                if (value.isLeft() && ValueNotAvailable.is(value.value)) {
+                                    descriptions.push((value.value as ValueNotAvailable).description);
                                     continue;
                                 }
                                 return value as Provider.Value<FirstAvailableProvider.Unwrap<T>>;
                             }
 
-                            return Validation.Fail(
+                            return left(
                                 new ValueNotAvailable(`First available: ${descriptions.join(', ')}`)
                             ) as Provider.Value<FirstAvailableProvider.Unwrap<T>>
                         })();
                     }
                     return x as Provider.Value<FirstAvailableProvider.Unwrap<T>>;
                 });
-            } else if (value.isFail() && ValueNotAvailable.is(value.fail())) {
-                descriptions.push((value.fail() as ValueNotAvailable).description);
+            } else if (value.isLeft() && ValueNotAvailable.is(value.value)) {
+                descriptions.push((value.value as ValueNotAvailable).description);
                 continue;
             }
             return value as Provider.Value<FirstAvailableProvider.Unwrap<T>>;
         }
 
-        return Validation.Fail(
+        return left(
             new ValueNotAvailable(`First available: ${descriptions.join(', ')}`)
         );
     }

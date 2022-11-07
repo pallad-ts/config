@@ -1,15 +1,15 @@
-import {Validation} from 'monet';
 import {Provider} from '../Provider';
 import {ERRORS} from '../errors';
 import {ConfigError} from '../ConfigError';
 import {ValueNotAvailable} from '../ValueNotAvailable';
+import {Either} from "@sweet-monads/either";
 
 /**
  * @internal
  */
-export function handleConfigLoadResult<T>(result: Validation<Provider.Fail, T>) {
-    if (result.isFail()) {
-        const fail = result.fail()
+export function handleConfigLoadResult<T>(result: Either<Provider.Fail, T>) {
+    if (result.isLeft()) {
+        const fail = result.value
         const errors: Array<ConfigError | Error> = (Array.isArray(fail) ? fail : [fail])
             .map(x => {
                 if (ValueNotAvailable.is(x)) {
@@ -25,5 +25,5 @@ export function handleConfigLoadResult<T>(result: Validation<Provider.Fail, T>) 
             .create();
     }
 
-    return result.success();
+    return result.value;
 }

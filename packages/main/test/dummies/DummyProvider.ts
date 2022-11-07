@@ -1,7 +1,7 @@
 import {Provider} from "@src/Provider";
 import {OptionalPromise} from '@src/utils';
-import {Validation} from 'monet';
 import {ValueNotAvailable} from '@src/ValueNotAvailable';
+import {left, right} from "@sweet-monads/either";
 
 export class DummyProvider<T> extends Provider<T> {
     private options: DummyProvider.Options<T>;
@@ -17,14 +17,14 @@ export class DummyProvider<T> extends Provider<T> {
     getValue(): OptionalPromise<Provider.Value<T>> {
         const value = (() => {
             if (this.options.error) {
-                return Validation.Fail<Provider.Fail, T>(this.options.error);
+                return left<Provider.Fail, T>(this.options.error);
             }
 
             if (this.options.value) {
-                return Validation.Success<Provider.Fail, T>(this.options.value);
+                return right<Provider.Fail, T>(this.options.value);
             }
 
-            return Validation.Fail<Provider.Fail, T>(
+            return left<Provider.Fail, T>(
                 new ValueNotAvailable(this.options.description)
             );
         })();

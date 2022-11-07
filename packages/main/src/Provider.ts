@@ -1,7 +1,7 @@
 import {OptionalPromise} from './utils';
-import {Validation} from 'monet';
 import {ValueNotAvailable} from './ValueNotAvailable';
 import * as is from 'predicates';
+import {Either} from "@sweet-monads/either";
 
 const TYPE = '@pallad/config/Provider';
 const TYPE_KEY = '@type';
@@ -36,7 +36,7 @@ export abstract class Provider<TType> {
 }
 
 export namespace Provider {
-    export type Value<T> = Validation<Fail, T>;
+    export type Value<T> = Either<Fail, T>;
 
     export type Fail = Fail.Entry | Fail.Entry[];
     export namespace Fail {

@@ -3,8 +3,8 @@ import {runOnOptionalPromise} from '../common/runOnOptionalPromise';
 import {ERRORS} from '../errors';
 import {loadConfig} from '../common/loadConfig';
 import {OptionalPromise} from '../utils';
-import {Validation} from 'monet';
 import {ResolvedConfig} from '../ResolvedConfig';
+import {Either, left, right} from "@sweet-monads/either";
 
 export class PickByTypeProvider<T> extends Provider<T> {
     private options = new Map<string, any>();
@@ -32,16 +32,16 @@ export class PickByTypeProvider<T> extends Provider<T> {
         return runOnOptionalPromise(
             this.getType(),
             type => {
-                if (type.isFail()) {
+                if (type.isLeft()) {
                     return type as unknown as Provider.Value<T>;
                 }
 
                 return runOnOptionalPromise(
-                    this.getOptionsForType(type.success()),
+                    this.getOptionsForType(type.value),
                     options => {
                         return options.map(x => {
                             return {
-                                type: type.success(),
+                                type: type.value,
                                 options: x
                             } as unknown as T;
                         })
@@ -51,20 +51,20 @@ export class PickByTypeProvider<T> extends Provider<T> {
         )
     }
 
-    private getType(): OptionalPromise<Validation<Provider.Fail, string>> {
+    private getType(): OptionalPromise<Either<Provider.Fail, string>> {
         return runOnOptionalPromise(
             this.typeProvider.getValue(),
             type => {
-                return type.flatMap(type => {
+                return type.chain(type => {
                     if (!this.options.has(type)) {
-                        return Validation.Fail(
+                        return left(
                             ERRORS.PICK_PROVIDER_UNREGISTERED_TYPE.format(
                                 type,
                                 Array.from(this.options.keys()).join(', ')
                             )
                         )
                     }
-                    return Validation.Success(type);
+                    return right(type);
                 });
             }
         );

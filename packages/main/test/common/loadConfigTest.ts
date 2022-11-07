@@ -1,8 +1,8 @@
 /* eslint-disable no-null/no-null */
 import {loadConfig} from "@src/common/loadConfig";
 import {DummyProvider} from "../dummies/DummyProvider";
-import {Validation} from 'monet';
 import {ValueNotAvailable} from '@src/ValueNotAvailable';
+import {left, right} from "@sweet-monads/either";
 
 describe('loadConfig', () => {
     it('simple object without providers', () => {
@@ -21,7 +21,7 @@ describe('loadConfig', () => {
         };
         const result = loadConfig(config);
         expect(result)
-            .toEqual(Validation.Success(config));
+            .toEqual(right(config));
     });
 
     it('supports only plain objects, arrays and primitives', () => {
@@ -35,7 +35,7 @@ describe('loadConfig', () => {
         const result = loadConfig(config);
         expect(result)
             .toEqual(
-                Validation.Success({
+                right({
                     ...config,
                     foo: 'test'
                 })
@@ -53,7 +53,7 @@ describe('loadConfig', () => {
         const result = loadConfig(config);
         expect(result)
             .toEqual(
-                Validation.Fail([error1, error2])
+                left([error1, error2])
             );
     });
 
@@ -102,7 +102,7 @@ describe('loadConfig', () => {
                 const result = loadConfig(config);
                 (isAsync ? expect(result).resolves : expect(result))
                     .toStrictEqual(
-                        Validation.Success({
+                        right({
                             foo: VALUE_1,
                             tab: [
                                 VALUE_2,
@@ -131,7 +131,7 @@ describe('loadConfig', () => {
                     });
                     (isAsync ? expect(result).resolves : expect(result))
                         .toStrictEqual(
-                            Validation.Fail([error])
+                            left([error])
                         );
                 });
 
@@ -143,7 +143,7 @@ describe('loadConfig', () => {
                     });
                     (isAsync ? expect(result).resolves : expect(result))
                         .toStrictEqual(
-                            Validation.Fail([error])
+                            left([error])
                         );
                 });
 
@@ -155,7 +155,7 @@ describe('loadConfig', () => {
                     });
                     (isAsync ? expect(result).resolves : expect(result))
                         .toStrictEqual(
-                            Validation.Fail([error])
+                            left([error])
                         );
                 });
 
@@ -167,7 +167,7 @@ describe('loadConfig', () => {
                     });
                     (isAsync ? expect(result).resolves : expect(result))
                         .toStrictEqual(
-                            Validation.Fail([error, error, error])
+                            left([error, error, error])
                         );
                 });
 
@@ -179,7 +179,7 @@ describe('loadConfig', () => {
                     });
                     (isAsync ? expect(result).resolves : expect(result))
                         .toStrictEqual(
-                            Validation.Fail([
+                            left([
                                 new ValueNotAvailable('prov 1')
                             ])
                         );
@@ -193,7 +193,7 @@ describe('loadConfig', () => {
                     });
                     (isAsync ? expect(result).resolves : expect(result))
                         .toStrictEqual(
-                            Validation.Fail([
+                            left([
                                 new ValueNotAvailable('prov 2')
                             ])
                         );
@@ -207,7 +207,7 @@ describe('loadConfig', () => {
                     });
                     (isAsync ? expect(result).resolves : expect(result))
                         .toStrictEqual(
-                            Validation.Fail([
+                            left([
                                 new ValueNotAvailable('prov 3')
                             ])
                         );
@@ -221,7 +221,7 @@ describe('loadConfig', () => {
                     });
                     (isAsync ? expect(result).resolves : expect(result))
                         .toStrictEqual(
-                            Validation.Fail([
+                            left([
                                 new ValueNotAvailable('prov 1'),
                                 new ValueNotAvailable('prov 2'),
                                 new ValueNotAvailable('prov 3'),

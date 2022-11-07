@@ -1,13 +1,13 @@
 import {OptionalPromise} from '@src/utils';
 import {Provider} from '@src/Provider';
-import {Validation} from 'monet';
 import {ValueNotAvailable} from '@src/ValueNotAvailable';
+import {left} from "@sweet-monads/either";
 
 export function assertNotAvailable(
     isAsync: boolean,
     value: OptionalPromise<Provider.Value<any>>,
     description: string): any {
-    const expected = Validation.Fail(
+    const expected = left(
         new ValueNotAvailable(description)
     );
     if (isAsync) {

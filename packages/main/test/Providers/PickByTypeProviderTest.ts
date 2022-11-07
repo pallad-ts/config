@@ -8,7 +8,7 @@ import {ERRORS} from '@src/errors';
 import {Provider} from '@src/Provider';
 import {assertProviderResolvedValidation} from '../common/assertProviderResolvedValidation';
 import {ValueNotAvailable} from '@src/ValueNotAvailable';
-import {Validation} from 'monet';
+import {left} from "@sweet-monads/either";
 
 describe('PickByTypeProvider', () => {
 
@@ -113,7 +113,7 @@ describe('PickByTypeProvider', () => {
                 return assertProviderResolvedValidation(
                     isTypeAsync || areOptionsAsync,
                     provider.getValue(),
-                    Validation.Fail([new ValueNotAvailable('opts 1')])
+                    left([new ValueNotAvailable('opts 1')])
                 );
             });
 
@@ -131,7 +131,7 @@ describe('PickByTypeProvider', () => {
                 return assertProviderResolvedValidation(
                     isTypeAsync || areOptionsAsync,
                     provider.getValue(),
-                    Validation.Fail([new ValueNotAvailable('opts 2')])
+                    left([new ValueNotAvailable('opts 2')])
                 );
             });
         });

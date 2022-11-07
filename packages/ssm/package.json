@@ -39,8 +39,8 @@
   "dependencies": {
     "aws-sdk": "^2.596.0",
     "dataloader": "^2.0.0",
-    "monet": "^0.9.2",
     "split-array": "^1.0.1",
+    "@sweet-monads/either": "^3",
     "tslib": "^2"
   },
   "files": [

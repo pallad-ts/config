@@ -1,9 +1,9 @@
 import {envFileProviderFactory} from '@src/envFileProviderFactory';
-import {Validation} from 'monet';
-import {DefaultValueProvider, Provider, ValueNotAvailable} from '@pallad/config';
-import {assert, IsAny, IsExact} from 'conditional-type-checks';
+import {DefaultValueProvider, ValueNotAvailable} from '@pallad/config';
+import {assert, IsExact} from 'conditional-type-checks';
 import {EnvFileProvider} from '@src/EnvFileProvider';
 import {int} from '@pallad/config/compiled/types';
+import {left, right} from "@sweet-monads/either";
 
 describe('envFileProviderFactory', () => {
 
@@ -45,10 +45,10 @@ describe('envFileProviderFactory', () => {
         });
 
         expect(factory('FOO').getValue())
-            .toStrictEqual(Validation.Success('bar'));
+            .toStrictEqual(right('bar'));
 
         expect(factory('HELLO').getValue())
-            .toStrictEqual(Validation.Success('world'));
+            .toStrictEqual(right('world'));
     });
 
     it('overriding env from previous files', () => {
@@ -61,7 +61,7 @@ describe('envFileProviderFactory', () => {
         });
 
         expect(factory('FOO').getValue())
-            .toStrictEqual(Validation.Success('world'));
+            .toStrictEqual(right('world'));
     });
 
     it('using with transformer', () => {
@@ -74,7 +74,7 @@ describe('envFileProviderFactory', () => {
             factory('FOO', {transformer: value => value.toUpperCase()})
                 .getValue()
         )
-            .toStrictEqual(Validation.Success('BAR'));
+            .toEqual(right('BAR'));
     });
 
     it('fails if env file does not exist and ignoring is disabled', () => {
@@ -95,7 +95,7 @@ describe('envFileProviderFactory', () => {
 
         expect(factory('FOO').getValue())
             .toStrictEqual(
-                Validation.Fail(new ValueNotAvailable('"FOO" from ENV file(s)'))
+                left(new ValueNotAvailable('"FOO" from ENV file(s)'))
             )
     });
 

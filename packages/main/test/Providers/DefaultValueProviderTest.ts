@@ -3,7 +3,6 @@ import {DummyProvider} from "../dummies/DummyProvider";
 import {Provider} from "@src/Provider";
 import {assert, IsExact} from 'conditional-type-checks';
 import {OptionalPromise} from '@src/utils';
-import {Validation} from 'monet';
 import {assertProviderValue} from '../common/assertProviderValue';
 import {assertProviderError} from '../common/assertProviderError';
 

@@ -1,14 +1,14 @@
 import {OptionalPromise} from '@src/utils';
 import {Provider} from '@src/Provider';
-import {Validation} from 'monet';
 import {assertProviderResolvedValidation} from './assertProviderResolvedValidation';
+import {right} from "@sweet-monads/either";
 
 export function assertProviderValue(
     isAsync: boolean,
     value: OptionalPromise<Provider.Value<any>>,
     successValue: any) {
 
-    const expected = Validation.Success(successValue);
+    const expected = right(successValue);
 
     return assertProviderResolvedValidation(isAsync, value, expected);
 }

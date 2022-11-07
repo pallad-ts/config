@@ -1,6 +1,7 @@
 import {Provider} from "../Provider";
-import {Maybe, Validation} from 'monet';
 import {ValueNotAvailable} from '../ValueNotAvailable';
+import {fromNullable, just, none} from "@sweet-monads/maybe";
+import {left, right} from "@sweet-monads/either";
 
 export class EnvProvider extends Provider<string> {
     constructor(private key: string,
@@ -9,10 +10,9 @@ export class EnvProvider extends Provider<string> {
     }
 
     getValue(): Provider.Value<string> {
-        return Maybe.fromUndefined(this.envs[this.key])
-            .filter(value => value !== '')
-            .toValidation(
-                new ValueNotAvailable('ENV: ' + this.key)
-            );
+        const value = fromNullable(this.envs[this.key])
+            .chain(value => value === '' ? none() : just(value));
+
+        return value.isNone() ? left(new ValueNotAvailable('ENV: ' + this.key)) : right(value.value);
     }
 }

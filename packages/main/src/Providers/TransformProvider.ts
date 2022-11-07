@@ -1,7 +1,7 @@
 import {Provider} from "../Provider";
 import {OptionalPromise, UnwrapProvider} from "../utils";
 import {runOnOptionalPromise} from '../common/runOnOptionalPromise';
-import {Either} from 'monet';
+import {fromTry} from "../common/fromTry";
 
 export class TransformProvider<TType, TSource> extends Provider<TType> {
     constructor(private provider: Provider<TSource>,
@@ -13,9 +13,8 @@ export class TransformProvider<TType, TSource> extends Provider<TType> {
         return runOnOptionalPromise(
             this.provider.getValue(),
             value => {
-                return value.flatMap(value => {
-                    return Either.fromTry(() => this.transformer(value))
-                        .toValidation();
+                return value.chain(value => {
+                    return fromTry(() => this.transformer(value))
                 })
             }
         )

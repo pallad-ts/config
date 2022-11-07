@@ -1,6 +1,6 @@
 import {EnvFileProvider} from '@src/EnvFileProvider';
-import {Validation} from 'monet';
 import {ValueNotAvailable} from '@pallad/config';
+import {left, right} from "@sweet-monads/either";
 
 describe('EnvFileProvider', () => {
     describe('not available', () => {
@@ -9,19 +9,19 @@ describe('EnvFileProvider', () => {
             const provider = new EnvFileProvider('FOO', {});
 
             expect(provider.getValue())
-                .toStrictEqual(Validation.Fail(new ValueNotAvailable('"FOO" from ENV file(s)')));
+                .toStrictEqual(left(new ValueNotAvailable('"FOO" from ENV file(s)')));
         });
 
         it('if ENV exists but is empty', () => {
             const provider = new EnvFileProvider('FOO', {FOO: ''});
 
             expect(provider.getValue())
-                .toStrictEqual(Validation.Fail(new ValueNotAvailable('"FOO" from ENV file(s)')));
+                .toStrictEqual(left(new ValueNotAvailable('"FOO" from ENV file(s)')));
         });
     });
 
     it('success', () => {
         expect(new EnvFileProvider('FOO', {FOO: 'bar'}).getValue())
-            .toStrictEqual(Validation.Success('bar'));
+            .toStrictEqual(right('bar'));
     });
 });

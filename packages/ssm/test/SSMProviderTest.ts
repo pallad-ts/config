@@ -1,8 +1,8 @@
 import * as sinon from 'sinon';
 import DataLoader = require("dataloader");
 import {SSMProvider} from "@src/SSMProvider";
-import {Validation} from 'monet';
 import {ValueNotAvailable} from '@pallad/config';
+import {left, right} from "@sweet-monads/either";
 
 describe('SSMProviderTest', () => {
     let dataLoader: sinon.SinonStubbedInstance<DataLoader<string, SSMProvider.Value | undefined>>;
@@ -26,7 +26,7 @@ describe('SSMProviderTest', () => {
 
         return expect(provider.getValue())
             .resolves
-            .toEqual(Validation.Fail(new ValueNotAvailable(`SSM: ${KEY}`)));
+            .toEqual(left(new ValueNotAvailable(`SSM: ${KEY}`)));
     });
 
     it('success', () => {
@@ -35,7 +35,7 @@ describe('SSMProviderTest', () => {
 
         return expect(provider.getValue())
             .resolves
-            .toEqual(Validation.Success(RESULT));
+            .toEqual(right(RESULT));
     });
 
     it('forwards error from dataloader', () => {
@@ -47,6 +47,6 @@ describe('SSMProviderTest', () => {
 
         return expect(provider.getValue())
             .resolves
-            .toEqual(Validation.Fail(error));
+            .toEqual(left(error));
     });
 });

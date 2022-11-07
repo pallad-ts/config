@@ -4,33 +4,33 @@ import {extractProvidersFromConfig} from './extractProvidersFromConfig';
 import {replaceProvidersInConfig} from './replaceProvidersInConfig';
 import {Provider} from '../Provider';
 import {isPromise} from './isPromise';
-import {Validation} from 'monet';
 import {ResolvedConfig} from '../ResolvedConfig';
+import {Either, left, right} from "@sweet-monads/either";
 
 /**
  * @internal
  */
-export function loadConfig<T>(config: T): OptionalPromise<Validation<Provider.Fail, ResolvedConfig<T>>> {
+export function loadConfig<T>(config: T): OptionalPromise<Either<Provider.Fail, ResolvedConfig<T>>> {
     return runOnOptionalPromise(
         resolveProviders(extractProvidersFromConfig(config)),
         resolved => {
             if (resolved.size === 0) {
-                return Validation.Success<Provider.Fail, ResolvedConfig<T>>(config as any);
+                return right<Provider.Fail, ResolvedConfig<T>>(config as any);
             }
 
             const fails = Array.from(resolved.values())
                 .reduce((result, entry) => {
-                    if (entry.isFail()) {
-                        const fail = entry.fail();
+                    if (entry.isLeft()) {
+                        const fail = entry.value;
                         return result.concat(Array.isArray(fail) ? fail : [fail]);
                     }
                     return result;
                 }, [] as Provider.Fail.Entry[]);
 
             if (fails.length) {
-                return Validation.Fail(fails);
+                return left(fails);
             }
-            return Validation.Success(replaceProvidersInConfig(config, resolved));
+            return right(replaceProvidersInConfig(config, resolved));
         }
     );
 }

@@ -1,7 +1,6 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import * as fs from 'fs';
 import * as is from 'predicates';
-import {Validation} from "monet";
 import {cosmiconfig} from 'cosmiconfig';
 import {get as getProperty} from 'object-path';
 import {Provider, extractProvidersFromConfig, replaceProvidersInConfig, ERRORS, ValueNotAvailable} from '@pallad/config';
@@ -9,6 +8,7 @@ import {Secret} from '@pallad/secret';
 import * as chalk from 'chalk';
 import {format as prettyFormat} from 'pretty-format'
 import {Config, Plugin, Printer, Refs} from 'pretty-format/build/types';
+import {Either, isEither, left, right} from "@sweet-monads/either";
 
 class ConfigCheck extends Command {
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -16,11 +16,11 @@ class ConfigCheck extends Command {
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     static flags = {
-        revealSecrets: flags.boolean({
+        revealSecrets: Flags.boolean({
             default: false,
             description: 'Whether to reveal secret values from @pallad/secret'
         }),
-        silent: flags.boolean({
+        silent: Flags.boolean({
             default: false,
             char: 's',
             description: 'Do not display config'
@@ -31,7 +31,7 @@ class ConfigCheck extends Command {
     static args = [{
         name: 'configPath',
         required: false,
-        parse(value: string) {
+        async parse(value: string) {
             if (is.startsWith('-', value)) {
                 throw new Error(`Property path: ${value} is rather a typo. Please use property path that does not start with "-"`)
             }
@@ -44,7 +44,7 @@ class ConfigCheck extends Command {
     static strict = true;
 
     async run() {
-        const {args, flags} = this.parse(ConfigCheck);
+        const {args, flags} = await this.parse(ConfigCheck);
         const configuration = await this.getConfiguration();
         const config = this.getConfig(configuration);
 
@@ -60,7 +60,7 @@ class ConfigCheck extends Command {
         }
 
         const hasFailures = Array.from(providersMap.values())
-            .some(x => x.success().isFail());
+            .some(x => x.isLeft());
 
         process.exit(hasFailures ? 1 : 0);
     }
@@ -99,19 +99,19 @@ class ConfigCheck extends Command {
         }
 
         const foundFunc = this.findConfigFunctionInModule(module, configuration.file);
-        if (foundFunc.isFail()) {
-            throw new Error(foundFunc.fail())
+        if (foundFunc.isLeft()) {
+            throw new Error(foundFunc.value)
         }
-        return foundFunc.success()();
+        return foundFunc.value();
     }
 
-    private findConfigFunctionInModule(module: any, modulePath: string): Validation<string, Function> {
+    private findConfigFunctionInModule(module: any, modulePath: string): Either<string, Function> {
         if (is.func(module)) {
-            return Validation.Success(module);
+            return right(module);
         }
         const funcs = Array.from(Object.values(module)).filter(is.func);
         if (funcs.length > 1) {
-            return Validation.Fail(
+            return left(
                 `Found 2 exported functions in module: ${modulePath}.
                 We do not know which one is responsible for generating configuration shape.
                 Please define "property" in config explicitly.`
@@ -119,14 +119,14 @@ class ConfigCheck extends Command {
         }
 
         if (funcs.length === 0) {
-            return Validation.Fail(`No functions generating configuration shape found in module: ${modulePath}`);
+            return left(`No functions generating configuration shape found in module: ${modulePath}`);
         }
 
-        return Validation.Success(funcs[0]);
+        return right(funcs[0]);
     }
 
     private async loadConfig(config: any) {
-        const map = new Map<Provider<any>, Validation<unknown, Provider.Value<any>>>();
+        const map = new Map<Provider<any>, Provider.Value<any>>();
         if (is.primitive(config)) {
             return {config, providersMap: map};
         }
@@ -135,7 +135,7 @@ class ConfigCheck extends Command {
         for (const provider of providers) {
             const value = await provider.getValue();
 
-            map.set(provider, Validation.Success(value));
+            map.set(provider, value);
         }
         return {
             config: replaceProvidersInConfig(config, map as any),
@@ -164,13 +164,13 @@ class ConfigCheck extends Command {
 
         const providerPlugin: Plugin = {
             test(value: any) {
-                return value && Validation.isInstance(value)
+                return value && isEither(value)
             },
             serialize(val: Provider.Value<any>, config: Config, indentation: string, depth: number, refs: Refs, printer: Printer) {
-                if (val.isSuccess()) {
-                    return printer(val.success(), config, indentation, depth, refs, false);
+                if (val.isRight()) {
+                    return printer(val.value, config, indentation, depth, refs, false);
                 }
-                const fail = val.fail();
+                const fail = val.value;
                 const errors = (Array.isArray(fail) ? fail : [fail])
                     .map(x => {
                         if (ValueNotAvailable.is(x)) {

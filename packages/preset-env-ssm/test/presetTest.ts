@@ -33,7 +33,7 @@ describe('preset', () => {
     }
 
     function ssm(key: string) {
-        return new SSMProvider(key, expect.any(DataLoader));
+        return new SSMProvider(key, expect.any(DataLoader) as any);
     }
 
     describe('env without envFile due to lack of envFile config', () => {

@@ -1,7 +1,7 @@
 import {DummyProvider} from './dummies/DummyProvider';
-import {Either} from 'monet';
 import {ERRORS} from '@src/errors';
 import {loadAsync} from '@src/loadAsync';
+import {left, right} from "@sweet-monads/either";
 
 describe('loadAsync', () => {
     it('loads config', () => {
@@ -25,13 +25,13 @@ describe('loadAsync', () => {
 
     describe('fails', () => {
         it('if some of providers are not available', async () => {
-            const result = await Either.fromPromise(loadAsync({
+            const result = await loadAsync({
                 foo: new DummyProvider({isAsync: true, description: 'foo desc'})
-            }));
-            expect(result.left())
+            }).then(right).catch(left);
+            expect(result.value)
                 .toHaveProperty('code', ERRORS.CONFIG_LOADING_FAILED.code);
 
-            expect(result.left())
+            expect(result.value)
                 .toHaveProperty('errors', [
                     ERRORS.PROVIDER_VALUE_NOT_AVAILABLE.format('foo desc')
                 ]);
@@ -39,13 +39,13 @@ describe('loadAsync', () => {
 
         it('if some of providers fail', async () => {
             const error = new Error('test');
-            const result = await Either.fromPromise(loadAsync({
+            const result = await loadAsync({
                 foo: new DummyProvider({isAsync: true, error})
-            }));
-            expect(result.left())
+            }).then(right).catch(left);
+            expect(result.value)
                 .toHaveProperty('code', ERRORS.CONFIG_LOADING_FAILED.code);
 
-            expect(result.left())
+            expect(result.value)
                 .toHaveProperty('errors', [
                     error
                 ]);
@@ -57,15 +57,15 @@ describe('loadAsync', () => {
             const error3 = new Error('e3');
             const error4 = new Error('e4');
 
-            const result = await Either.fromPromise(loadAsync({
+            const result = await loadAsync({
                 foo: new DummyProvider({isAsync: true, error: [error1, error2]}),
                 var: new DummyProvider({isAsync: true, error: [error3, error4]})
-            }));
+            }).then(right).catch(left);
 
-            expect(result.left())
+            expect(result.value)
                 .toHaveProperty('code', ERRORS.CONFIG_LOADING_FAILED.code);
 
-            expect(result.left())
+            expect(result.value)
                 .toHaveProperty('errors', [
                     error1,
                     error2,

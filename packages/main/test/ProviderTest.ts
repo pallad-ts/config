@@ -2,7 +2,7 @@ import {Provider} from "@src/Provider";
 import {DummyProvider} from "./dummies/DummyProvider";
 import * as fs from 'fs';
 import * as path from 'path';
-import {Validation} from 'monet';
+import {right} from "@sweet-monads/either";
 
 describe('Provider', () => {
     const VALUE = {raw: 'value'} as const;
@@ -34,7 +34,7 @@ describe('Provider', () => {
 
                 const newInstance = new class extends NewProvider {
                     getValue() {
-                        return Validation.Success(true);
+                        return right(true);
                     }
                 };
                 const dummy = new DummyProvider({
