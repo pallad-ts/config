@@ -15,7 +15,7 @@
     "@types/sinon": "^10",
     "conditional-type-checks": "^1.0.5",
     "dotenv": "^8.2.0",
-    "lerna": "^4",
+    "lerna": "^6",
     "sinon": "^14",
     "ts-node": "^10.4.0"
   }
