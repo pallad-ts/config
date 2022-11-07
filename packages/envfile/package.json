@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-envfile",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Envfile handling for @pallad/config",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",
@@ -41,13 +41,13 @@
     "@pallad/config": "*"
   },
   "devDependencies": {
-    "@pallad/config": "*"
+    "@pallad/config": "^3.0.0"
   },
   "dependencies": {
+    "@sweet-monads/either": "^3",
+    "@sweet-monads/maybe": "^3",
     "alpha-errors": "^0.4.0",
     "dotenv": "^10.0.0",
-    "tslib": "^2",
-    "@sweet-monads/maybe": "^3",
-    "@sweet-monads/either": "^3"
+    "tslib": "^2"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Create and validate configuration",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",
@@ -34,12 +34,12 @@
   },
   "homepage": "https://pallad.dev/config",
   "dependencies": {
+    "@sweet-monads/either": "^3",
+    "@sweet-monads/maybe": "^3",
     "alpha-errors": "^0.4.0",
     "predicates": "^2.0.3",
     "tslib": "^2",
-    "yn": "^4.0.0",
-    "@sweet-monads/either": "^3",
-    "@sweet-monads/maybe": "^3"
+    "yn": "^4.0.0"
   },
   "files": [
     "compiled",

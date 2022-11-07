@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-ssm",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "SSM provider for @pallad/config",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",
@@ -27,7 +27,7 @@
     "@pallad/config": "*"
   },
   "devDependencies": {
-    "@pallad/config": "^2.0.1"
+    "@pallad/config": "^3.0.0"
   },
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
   "license": "MIT",
@@ -38,9 +38,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-ssm": "^3",
+    "@sweet-monads/either": "^3",
     "dataloader": "^2.0.0",
     "split-array": "^1.0.1",
-    "@sweet-monads/either": "^3",
     "tslib": "^2"
   },
   "files": [

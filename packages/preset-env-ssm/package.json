@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-preset-env-ssm",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Preset for @pallad/config that loads config from ENV variables, env files and ssm",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",
@@ -14,9 +14,9 @@
     "test": "test"
   },
   "dependencies": {
-    "@pallad/config": "^2.0.1",
-    "@pallad/config-envfile": "^2.0.1",
-    "@pallad/config-ssm": "^2.0.1",
+    "@pallad/config": "^3.0.0",
+    "@pallad/config-envfile": "^3.0.0",
+    "@pallad/config-ssm": "^3.0.0",
     "tslib": "^2"
   },
   "scripts": {

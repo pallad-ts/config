@@ -18,20 +18,20 @@
   "dependencies": {
     "@oclif/core": "^1",
     "@oclif/plugin-help": "^3",
+    "@sweet-monads/either": "^3.1.0",
     "chalk": "^4",
     "cosmiconfig": "^7.0.1",
     "object-path": "^0.11.8",
     "predicates": "^2.0.3",
     "pretty-format": "^27.3.1",
-    "tslib": "^2",
-    "@sweet-monads/either": "^3.1.0"
+    "tslib": "^2"
   },
   "peerDependencies": {
     "@pallad/config": "*",
     "@pallad/secret": "^1"
   },
   "devDependencies": {
-    "@pallad/config": "^2",
+    "@pallad/config": "^3.0.0",
     "@pallad/secret": "^1"
   },
   "oclif": {
