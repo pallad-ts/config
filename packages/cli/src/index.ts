@@ -1,13 +1,12 @@
-import {Command, Flags} from '@oclif/core'
+import {Command, Flags, Args} from '@oclif/core'
 import * as fs from 'fs';
 import * as is from 'predicates';
 import {cosmiconfig} from 'cosmiconfig';
 import {get as getProperty} from 'object-path';
 import {Provider, extractProvidersFromConfig, replaceProvidersInConfig, ERRORS, ValueNotAvailable} from '@pallad/config';
 import {Secret} from '@pallad/secret';
-import * as chalk from 'chalk';
-import {format as prettyFormat} from 'pretty-format'
-import {Config, Plugin, Printer, Refs} from 'pretty-format/build/types';
+import chalk from 'chalk';
+import {format as prettyFormat, Config, Plugin, Printer, Refs} from 'pretty-format'
 import {Either, isEither, left, right} from "@sweet-monads/either";
 
 class ConfigCheck extends Command {
@@ -28,17 +27,20 @@ class ConfigCheck extends Command {
     };
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    static args = [{
-        name: 'configPath',
-        required: false,
-        async parse(value: string) {
-            if (is.startsWith('-', value)) {
-                throw new Error(`Property path: ${value} is rather a typo. Please use property path that does not start with "-"`)
-            }
-            return value;
-        },
-        description: 'config property path to display'
-    }];
+    static args = {
+        configPath: Args.string({
+            name: 'configPath',
+            required: false,
+            // eslint-disable-next-line @typescript-eslint/require-await
+            async parse(value: string) {
+                if (is.startsWith('-', value)) {
+                    throw new Error(`Property path: ${value} is rather a typo. Please use property path that does not start with "-"`)
+                }
+                return value;
+            },
+            description: 'config property path to display'
+        })
+    };
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     static strict = true;

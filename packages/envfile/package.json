@@ -47,7 +47,7 @@
     "@sweet-monads/either": "^3",
     "@sweet-monads/maybe": "^3",
     "alpha-errors": "^0.4.0",
-    "dotenv": "^10.0.0",
+    "dotenv": "^16",
     "tslib": "^2"
   }
 }

@@ -1,8 +1,7 @@
 import {Provider} from "../Provider";
 import {OptionalPromise, UnwrapProvider} from "../utils";
 import {runOnOptionalPromise} from '../common/runOnOptionalPromise';
-import {fromTry} from "../common/fromTry";
-
+import {fromTry} from '@sweet-monads/either';
 export class TransformProvider<TType, TSource> extends Provider<TType> {
     constructor(private provider: Provider<TSource>,
                 private transformer: TransformProvider.Transformer<TType, TSource>) {
