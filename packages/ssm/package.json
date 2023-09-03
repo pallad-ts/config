@@ -40,7 +40,6 @@
     "@aws-sdk/client-ssm": "^3",
     "@sweet-monads/either": "^3",
     "dataloader": "^2.0.0",
-    "split-array": "^1.0.1",
     "tslib": "^2"
   },
   "files": [

@@ -1,7 +1,7 @@
 import {loadSync} from '@src/loadSync';
 import {DummyProvider} from './dummies/DummyProvider';
 import {ERRORS} from '@src/errors';
-import {fromTry} from "@src/common/fromTry";
+import {fromTry} from "@sweet-monads/either";
 
 describe('loadSync', () => {
     it('loads config', () => {

@@ -3,7 +3,6 @@ import DataLoader = require("dataloader");
 import {wrapWithDefaultAndTransformer} from '@pallad/config';
 import {SSMClient, Parameter, GetParametersCommand} from '@aws-sdk/client-ssm';
 
-const splitArray = require('split-array');
 
 export function parameterDeserializer(parameter: Parameter) {
     if (parameter.Type === 'StringList') {
@@ -13,7 +12,9 @@ export function parameterDeserializer(parameter: Parameter) {
 }
 
 function createDataLoader(batchFN: ssmProviderFactory.BatchFunction) {
-    return new DataLoader<string, SSMProvider.Value | undefined>(batchFN);
+    return new DataLoader<string, SSMProvider.Value | undefined>(batchFN, {
+        maxBatchSize: 10
+    });
 }
 
 export function ssmProviderFactory<TTransformed, TDefault>(
@@ -23,18 +24,18 @@ export function ssmProviderFactory<TTransformed, TDefault>(
     const paramDeserializer = options?.parameterDeserializer ?? parameterDeserializer;
 
     const batchFn = async (keys: readonly string[]) => {
+        if (keys.length > 10) {
+            throw new Error('Misconfigured dataloader. Missing required `maxBatchSize: 10` option');
+        }
         const map = new Map<string, SSMProvider.Value | undefined>();
-        const batches = splitArray(keys, 10);
-        for (const batch of batches) {
-            const parameters = await ssm.send(new GetParametersCommand({
-                Names: batch,
-                WithDecryption: true
-            }));
+        const parameters = await ssm.send(new GetParametersCommand({
+            Names: keys.slice(),
+            WithDecryption: true
+        }));
 
-            if (parameters.Parameters) {
-                for (const parameter of parameters.Parameters) {
-                    map.set(parameter.Name!, paramDeserializer(parameter));
-                }
+        if (parameters.Parameters) {
+            for (const parameter of parameters.Parameters) {
+                map.set(parameter.Name!, paramDeserializer(parameter));
             }
         }
         return keys.map(x => map.get(x));
@@ -50,11 +51,12 @@ export function ssmProviderFactory<TTransformed, TDefault>(
 export namespace ssmProviderFactory {
     export interface Options {
         ssm?: SSMClient;
-        createDataLoader?: (batchFn: BatchFunction) => DataLoader<string, SSMProvider.Value | undefined>;
+        createDataLoader?: CreateDataLoader;
         parameterDeserializer?: ParameterDeserializer;
         prefix?: string;
     }
 
+    export type CreateDataLoader = (batchFn: BatchFunction) => DataLoader<string, SSMProvider.Value | undefined>
     export type BatchFunction = (key: readonly string[]) => Promise<Array<SSMProvider.Value | undefined>>;
     export type ParameterDeserializer = (parameter: Parameter) => Promise<any> | any;
 }

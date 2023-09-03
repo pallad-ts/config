@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ssmProviderFactory ssm loading fails if dataloader has misconfigured maxBatchSize 1`] = `
+[
+  "Misconfigured dataloader. Missing required \`maxBatchSize: 10\` option",
+  "Misconfigured dataloader. Missing required \`maxBatchSize: 10\` option",
+  "Misconfigured dataloader. Missing required \`maxBatchSize: 10\` option",
+  "Misconfigured dataloader. Missing required \`maxBatchSize: 10\` option",
+  "Misconfigured dataloader. Missing required \`maxBatchSize: 10\` option",
+  "Misconfigured dataloader. Missing required \`maxBatchSize: 10\` option",
+  "Misconfigured dataloader. Missing required \`maxBatchSize: 10\` option",
+  "Misconfigured dataloader. Missing required \`maxBatchSize: 10\` option",
+  "Misconfigured dataloader. Missing required \`maxBatchSize: 10\` option",
+  "Misconfigured dataloader. Missing required \`maxBatchSize: 10\` option",
+  "Misconfigured dataloader. Missing required \`maxBatchSize: 10\` option",
+  "Misconfigured dataloader. Missing required \`maxBatchSize: 10\` option",
+]
+`;

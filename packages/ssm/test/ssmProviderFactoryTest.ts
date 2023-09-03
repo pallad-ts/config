@@ -2,6 +2,7 @@ import * as sinon from 'sinon';
 import {type, ValueNotAvailable} from '@pallad/config';
 import {ssmProviderFactory} from '@src/ssmProviderFactory';
 import {left, right} from "@sweet-monads/either";
+import {DataLoader} from "@src/index";
 
 describe('ssmProviderFactory', () => {
     describe('ssm', () => {
@@ -59,17 +60,44 @@ describe('ssmProviderFactory', () => {
             });
 
             it('uses custom dataLoader factory', () => {
-                const dataLoader = {};
-                const stub = sinon.stub()
-                    .resolves(dataLoader);
+
+                const spy = sinon.spy((batchFn: ssmProviderFactory.BatchFunction) => {
+                    return new DataLoader(batchFn)
+                });
 
                 ssmProviderFactory({
                     ...CONFIG,
-                    createDataLoader: stub,
+                    createDataLoader: spy,
                 });
 
-                sinon.assert.calledOnce(stub);
+                sinon.assert.calledOnce(spy);
             });
+
+            it('fails if dataloader has misconfigured maxBatchSize', async () => {
+                const provider = ssmProviderFactory({
+                    ...CONFIG,
+                    createDataLoader: (batchFn: ssmProviderFactory.BatchFunction) => {
+                        return new DataLoader(batchFn)
+                    },
+                });
+
+                const result = await Promise.all(
+                    ['k1', 'k2', 'k3', 'k4', 'k5', 'k6', 'k7', 'k8', 'k8', 'k10', 'k11', 'k12']
+                        .map(x => {
+                            return provider(x).getValue();
+                        })
+                );
+
+                const finalResult = result.map(x => {
+                    return x.fold(x => {
+                        if (x instanceof Error) {
+                            return x.message;
+                        }
+                    }, x => undefined);
+                });
+
+                expect(finalResult).toMatchSnapshot();
+            })
 
             it('using parameter deserializer', () => {
                 const stub = sinon.stub()
