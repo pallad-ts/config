@@ -15,7 +15,7 @@
     "@types/object-path": "^0.11",
     "conditional-type-checks": "^1.0.5",
     "dotenv": "^8.2.0",
-    "lerna": "^7",
+    "lerna": "^8",
     "ts-node": "^10.4.0"
   }
 }

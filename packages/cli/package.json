@@ -16,8 +16,8 @@
   "types": "compiled/index.d.ts",
   "main": "compiled/index.js",
   "dependencies": {
-    "@oclif/core": "^2",
-    "@oclif/plugin-help": "^3",
+    "@oclif/core": "^3",
+    "@oclif/plugin-help": "^6",
     "@sweet-monads/either": "^3",
     "chalk": "^5",
     "cosmiconfig": "^8",
