@@ -9,7 +9,7 @@ import {Either} from "@sweet-monads/either";
 export function replaceProvidersInConfig<T>(config: T, resolvedDependencies: Map<Provider<any>, Either<Provider.Fail, any>>): ResolvedConfig<T> {
     if (is.primitive(config)) {
         return config as any as ResolvedConfig<T>;
-    } else if (Provider.is(config)) {
+    } else if (Provider.isType(config)) {
         return resolvedDependencies.get(config)!.value;
     } else if (is.array(config)) {
         const newObject = [];

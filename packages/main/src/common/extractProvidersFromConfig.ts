@@ -1,5 +1,5 @@
-import * as is from 'predicates';
-import {Provider} from "../Provider";
+import * as is from "predicates";
+import { Provider } from "../Provider";
 
 /**
  * @internal
@@ -11,7 +11,7 @@ export function extractProvidersFromConfig(config: unknown): Array<Provider<any>
 
     let deps: Array<Provider<any>> = [];
 
-    if (Provider.is(config)) {
+    if (Provider.isType(config)) {
         deps.push(config);
     } else if (is.array(config)) {
         for (const value of config) {
@@ -30,4 +30,3 @@ export function extractProvidersFromConfig(config: unknown): Array<Provider<any>
     }
     return deps;
 }
-

@@ -72,7 +72,7 @@ export class PickByTypeProvider<T> extends Provider<T> {
 
     private getOptionsForType(type: string): OptionalPromise<Provider.Value<any>> {
         const options = this.options.get(type)!;
-        if (Provider.is(options)) {
+        if (Provider.isType(options)) {
             return options.getValue();
         }
 

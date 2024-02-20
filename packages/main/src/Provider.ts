@@ -1,12 +1,9 @@
 import { OptionalPromise } from "./utils";
 import { ValueNotAvailable } from "./ValueNotAvailable";
-import * as is from "predicates";
 import { Either } from "@sweet-monads/either";
+import { TypeCheck } from "@pallad/type-check";
 
-const TYPE = "@pallad/config/Provider";
-const TYPE_KEY = "@type";
-
-const IS_TYPE = is.property(TYPE_KEY, is.strictEqualTo(TYPE));
+const CHECK = new TypeCheck("@pallad/config/Provider");
 
 /**
  * Describes config value retrievable from other sources (env, env file, external storage etc)
@@ -15,11 +12,7 @@ const IS_TYPE = is.property(TYPE_KEY, is.strictEqualTo(TYPE));
  */
 export abstract class Provider<TType> {
     constructor() {
-        Object.defineProperty(this, TYPE_KEY, {
-            value: TYPE,
-            enumerable: false,
-            configurable: false,
-        });
+        CHECK.assign(this);
     }
 
     /**
@@ -30,8 +23,8 @@ export abstract class Provider<TType> {
     /**
      * Checks if given value is a Provider
      */
-    static is<T>(value: any): value is Provider<T> {
-        return value instanceof Provider || IS_TYPE(value);
+    static isType<T>(value: unknown): value is Provider<T> {
+        return CHECK.isType(value);
     }
 }
 
