@@ -1,8 +1,8 @@
-import {Provider} from "../Provider";
-import {isPromise} from '../common/isPromise';
-import {OptionalPromise} from '../utils';
-import {ValueNotAvailable} from '../ValueNotAvailable';
-import {left} from "@sweet-monads/either";
+import { Provider } from "../Provider";
+import { isPromise } from "../common/isPromise";
+import { OptionalPromise } from "../utils";
+import { ValueNotAvailable } from "../ValueNotAvailable";
+import { left } from "@sweet-monads/either";
 
 export class FirstAvailableProvider<T extends Array<Provider<any>>> extends Provider<FirstAvailableProvider.Unwrap<T>> {
     private providers: Array<Provider<T>>;
@@ -32,8 +32,8 @@ export class FirstAvailableProvider<T extends Array<Provider<any>>> extends Prov
                             }
 
                             return left(
-                                new ValueNotAvailable(`First available: ${descriptions.join(', ')}`)
-                            ) as Provider.Value<FirstAvailableProvider.Unwrap<T>>
+                                new ValueNotAvailable(`First available: ${descriptions.join(", ")}`)
+                            ) as Provider.Value<FirstAvailableProvider.Unwrap<T>>;
                         })();
                     }
                     return x as Provider.Value<FirstAvailableProvider.Unwrap<T>>;
@@ -45,12 +45,10 @@ export class FirstAvailableProvider<T extends Array<Provider<any>>> extends Prov
             return value as Provider.Value<FirstAvailableProvider.Unwrap<T>>;
         }
 
-        return left(
-            new ValueNotAvailable(`First available: ${descriptions.join(', ')}`)
-        );
+        return left(new ValueNotAvailable(`First available: ${descriptions.join(", ")}`));
     }
 }
 
 export namespace FirstAvailableProvider {
-    export type Unwrap<T> = T extends Array<Provider<infer U>> ? U : T;
+    export type Unwrap<T> = T extends Array<infer U> ? (U extends Provider<infer TU> ? TU : never) : never;
 }

@@ -1,9 +1,8 @@
-import {resolve} from 'path';
-import {parse} from 'dotenv';
-import {readFileSync, existsSync} from 'fs';
-import {ERRORS} from './errors';
-import {EnvFileProvider} from './EnvFileProvider';
-import {wrapWithDefaultAndTransformer} from '@pallad/config';
+import { resolve } from "path";
+import { parse } from "dotenv";
+import { readFileSync, existsSync } from "fs";
+import { ERRORS } from "./errors";
+import { EnvFileProvider } from "./EnvFileProvider";
 
 export function envFileProviderFactory(options: envFileProviderFactory.Options) {
     const envs: Record<string, string> = {};
@@ -13,9 +12,8 @@ export function envFileProviderFactory(options: envFileProviderFactory.Options) 
     const paths = Array.isArray(options.paths) ? options.paths : [options.paths];
 
     for (const path of paths) {
-
         const resolvedPathData: envFileProviderFactory.PathEntryObject =
-            typeof path === 'string' ? {path: path, required: true} : path;
+            typeof path === "string" ? { path: path, required: true } : path;
 
         const filePath = resolve(cwd, resolvedPathData.path);
 
@@ -26,7 +24,7 @@ export function envFileProviderFactory(options: envFileProviderFactory.Options) 
             continue;
         }
 
-        const result = parse(readFileSync(filePath, 'utf-8'));
+        const result = parse(readFileSync(filePath, "utf-8"));
         Object.assign(envs, result);
     }
 
@@ -34,12 +32,12 @@ export function envFileProviderFactory(options: envFileProviderFactory.Options) 
         Object.assign(process.env, envs);
     }
 
-    return wrapWithDefaultAndTransformer.wrap(key => new EnvFileProvider(key, envs));
+    return (key: string) => new EnvFileProvider(key, envs);
 }
 
 export namespace envFileProviderFactory {
     export interface Options {
-        paths: PathEntry | PathEntry[],
+        paths: PathEntry | PathEntry[];
         /**
          * Working directory. By default `process.cwd()`
          */
@@ -53,7 +51,7 @@ export namespace envFileProviderFactory {
     export type PathEntry = string | PathEntryObject;
 
     export interface PathEntryObject {
-        path: string,
-        required: boolean
+        path: string;
+        required: boolean;
     }
 }

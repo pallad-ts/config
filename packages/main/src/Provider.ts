@@ -1,7 +1,8 @@
 import { OptionalPromise } from "./utils";
 import { ValueNotAvailable } from "./ValueNotAvailable";
-import { Either } from "@sweet-monads/either";
+import { Either, fromTry, right } from "@sweet-monads/either";
 import { TypeCheck } from "@pallad/type-check";
+import { runOnOptionalPromise } from "./common/runOnOptionalPromise";
 
 const CHECK = new TypeCheck("@pallad/config/Provider");
 
@@ -26,6 +27,14 @@ export abstract class Provider<TType> {
     static isType<T>(value: unknown): value is Provider<T> {
         return CHECK.isType(value);
     }
+
+    transform<TNewType>(transformer: (value: TType) => TNewType): TransformProvider<TNewType, TType> {
+        return new TransformProvider(this, transformer);
+    }
+
+    defaultTo<TNewType>(defaultValue: TNewType): DefaultValueProvider<TNewType, TType> {
+        return new DefaultValueProvider(this, defaultValue);
+    }
 }
 
 export namespace Provider {
@@ -35,4 +44,49 @@ export namespace Provider {
     export namespace Fail {
         export type Entry = ValueNotAvailable | Error;
     }
+}
+
+/**
+ * Wrapper for other provider. Returns default value if given provider has no available value.
+ *
+ * @public
+ */
+export class DefaultValueProvider<T, TOriginal> extends Provider<T | TOriginal> {
+    constructor(
+        private provider: Provider<TOriginal>,
+        private defaultValue: T
+    ) {
+        super();
+    }
+
+    getValue(): OptionalPromise<Provider.Value<T | TOriginal>> {
+        return runOnOptionalPromise(this.provider.getValue(), result => {
+            if (result.isLeft() && ValueNotAvailable.is(result.value)) {
+                return right<Provider.Fail, any>(this.defaultValue);
+            }
+
+            return result;
+        });
+    }
+}
+
+export class TransformProvider<TType, TSource> extends Provider<TType> {
+    constructor(
+        private provider: Provider<TSource>,
+        private transformer: TransformProvider.Transformer<TType, TSource>
+    ) {
+        super();
+    }
+
+    getValue(): OptionalPromise<Provider.Value<TType>> {
+        return runOnOptionalPromise(this.provider.getValue(), value => {
+            return value.chain(value => {
+                return fromTry(() => this.transformer(value));
+            });
+        });
+    }
+}
+
+export namespace TransformProvider {
+    export type Transformer<T, TSource = unknown> = (x: TSource, ...args: any[]) => T;
 }
