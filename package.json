@@ -10,12 +10,14 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@pallad/errors-dev": "^1.1.0",
     "@pallad/scripts": "^3",
     "@pallad/secret": "^1.1.0",
     "@types/object-path": "^0.11",
     "conditional-type-checks": "^1.0.5",
     "dotenv": "^8.2.0",
     "lerna": "^8",
+    "prettier": "^3.2.5",
     "ts-node": "^10.4.0"
   }
 }

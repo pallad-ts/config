@@ -1,53 +1,46 @@
-import {Provider, ValueNotAvailable} from "@pallad/config";
-import {SecretManagerConfigReference} from "./SecretManagerConfigReference";
+import { AsyncProvider, Provider, ValueNotAvailable } from "@pallad/config";
+import { SecretReference } from "./SecretReference";
 import DataLoader = require("dataloader");
-import {left, right} from '@sweet-monads/either'
+import { fromPromise, left, right } from "@sweet-monads/either";
+import { ERRORS } from "./errors";
 
-export class SecretManagerProvider extends Provider<SecretManagerProvider.Value> {
-
-	private cache?: Promise<Provider.Value<SecretManagerProvider.Value>>;
-
-	constructor(readonly reference: SecretManagerConfigReference, readonly dataLoader: DataLoader<string, SecretManagerProvider.Value | undefined>) {
+export class SecretManagerProvider extends AsyncProvider<unknown> {
+	constructor(
+		readonly reference: SecretReference,
+		readonly dataLoader: DataLoader<string, unknown | undefined>
+	) {
 		super();
 	}
 
-	getValue(): Promise<Provider.Value<SecretManagerProvider.Value>> {
-		if (!this.cache) {
-			this.cache = this.dataLoader.load(this.reference.secretName)
-				.then(value => {
-					if (value === undefined) {
-						const description = SecretManagerConfigReference.computeDescription(this.reference);
-						return left<Provider.Fail, SecretManagerProvider.Value>(new ValueNotAvailable(description));
-					}
-					return this.extractValue(value);
-				})
-				.catch(x => {
-					return left<Provider.Fail, SecretManagerProvider.Value>(x);
-				});
-		}
-		return this.cache!;
+	resolveValueAsync(): Promise<Provider.Value<unknown>> {
+		return this.loadValue().catch(e => left(e));
 	}
 
-	private extractValue(value: SecretManagerProvider.Value) {
-		if (this.reference.property) {
-			if (typeof value === 'string') {
-				return left(new Error('Cannot extract property from string'));
-			}
+	private async loadValue() {
+		const value = await this.dataLoader.load(this.reference.secretName);
 
-			const resolvedValue = value[this.reference.property];
-
-			if (resolvedValue === undefined || resolvedValue === '' || resolvedValue === null) {
-				const description = SecretManagerConfigReference.computeDescription(this.reference);
-				return left(new ValueNotAvailable(description));
-			}
-
-			return right(resolvedValue);
+		if (value === undefined) {
+			const description = SecretReference.computeDescription(this.reference);
+			return left<Provider.Fail, unknown>(new ValueNotAvailable(description));
 		}
 
+		return this.extractValue(value);
+	}
+
+	private extractValue(value: unknown) {
+		if (this.reference.property) {
+			// eslint-disable-next-line no-null/no-null
+			if (typeof value === "object" && value !== null) {
+				const resolvedValue = (value as Record<string, unknown>)[this.reference.property];
+				// eslint-disable-next-line no-null/no-null
+				if (resolvedValue === undefined || resolvedValue === "" || resolvedValue === null) {
+					const description = SecretReference.computeDescription(this.reference);
+					return left(new ValueNotAvailable(description));
+				}
+				return right(resolvedValue);
+			}
+			return left(ERRORS.CANNOT_EXTRACT_PROPERTY_FROM_NON_OBJECT.create());
+		}
 		return right(value);
 	}
-}
-
-export namespace SecretManagerProvider {
-	export type Value = string | Record<string, unknown>;
 }
