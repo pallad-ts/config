@@ -1,28 +1,25 @@
-import {createPreset} from "@src/preset";
-import {DefaultValueProvider, EnvProvider, FirstAvailableProvider, TransformProvider} from "@pallad/config";
-import * as sinon from 'sinon';
-import {EnvFileProvider, envFileProviderFactory} from "@pallad/config-envfile";
-import {DataLoader, SSMProvider, ssmProviderFactory} from "@pallad/config-ssm";
+import { createPreset } from "@src/preset";
+import { DefaultValueProvider, EnvProvider, FirstAvailableProvider, TransformProvider } from "@pallad/config";
+import * as sinon from "sinon";
+import { EnvFileProvider, envFileProviderFactory } from "@pallad/config-envfile";
+import { DataLoader, SSMProvider, ssmProviderFactory } from "@pallad/config-ssm";
 
-describe('preset', () => {
+describe("preset", () => {
     const ENV_OPTIONS = {
-        FOO: 'bar'
+        FOO: "bar",
     };
 
     const ENV_FILE_OPTIONS: envFileProviderFactory.Options = {
-        paths: [
-            {path: './envFiles/test.env', required: false}
-        ]
+        paths: [{ path: "./envFiles/test.env", required: false }],
     };
 
     const SSM_OPTIONS: ssmProviderFactory.Options = {
-        prefix: '/test/',
+        prefix: "/test/",
     };
 
-    const DEFAULT_VALUE = 'some-default-value';
+    const DEFAULT_VALUE = "some-default-value";
 
-    const KEY = {env: 'FOO', ssmKey: 'foo'};
-
+    const KEY = { env: "FOO", ssmKey: "foo" };
 
     function env(key: string) {
         return new EnvProvider(key, ENV_OPTIONS);
@@ -36,180 +33,62 @@ describe('preset', () => {
         return new SSMProvider(key, expect.any(DataLoader) as any);
     }
 
-    describe('env without envFile due to lack of envFile config', () => {
+    describe("env without envFile due to lack of envFile config", () => {
         let preset: ReturnType<typeof createPreset>;
-        beforeEach(() => {
-            preset = createPreset({
-                env: ENV_OPTIONS
-            });
-        });
-
-        it('without transformer', () => {
-            const config = preset(KEY);
-
-            expect(config)
-                .toMatchObject(
-                    new FirstAvailableProvider(
-                        env('FOO')
-                    )
-                );
-        });
-
-        it('with transformer', () => {
-            const transformer = sinon.stub();
-            const config = preset(KEY, {transformer});
-
-            expect(config)
-                .toMatchObject(
-                    new TransformProvider(
-                        new FirstAvailableProvider(
-                            env('FOO'),
-                        ),
-                        transformer
-                    )
-                );
-        });
-
-        it('with default value', () => {
-            const config = preset(KEY, {default: DEFAULT_VALUE});
-            expect(config)
-                .toMatchObject(
-                    new DefaultValueProvider(
-                        new FirstAvailableProvider(
-                            env('FOO'),
-                        ),
-                        DEFAULT_VALUE
-                    )
-                );
-        })
-    });
-
-    describe('env with envFile', () => {
-        let preset: ReturnType<typeof createPreset>;
-
         beforeEach(() => {
             preset = createPreset({
                 env: ENV_OPTIONS,
-                envFile: ENV_FILE_OPTIONS
             });
         });
 
-        it('without transformer', () => {
+        it("without transformer", () => {
             const config = preset(KEY);
 
-            expect(config)
-                .toMatchObject(
-                    new FirstAvailableProvider(
-                        env('FOO'),
-                        envFile('FOO')
-                    )
-                );
+            expect(config).toMatchObject(new FirstAvailableProvider(env("FOO")));
         });
-
-        it('with transformer', () => {
-            const transformer = sinon.stub();
-            const config = preset(KEY, {transformer});
-            expect(config)
-                .toMatchObject(
-                    new TransformProvider(
-                        new FirstAvailableProvider(
-                            env('FOO'),
-                            envFile('FOO')
-                        ),
-                        transformer
-                    )
-                );
-        });
-
-        it('with default value', () => {
-            const config = preset(KEY, {default: DEFAULT_VALUE});
-            expect(config)
-                .toMatchObject(
-                    new DefaultValueProvider(
-                        new FirstAvailableProvider(
-                            env('FOO'),
-                            envFile('FOO')
-                        ),
-                        DEFAULT_VALUE
-                    )
-                );
-        })
     });
 
-    describe('env with envFile and ssm', () => {
+    describe("env with envFile", () => {
         let preset: ReturnType<typeof createPreset>;
 
         beforeEach(() => {
             preset = createPreset({
                 env: ENV_OPTIONS,
                 envFile: ENV_FILE_OPTIONS,
-                ssm: SSM_OPTIONS
             });
         });
 
-        it('without transformer', () => {
+        it("without transformer", () => {
             const config = preset(KEY);
-            expect(config)
-                .toMatchObject(
-                    new FirstAvailableProvider(
-                        env('FOO'),
-                        envFile('FOO'),
-                        ssm('/test/foo')
-                    )
-                );
+
+            expect(config).toMatchObject(new FirstAvailableProvider(env("FOO"), envFile("FOO")));
+        });
+    });
+
+    describe("env with envFile and ssm", () => {
+        let preset: ReturnType<typeof createPreset>;
+
+        beforeEach(() => {
+            preset = createPreset({
+                env: ENV_OPTIONS,
+                envFile: ENV_FILE_OPTIONS,
+                ssm: SSM_OPTIONS,
+            });
         });
 
-        it('with transformer', () => {
-            const transformer = sinon.stub();
-            const config = preset(KEY, {transformer});
-            expect(config)
-                .toMatchObject(
-                    new TransformProvider(
-                        new FirstAvailableProvider(
-                            env('FOO'),
-                            envFile('FOO'),
-                            ssm('/test/foo')
-                        ),
-                        transformer
-                    )
-                );
+        it("without transformer", () => {
+            const config = preset(KEY);
+            expect(config).toMatchObject(new FirstAvailableProvider(env("FOO"), envFile("FOO"), ssm("/test/foo")));
         });
 
-        it('no ssm if ssmKey not provided', () => {
-            const config = preset({env: 'FOO'});
-            expect(config)
-                .toMatchObject(
-                    new FirstAvailableProvider(
-                        env('FOO'),
-                        envFile('FOO'),
-                    )
-                );
+        it("no ssm if ssmKey not provided", () => {
+            const config = preset({ env: "FOO" });
+            expect(config).toMatchObject(new FirstAvailableProvider(env("FOO"), envFile("FOO")));
         });
 
-        it('default value', () => {
-            const config = preset(KEY, {default: DEFAULT_VALUE});
-            expect(config)
-                .toMatchObject(
-                    new DefaultValueProvider(
-                        new FirstAvailableProvider(
-                            env('FOO'),
-                            envFile('FOO'),
-                            ssm('/test/foo')
-                        ),
-                        DEFAULT_VALUE
-                    )
-                );
+        it("only ssm if env key not provided", () => {
+            const config = preset({ ssmKey: "foo" });
+            expect(config).toMatchObject(new FirstAvailableProvider(ssm("/test/foo")));
         });
-
-        it('only ssm if env key not provided', () => {
-            const config = preset({ssmKey: 'foo'});
-            expect(config)
-                .toMatchObject(
-                    new FirstAvailableProvider(
-                        ssm('/test/foo')
-                    )
-                );
-        })
-    })
+    });
 });
-

@@ -1,7 +1,6 @@
 import { SecretManagerProvider } from "./SecretManagerProvider";
 import DataLoader = require("dataloader");
 import { SecretsManagerClient, BatchGetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
-import { wrapWithDefaultAndTransformer } from "@pallad/config";
 import { SecretReference } from "./SecretReference";
 import { SecretValueEntry } from "@aws-sdk/client-secrets-manager/dist-types/models/models_0";
 import { ERRORS } from "./errors";
