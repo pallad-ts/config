@@ -15,7 +15,7 @@ describe("extractProvidersFromConfig", () => {
             ["deep object", { test: { still: { no: { deps: [] } } } }],
             ["deep object with array", { noDeps: [{}] }],
         ])("%s", (name: string, config: any) => {
-            expect(extractProvidersFromConfig(config)).toEqual([]);
+            expect(Array.from(extractProvidersFromConfig(config))).toEqual([]);
         });
     });
 
@@ -50,7 +50,7 @@ describe("extractProvidersFromConfig", () => {
                 [dep2],
             ],
         ])("Case: %#", (value, deps) => {
-            expect(extractProvidersFromConfig(value)).toEqual(deps);
+            expect(Array.from(extractProvidersFromConfig(value))).toEqual(deps);
         });
     });
 });

@@ -4,29 +4,20 @@ import { Provider } from "../Provider";
 /**
  * @internal
  */
-export function extractProvidersFromConfig(config: unknown): Array<Provider<any>> {
+export function* extractProvidersFromConfig(config: unknown): Generator<Provider<any>> {
     if (is.primitive(config)) {
-        return [];
+        return;
     }
 
-    let deps: Array<Provider<any>> = [];
-
     if (Provider.isType(config)) {
-        deps.push(config);
+        yield config;
     } else if (is.array(config)) {
         for (const value of config) {
-            const extraDeps = extractProvidersFromConfig(value);
-            if (extraDeps.length > 0) {
-                deps = deps.concat(extraDeps);
-            }
+            yield* extractProvidersFromConfig(value);
         }
     } else if (is.plainObject(config)) {
         for (const value of Object.values(config)) {
-            const extraDeps = extractProvidersFromConfig(value);
-            if (extraDeps.length > 0) {
-                deps = deps.concat(extraDeps);
-            }
+            yield* extractProvidersFromConfig(value);
         }
     }
-    return deps;
 }
