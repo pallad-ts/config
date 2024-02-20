@@ -10,9 +10,12 @@ export class EnvFileProvider extends Provider<string> {
     }
 
     getValue() {
-        const result = fromNullable(this.envFileVars[this.key])
-            .chain(value => value === '' ? none() : just(value));
-
-        return result.isNone() ? left(new ValueNotAvailable(`"${this.key}" from ENV file(s)`)) : right(result.value);
+        return fromNullable(this.envFileVars[this.key])
+            .chain(value => value === '' ? none() : just(value))
+            .fold(() => {
+                return left(new ValueNotAvailable(`"${this.key}" from ENV file(s)`));
+            }, (result) => {
+                return right(result)
+            })
     }
 }
