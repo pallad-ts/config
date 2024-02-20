@@ -1,10 +1,10 @@
-import {OptionalPromise} from './utils';
-import {ValueNotAvailable} from './ValueNotAvailable';
-import * as is from 'predicates';
-import {Either} from "@sweet-monads/either";
+import { OptionalPromise } from "./utils";
+import { ValueNotAvailable } from "./ValueNotAvailable";
+import * as is from "predicates";
+import { Either } from "@sweet-monads/either";
 
-const TYPE = '@pallad/config/Provider';
-const TYPE_KEY = '@type';
+const TYPE = "@pallad/config/Provider";
+const TYPE_KEY = "@type";
 
 const IS_TYPE = is.property(TYPE_KEY, is.strictEqualTo(TYPE));
 
@@ -18,7 +18,7 @@ export abstract class Provider<TType> {
         Object.defineProperty(this, TYPE_KEY, {
             value: TYPE,
             enumerable: false,
-            configurable: false
+            configurable: false,
         });
     }
 
