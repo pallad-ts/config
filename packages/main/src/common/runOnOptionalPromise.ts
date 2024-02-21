@@ -1,5 +1,5 @@
-import {OptionalPromise} from '../utils';
-import {isPromise} from './isPromise';
+import { OptionalPromise } from "../utils";
+import { isPromise } from "./isPromise";
 
 /**
  * @internal

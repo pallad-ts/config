@@ -1,3 +1,3 @@
 module.exports = {
-    preset: '@pallad/scripts'
+    preset: "@pallad/scripts",
 };

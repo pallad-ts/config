@@ -1,3 +1,3 @@
-import {envProviderFactory} from '../providersFactory/envProviderFactory';
+import { envProviderFactory } from "../providersFactory/envProviderFactory";
 
 export const env = envProviderFactory();

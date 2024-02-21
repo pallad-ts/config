@@ -1,6 +1,6 @@
-import {loadConfig} from './common/loadConfig';
-import {handleConfigLoadResult} from './common/handleConfigLoadResult';
-import {ResolvedConfig} from './ResolvedConfig';
+import { loadConfig } from "./common/loadConfig";
+import { handleConfigLoadResult } from "./common/handleConfigLoadResult";
+import { ResolvedConfig } from "./ResolvedConfig";
 
 /**
  * Loads config asynchronously

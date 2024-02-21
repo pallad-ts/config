@@ -2,18 +2,19 @@ function factory<T>(options: { transformer: (value: string) => T }): (value: str
 function factory(options?: Split.Options<string>): (value: string) => string[];
 function factory<T>(options?: Split.Options<T>) {
     return (value: string) => {
-        let tmpResult: any[] = (value || '').split(options?.separator ?? ',')
+        let tmpResult: any[] = (value || "")
+            .split(options?.separator ?? ",")
             .map(x => x.trim())
             .filter(x => x);
 
         if (options?.transformer) {
-            tmpResult = tmpResult.map(options.transformer).filter(x => x)
+            tmpResult = tmpResult.map(options.transformer).filter(x => x);
         }
         return tmpResult;
-    }
+    };
 }
 
-export const split = factory({separator: ','}) as Split;
+export const split = factory({ separator: "," }) as Split;
 
 split.by = factory;
 
@@ -30,7 +31,7 @@ export namespace Split {
 
     export namespace Options {
         export interface Transformer<T> {
-            transformer: (value: string) => T
+            transformer: (value: string) => T;
         }
     }
 }

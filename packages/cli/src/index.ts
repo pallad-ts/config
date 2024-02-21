@@ -1,78 +1,85 @@
-import {Command, Flags, Args} from '@oclif/core'
-import * as fs from 'fs';
-import * as is from 'predicates';
-import {cosmiconfig} from 'cosmiconfig';
-import {get as getProperty} from 'object-path';
-import {Provider, extractProvidersFromConfig, replaceProvidersInConfig, ERRORS, ValueNotAvailable} from '@pallad/config';
-import {Secret} from '@pallad/secret';
-import chalk from 'chalk';
-import {format as prettyFormat, Config, Plugin, Printer, Refs} from 'pretty-format'
-import {Either, isEither, left, right} from "@sweet-monads/either";
+import { Command, Flags, Args } from "@oclif/core";
+import * as fs from "fs";
+import * as is from "predicates";
+import { cosmiconfig } from "cosmiconfig";
+import { get as getProperty } from "object-path";
+import {
+    Provider,
+    extractProvidersFromConfig,
+    replaceProvidersInConfig,
+    ERRORS,
+    ValueNotAvailable,
+} from "@pallad/config";
+import { Secret } from "@pallad/secret";
+import chalk from "chalk";
+import { format as prettyFormat, Config, Plugin, Printer, Refs } from "pretty-format";
+import { Either, isEither, left, right } from "@sweet-monads/either";
 
 class ConfigCheck extends Command {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    static description = 'Display config created with @pallad/config';
+    static description = "Display config created with @pallad/config";
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     static flags = {
         revealSecrets: Flags.boolean({
             default: false,
-            description: 'Whether to reveal secret values from @pallad/secret'
+            description: "Whether to reveal secret values from @pallad/secret",
         }),
         silent: Flags.boolean({
             default: false,
-            char: 's',
-            description: 'Do not display config'
-        })
+            char: "s",
+            description: "Do not display config",
+        }),
     };
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     static args = {
         configPath: Args.string({
-            name: 'configPath',
+            name: "configPath",
             required: false,
             // eslint-disable-next-line @typescript-eslint/require-await
             async parse(value: string) {
-                if (is.startsWith('-', value)) {
-                    throw new Error(`Property path: ${value} is rather a typo. Please use property path that does not start with "-"`)
+                if (is.startsWith("-", value)) {
+                    throw new Error(
+                        `Property path: ${value} is rather a typo. Please use property path that does not start with "-"`
+                    );
                 }
                 return value;
             },
-            description: 'config property path to display'
-        })
+            description: "config property path to display",
+        }),
     };
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     static strict = true;
 
     async run() {
-        const {args, flags} = await this.parse(ConfigCheck);
+        const { args, flags } = await this.parse(ConfigCheck);
         const configuration = await this.getConfiguration();
         const config = this.getConfig(configuration);
 
         const finalConfig = args.configPath ? getProperty(config, args.configPath) : config;
 
-        const {config: resolvedConfig, providersMap} = await this.loadConfig(finalConfig);
+        const { config: resolvedConfig, providersMap } = await this.loadConfig(finalConfig);
 
         if (!flags.silent) {
             this.displayConfig(resolvedConfig, {
                 revealSecrets: flags.revealSecrets,
-                propertyPath: args.configPath
+                propertyPath: args.configPath,
             });
         }
 
-        const hasFailures = Array.from(providersMap.values())
-            .some(x => x.isLeft());
+        const hasFailures = Array.from(providersMap.values()).some(x => x.isLeft());
 
         process.exit(hasFailures ? 1 : 0);
     }
 
     private async getConfiguration(): Promise<Configuration> {
-        const explorer = cosmiconfig('pallad-config');
+        const explorer = cosmiconfig("pallad-config");
         const result = await explorer.search();
 
         if (!result || !result.config) {
-            throw new Error('Missing configuration for pallad-config');
+            throw new Error("Missing configuration for pallad-config");
         }
 
         if (!is.string(result.config.file)) {
@@ -85,7 +92,7 @@ class ConfigCheck extends Command {
 
         return {
             file: result.config.file,
-            property: result.config.property
+            property: result.config.property,
         };
     }
 
@@ -95,14 +102,16 @@ class ConfigCheck extends Command {
         if (configuration.property) {
             const func = module[configuration.property];
             if (!is.func(func)) {
-                throw new Error(`Property "${configuration.property}" from module "${configuration.file}" is not a function`);
+                throw new Error(
+                    `Property "${configuration.property}" from module "${configuration.file}" is not a function`
+                );
             }
             return func();
         }
 
         const foundFunc = this.findConfigFunctionInModule(module, configuration.file);
         if (foundFunc.isLeft()) {
-            throw new Error(foundFunc.value)
+            throw new Error(foundFunc.value);
         }
         return foundFunc.value();
     }
@@ -130,7 +139,7 @@ class ConfigCheck extends Command {
     private async loadConfig(config: any) {
         const map = new Map<Provider<any>, Provider.Value<any>>();
         if (is.primitive(config)) {
-            return {config, providersMap: map};
+            return { config, providersMap: map };
         }
         const providers = extractProvidersFromConfig(config);
 
@@ -141,11 +150,11 @@ class ConfigCheck extends Command {
         }
         return {
             config: replaceProvidersInConfig(config, map as any),
-            providersMap: map
+            providersMap: map,
         };
     }
 
-    private displayConfig(config: any, options: { revealSecrets: boolean, propertyPath?: string }) {
+    private displayConfig(config: any, options: { revealSecrets: boolean; propertyPath?: string }) {
         function renderSecret(secret: Secret<any>, printer: (value: any) => string) {
             if (options.revealSecrets) {
                 return printer(secret.getValue());
@@ -157,18 +166,34 @@ class ConfigCheck extends Command {
             test(value: any) {
                 return Secret.is(value);
             },
-            serialize(val: Secret<any>, config: Config, indentation: string, depth: number, refs: Refs, printer: Printer) {
-                return renderSecret(val, value => printer(value, config, indentation, depth, refs, true))
-                    + ' '
-                    + chalk.yellow('(secret)');
-            }
+            serialize(
+                val: Secret<any>,
+                config: Config,
+                indentation: string,
+                depth: number,
+                refs: Refs,
+                printer: Printer
+            ) {
+                return (
+                    renderSecret(val, value => printer(value, config, indentation, depth, refs, true)) +
+                    " " +
+                    chalk.yellow("(secret)")
+                );
+            },
         };
 
         const providerPlugin: Plugin = {
             test(value: any) {
-                return value && isEither(value)
+                return value && isEither(value);
             },
-            serialize(val: Provider.Value<any>, config: Config, indentation: string, depth: number, refs: Refs, printer: Printer) {
+            serialize(
+                val: Provider.Value<any>,
+                config: Config,
+                indentation: string,
+                depth: number,
+                refs: Refs,
+                printer: Printer
+            ) {
                 if (val.isRight()) {
                     return printer(val.value, config, indentation, depth, refs, false);
                 }
@@ -181,30 +206,25 @@ class ConfigCheck extends Command {
                         return x;
                     })
                     .map(x => x.message);
-                return chalk.red(errors.join(', '));
-            }
-        }
+                return chalk.red(errors.join(", "));
+            },
+        };
 
         if (options.propertyPath) {
             console.log(`Displaying config at property path: ${chalk.greenBright(options.propertyPath)}`);
         }
 
         console.log(
-            prettyFormat(
-                config, {
-                    plugins: [
-                        secretPlugin,
-                        providerPlugin
-                    ]
-                }
-            )
+            prettyFormat(config, {
+                plugins: [secretPlugin, providerPlugin],
+            })
         );
     }
 }
 
 interface ProviderValue {
-    provider: Provider<any>,
-    value: Provider.Value<any>
+    provider: Provider<any>;
+    value: Provider.Value<any>;
 }
 
 interface Configuration {

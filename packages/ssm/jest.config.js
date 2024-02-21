@@ -1,4 +1,4 @@
 module.exports = {
-    preset: '@pallad/scripts',
-    globalSetup: "./test/bootstrap.ts"
+    preset: "@pallad/scripts",
+    globalSetup: "./test/bootstrap.ts",
 };

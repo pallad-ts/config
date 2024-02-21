@@ -1,5 +1,5 @@
-import yn = require('yn');
-import {ERRORS} from '../errors';
+import yn = require("yn");
+import { ERRORS } from "../errors";
 
 export function bool(x: unknown): boolean {
     const result = yn(x);

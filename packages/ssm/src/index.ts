@@ -1,6 +1,6 @@
-export * from './SSMProvider';
-export * from './ssmProviderFactory';
+export * from "./SSMProvider";
+export * from "./ssmProviderFactory";
 
-import DataLoader = require('dataloader');
+import DataLoader = require("dataloader");
 
-export {DataLoader};
+export { DataLoader };

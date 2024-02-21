@@ -1,8 +1,8 @@
-import {ERRORS} from './errors';
-import {loadConfig} from './common/loadConfig';
-import {isPromise} from './common/isPromise';
-import {handleConfigLoadResult} from './common/handleConfigLoadResult';
-import {ResolvedConfig} from './ResolvedConfig';
+import { ERRORS } from "./errors";
+import { loadConfig } from "./common/loadConfig";
+import { isPromise } from "./common/isPromise";
+import { handleConfigLoadResult } from "./common/handleConfigLoadResult";
+import { ResolvedConfig } from "./ResolvedConfig";
 
 /**
  * Loads config synchronously

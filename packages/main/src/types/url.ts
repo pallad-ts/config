@@ -1,15 +1,15 @@
-import {ConfigError} from '../ConfigError';
-import {ERRORS} from '../errors';
-
+import { ConfigError } from "../ConfigError";
+import { ERRORS } from "../errors";
 
 function factory(options?: { protocols?: string[] | string }) {
     const finalOptions: { protocols: string[] | undefined } = {
-        protocols: undefined
+        protocols: undefined,
     };
 
     if (options?.protocols) {
-        finalOptions.protocols = (Array.isArray(options.protocols) ? options.protocols : [options.protocols])
-            .map(x => x.toLowerCase());
+        finalOptions.protocols = (Array.isArray(options.protocols) ? options.protocols : [options.protocols]).map(x =>
+            x.toLowerCase()
+        );
     }
 
     return (x: any): string => {
@@ -21,22 +21,19 @@ function factory(options?: { protocols?: string[] | string }) {
         }
 
         if (finalOptions.protocols) {
-            const protocol = url.protocol.replace(/:$/, '');
+            const protocol = url.protocol.replace(/:$/, "");
             if (!finalOptions.protocols.includes(protocol)) {
-                throw ERRORS.TYPE_URL_INVALID_PROTOCOL.format(
-                    protocol,
-                    finalOptions.protocols.join(', ')
-                );
+                throw ERRORS.TYPE_URL_INVALID_PROTOCOL.format(protocol, finalOptions.protocols.join(", "));
             }
         }
         return x;
-    }
+    };
 }
 
 export interface Url {
-    (value: any): string
+    (value: any): string;
 
-    options: typeof factory
+    options: typeof factory;
 }
 
 export const url = (() => {

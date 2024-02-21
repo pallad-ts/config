@@ -1,173 +1,150 @@
-import * as validations from '@src/types';
-import {split} from '@src/types';
-import * as sinon from 'sinon';
-import {assert, IsExact} from 'conditional-type-checks';
+import * as validations from "@src/types";
+import { split } from "@src/types";
+import * as sinon from "sinon";
+import { assert, IsExact } from "conditional-type-checks";
 
-describe('types', () => {
-    describe('string', () => {
-        it('gets trimmed', () => {
-            expect(validations.string('test '))
-                .toEqual('test');
+describe("types", () => {
+    describe("string", () => {
+        it("gets trimmed", () => {
+            expect(validations.string("test ")).toEqual("test");
         });
 
-        it('converts to string', () => {
+        it("converts to string", () => {
             expect(
                 validations.string({
                     toString() {
-                        return 'test'
-                    }
+                        return "test";
+                    },
                 })
-            )
-                .toEqual('test');
+            ).toEqual("test");
         });
     });
 
-    describe('int', () => {
-        it.each([
-            ['10'],
-            [10],
-            [10.5],
-            ['10.5'],
-            ['10px']
-        ])('converts to int: %s', input => {
-            expect(validations.int(input))
-                .toEqual(10);
+    describe("int", () => {
+        it.each([["10"], [10], [10.5], ["10.5"], ["10px"]])("converts to int: %s", input => {
+            expect(validations.int(input)).toEqual(10);
         });
 
-        it('fails if not a number', () => {
+        it("fails if not a number", () => {
             expect(() => {
-                validations.int('foo')
-            })
-                .toThrowErrorMatchingSnapshot();
+                validations.int("foo");
+            }).toThrowErrorMatchingSnapshot();
         });
     });
 
-    describe('number', () => {
+    describe("number", () => {
         it.each([
-            ['10', 10],
+            ["10", 10],
             [10, 10],
             [10.5, 10.5],
-            ['10.5', 10.5],
-            ['10.5px', 10.5]
-        ])('converts to number: %s', (input, expected) => {
-            expect(validations.number(input))
-                .toEqual(expected);
+            ["10.5", 10.5],
+            ["10.5px", 10.5],
+        ])("converts to number: %s", (input, expected) => {
+            expect(validations.number(input)).toEqual(expected);
         });
 
-        it('fails if not a number', () => {
+        it("fails if not a number", () => {
             expect(() => {
-                validations.number('foo')
-            })
-                .toThrowErrorMatchingSnapshot();
+                validations.number("foo");
+            }).toThrowErrorMatchingSnapshot();
         });
     });
 
-    describe('bool', () => {
+    describe("bool", () => {
         it.each<[any, boolean]>([
-            ['yes', true],
-            ['no', false],
-            ['on', true],
-            ['off', false],
-            ['1', true],
-            ['0', false],
+            ["yes", true],
+            ["no", false],
+            ["on", true],
+            ["off", false],
+            ["1", true],
+            ["0", false],
             [1, true],
-            [0, false]
-        ])('converts to bool: %s - %s', (value, expected) => {
-            expect(validations.bool(value))
-                .toEqual(expected);
+            [0, false],
+        ])("converts to bool: %s - %s", (value, expected) => {
+            expect(validations.bool(value)).toEqual(expected);
         });
 
-        it('throws error if cannot be converted to bool', () => {
+        it("throws error if cannot be converted to bool", () => {
             expect(() => {
-                validations.bool('some strange value')
-            })
-                .toThrowErrorMatchingSnapshot();
+                validations.bool("some strange value");
+            }).toThrowErrorMatchingSnapshot();
         });
     });
 
-    describe('url', () => {
-        describe('validation', () => {
+    describe("url", () => {
+        describe("validation", () => {
             const validator = validations.url;
 
-            it('success', () => {
-                expect(validator('http://9marshals.com'))
-                    .toEqual('http://9marshals.com')
+            it("success", () => {
+                expect(validator("http://9marshals.com")).toEqual("http://9marshals.com");
             });
 
-            it('failure', () => {
+            it("failure", () => {
                 expect(() => {
-                    validator('test')
-                })
-                    .toThrowErrorMatchingSnapshot();
-            })
+                    validator("test");
+                }).toThrowErrorMatchingSnapshot();
+            });
         });
 
-        describe('requiring protocol', () => {
-            const validator = validations.url.options({protocols: ['http']});
-            it('success', () => {
-                expect(validator('http://9marshals.com'))
-                    .toEqual('http://9marshals.com');
+        describe("requiring protocol", () => {
+            const validator = validations.url.options({ protocols: ["http"] });
+            it("success", () => {
+                expect(validator("http://9marshals.com")).toEqual("http://9marshals.com");
             });
 
-            it('failure', () => {
+            it("failure", () => {
                 expect(() => {
-                    validator('ftp://9marshals.com')
-                })
-                    .toThrowErrorMatchingSnapshot();
+                    validator("ftp://9marshals.com");
+                }).toThrowErrorMatchingSnapshot();
             });
-        })
+        });
     });
 
-    describe('split', function () {
-        it('trims values and removed empty ones', () => {
-            const result = split('foo,bar  , baz,,');
-            expect(result)
-                .toEqual(['foo', 'bar', 'baz']);
+    describe("split", function () {
+        it("trims values and removed empty ones", () => {
+            const result = split("foo,bar  , baz,,");
+            expect(result).toEqual(["foo", "bar", "baz"]);
         });
 
-        it('ignored empty string', () => {
-            const result = split('');
-            expect(result)
-                .toEqual([]);
+        it("ignored empty string", () => {
+            const result = split("");
+            expect(result).toEqual([]);
         });
 
-        it('applies transformer if provided', () => {
+        it("applies transformer if provided", () => {
             const transformer = sinon.stub().callsFake(value => `${value}!`);
 
             const result = split.by({
-                transformer
-            })('foo,bar, ,');
+                transformer,
+            })("foo,bar, ,");
 
-            expect(result)
-                .toEqual(['foo!', 'bar!'])
+            expect(result).toEqual(["foo!", "bar!"]);
         });
 
-        it('uses provided separator', () => {
-
+        it("uses provided separator", () => {
             const result = split.by({
-                separator: ':'
-            })('foo,bar:baz ');
+                separator: ":",
+            })("foo,bar:baz ");
 
-            expect(result)
-                .toEqual(['foo,bar', 'baz'])
+            expect(result).toEqual(["foo,bar", "baz"]);
         });
 
-        describe('types', () => {
-            it('returns string', () => {
-                const value = split('test,test2');
+        describe("types", () => {
+            it("returns string", () => {
+                const value = split("test,test2");
                 type Expected = string[];
 
                 assert<IsExact<typeof value, Expected>>(true);
             });
 
-            it('with transformer', () => {
+            it("with transformer", () => {
                 const value = split.by({
-                    transformer: x => parseInt(x, 10)
-                })('test,test2');
+                    transformer: x => parseInt(x, 10),
+                })("test,test2");
 
                 type Expected = number[];
                 assert<IsExact<typeof value, Expected>>(true);
             });
-        })
+        });
     });
 });
