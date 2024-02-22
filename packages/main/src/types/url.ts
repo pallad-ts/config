@@ -23,7 +23,7 @@ function factory(options?: { protocols?: string[] | string }) {
         if (finalOptions.protocols) {
             const protocol = url.protocol.replace(/:$/, "");
             if (!finalOptions.protocols.includes(protocol)) {
-                throw ERRORS.TYPE_URL_INVALID_PROTOCOL.format(protocol, finalOptions.protocols.join(", "));
+                throw ERRORS.TYPE_URL_INVALID_PROTOCOL.create(protocol, finalOptions.protocols);
             }
         }
         return x;

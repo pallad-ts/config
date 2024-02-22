@@ -1,8 +1,12 @@
 import { Command, Flags, Args } from "@oclif/core";
-import * as fs from "fs";
-import * as is from "predicates";
+import { Either, isEither, left, right } from "@sweet-monads/either";
+import chalk from "chalk";
 import { cosmiconfig } from "cosmiconfig";
+import * as fs from "fs";
 import { get as getProperty } from "object-path";
+import * as is from "predicates";
+import { format as prettyFormat, Config, Plugin, Printer, Refs } from "pretty-format";
+
 import {
     Provider,
     extractProvidersFromConfig,
@@ -11,9 +15,6 @@ import {
     ValueNotAvailable,
 } from "@pallad/config";
 import { Secret } from "@pallad/secret";
-import chalk from "chalk";
-import { format as prettyFormat, Config, Plugin, Printer, Refs } from "pretty-format";
-import { Either, isEither, left, right } from "@sweet-monads/either";
 
 class ConfigCheck extends Command {
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -200,8 +201,8 @@ class ConfigCheck extends Command {
                 const fail = val.value;
                 const errors = (Array.isArray(fail) ? fail : [fail])
                     .map(x => {
-                        if (ValueNotAvailable.is(x)) {
-                            return ERRORS.PROVIDER_VALUE_NOT_AVAILABLE.format(x.description);
+                        if (ValueNotAvailable.isType(x)) {
+                            return ERRORS.PROVIDER_VALUE_NOT_AVAILABLE.create(x.description);
                         }
                         return x;
                     })

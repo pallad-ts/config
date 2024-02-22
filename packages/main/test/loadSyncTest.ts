@@ -1,7 +1,10 @@
-import { loadSync } from "@src/loadSync";
-import { DummyProvider } from "./dummies/DummyProvider";
 import { ERRORS } from "@src/errors";
+import { loadSync } from "@src/loadSync";
 import { fromTry } from "@sweet-monads/either";
+
+import "@pallad/errors-dev";
+
+import { DummyProvider } from "./dummies/DummyProvider";
 
 describe("loadSync", () => {
     it("loads config", () => {
@@ -36,9 +39,9 @@ describe("loadSync", () => {
                     foo: DummyProvider.notAvailable({ isAsync: false, description: "foo desc" }),
                 });
             });
-            expect(result.value).toHaveProperty("code", ERRORS.CONFIG_LOADING_FAILED.code);
+            expect(result.value).toBeErrorWithCode(ERRORS.CONFIG_LOADING_FAILED);
 
-            expect(result.value).toHaveProperty("errors", [ERRORS.PROVIDER_VALUE_NOT_AVAILABLE.format("foo desc")]);
+            expect(result.value).toHaveProperty("errorList", [ERRORS.PROVIDER_VALUE_NOT_AVAILABLE.create("foo desc")]);
         });
 
         it("if some of providers fails", () => {
@@ -48,9 +51,9 @@ describe("loadSync", () => {
                     foo: DummyProvider.notAvailable({ isAsync: false, error }),
                 });
             });
-            expect(result.value).toHaveProperty("code", ERRORS.CONFIG_LOADING_FAILED.code);
+            expect(result.value).toBeErrorWithCode(ERRORS.CONFIG_LOADING_FAILED);
 
-            expect(result.value).toHaveProperty("errors", [error]);
+            expect(result.value).toHaveProperty("errorList", [error]);
         });
 
         it("if some of providers fails with multiple errors", () => {
@@ -66,9 +69,9 @@ describe("loadSync", () => {
                 });
             });
 
-            expect(result.value).toHaveProperty("code", ERRORS.CONFIG_LOADING_FAILED.code);
+            expect(result.value).toBeErrorWithCode(ERRORS.CONFIG_LOADING_FAILED);
 
-            expect(result.value).toHaveProperty("errors", [error1, error2, error3, error4]);
+            expect(result.value).toHaveProperty("errorList", [error1, error2, error3, error4]);
         });
     });
 });

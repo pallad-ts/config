@@ -1,11 +1,13 @@
-import { Domain, generators } from "alpha-errors";
 import { ConfigError } from "@pallad/config";
+import { Domain, ErrorDescriptor, formatCodeFactory } from "@pallad/errors";
 
-export const ERRORS = new Domain({
-    errorClass: ConfigError,
-    codeGenerator: generators.formatCode("E_CONF_ENVFILE_%d"),
-}).createErrors(create => {
-    return {
-        ENV_FILE_DOES_NOT_EXIST: create("Env file %s does not exist but it is required"),
-    };
+const errorsDomain = new Domain();
+const code = formatCodeFactory("E_CONF_ENVFILE_%c");
+
+export const ERRORS = errorsDomain.addErrorsDescriptorsMap({
+    ENV_FILE_DOES_NOT_EXIST: ErrorDescriptor.useMessageFormatter(
+        code(1),
+        (filePath: string) => `Env file "${filePath}" does not exist but it is required`,
+        ConfigError
+    ),
 });

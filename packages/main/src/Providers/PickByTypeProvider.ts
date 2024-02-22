@@ -22,7 +22,7 @@ export class PickByTypeProvider<T> extends Provider<T> {
         value: TValue
     ): PickByTypeProvider<NonNullable<T> | PickByTypeProvider.Value<TType, ResolvedConfig.Value<TValue>>> {
         if (this.options.has(type)) {
-            throw ERRORS.PICK_PROVIDER_TYPE_ALREADY_EXISTS.format(type);
+            throw ERRORS.PICK_PROVIDER_TYPE_ALREADY_EXISTS.create(type);
         }
         this.options.set(type, value);
         return this as any;
@@ -49,9 +49,7 @@ export class PickByTypeProvider<T> extends Provider<T> {
         return runOnOptionalPromise(this.typeProvider.getValue(), type => {
             return type.chain(type => {
                 if (!this.options.has(type)) {
-                    return left(
-                        ERRORS.PICK_PROVIDER_UNREGISTERED_TYPE.format(type, Array.from(this.options.keys()).join(", "))
-                    );
+                    return left(ERRORS.PICK_PROVIDER_UNREGISTERED_TYPE.create(type, Array.from(this.options.keys())));
                 }
                 return right(type);
             });

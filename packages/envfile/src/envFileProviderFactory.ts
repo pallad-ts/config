@@ -1,8 +1,9 @@
-import { resolve } from "path";
 import { parse } from "dotenv";
 import { readFileSync, existsSync } from "fs";
-import { ERRORS } from "./errors";
+import { resolve } from "path";
+
 import { EnvFileProvider } from "./EnvFileProvider";
+import { ERRORS } from "./errors";
 
 export function envFileProviderFactory(options: envFileProviderFactory.Options) {
     const envs: Record<string, string> = {};
@@ -19,7 +20,7 @@ export function envFileProviderFactory(options: envFileProviderFactory.Options) 
 
         if (!existsSync(filePath)) {
             if (resolvedPathData.required) {
-                throw ERRORS.ENV_FILE_DOES_NOT_EXIST.format(resolvedPathData.path);
+                throw ERRORS.ENV_FILE_DOES_NOT_EXIST.create(resolvedPathData.path);
             }
             continue;
         }

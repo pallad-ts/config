@@ -34,10 +34,10 @@
   },
   "homepage": "https://pallad.dev/config",
   "dependencies": {
+    "@pallad/errors": "^1.0.1",
     "@pallad/type-check": "^1.2.0",
     "@sweet-monads/either": "^3",
     "@sweet-monads/maybe": "^3",
-    "alpha-errors": "^0.4.0",
     "predicates": "^2.0.3",
     "tslib": "^2",
     "yn": "^4.0.0"

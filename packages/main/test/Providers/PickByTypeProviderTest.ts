@@ -1,14 +1,15 @@
-import { assert, IsExact } from "conditional-type-checks";
-import { DummyProvider } from "../dummies/DummyProvider";
+import { Provider } from "@src/Provider";
 import { PickByTypeProvider } from "@src/Providers/PickByTypeProvider";
+import { ValueNotAvailable } from "@src/ValueNotAvailable";
+import { ERRORS } from "@src/errors";
 import { OptionalPromise } from "@src/utils";
+import { left } from "@sweet-monads/either";
+import { assert, IsExact } from "conditional-type-checks";
+
 import { assertNotAvailable } from "../common/assertNotAvailable";
 import { assertProviderError } from "../common/assertProviderError";
-import { ERRORS } from "@src/errors";
-import { Provider } from "@src/Provider";
 import { assertProviderResolvedValidation } from "../common/assertProviderResolvedValidation";
-import { ValueNotAvailable } from "@src/ValueNotAvailable";
-import { left } from "@sweet-monads/either";
+import { DummyProvider } from "../dummies/DummyProvider";
 
 describe("PickByTypeProvider", () => {
     const TYPE_1 = "foo";
@@ -64,7 +65,7 @@ describe("PickByTypeProvider", () => {
             return assertProviderError(
                 isTypeAsync,
                 provider.getValue(),
-                ERRORS.PICK_PROVIDER_UNREGISTERED_TYPE.format("baz", [TYPE_1, TYPE_2].join(", "))
+                ERRORS.PICK_PROVIDER_UNREGISTERED_TYPE.create("baz", [TYPE_1, TYPE_2])
             );
         });
 

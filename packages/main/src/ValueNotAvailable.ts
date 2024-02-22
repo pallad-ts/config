@@ -1,12 +1,10 @@
-/**
- * @public
- */
-export class ValueNotAvailable {
-    constructor(readonly description: string) {
-        Object.freeze(this);
-    }
+import { TypeCheck } from "@pallad/type-check";
 
-    static is(value: any): value is ValueNotAvailable {
-        return value instanceof ValueNotAvailable;
+const CHECK = new TypeCheck<ValueNotAvailable>("@pallad/config/ValueNotAvailable");
+
+export class ValueNotAvailable extends CHECK.clazz {
+    constructor(readonly description: string) {
+        super();
+        Object.freeze(this);
     }
 }

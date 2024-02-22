@@ -14,7 +14,7 @@ import { ResolvedConfig } from "./ResolvedConfig";
 export function loadSync<T extends object>(config: T): ResolvedConfig<T> {
     const result = loadConfig(config);
     if (isPromise(result)) {
-        throw ERRORS.SYNC_LOADING_NOT_AVAILABLE();
+        throw ERRORS.SYNC_LOADING_NOT_AVAILABLE.create();
     }
     return handleConfigLoadResult(result);
 }

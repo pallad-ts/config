@@ -44,9 +44,9 @@
     "@pallad/config": "^3.0.0"
   },
   "dependencies": {
+    "@pallad/errors": "^1.0.1",
     "@sweet-monads/either": "^3",
     "@sweet-monads/maybe": "^3",
-    "alpha-errors": "^0.4.0",
     "dotenv": "^16",
     "tslib": "^2"
   }

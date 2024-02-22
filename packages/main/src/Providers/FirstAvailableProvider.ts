@@ -19,12 +19,12 @@ export class FirstAvailableProvider<T extends Array<Provider<any>>> extends Prov
             const value = provider.getValue();
             if (isPromise(value)) {
                 return value.then(x => {
-                    if (x.isLeft() && ValueNotAvailable.is(x.value)) {
+                    if (x.isLeft() && ValueNotAvailable.isType(x.value)) {
                         descriptions.push((x.value as ValueNotAvailable).description);
                         return (async () => {
                             for (const provider of iterator) {
                                 const value = await provider.getValue();
-                                if (value.isLeft() && ValueNotAvailable.is(value.value)) {
+                                if (value.isLeft() && ValueNotAvailable.isType(value.value)) {
                                     descriptions.push((value.value as ValueNotAvailable).description);
                                     continue;
                                 }
@@ -38,7 +38,7 @@ export class FirstAvailableProvider<T extends Array<Provider<any>>> extends Prov
                     }
                     return x as Provider.Value<FirstAvailableProvider.Unwrap<T>>;
                 });
-            } else if (value.isLeft() && ValueNotAvailable.is(value.value)) {
+            } else if (value.isLeft() && ValueNotAvailable.isType(value.value)) {
                 descriptions.push((value.value as ValueNotAvailable).description);
                 continue;
             }

@@ -1,8 +1,10 @@
-import { OptionalPromise } from "./utils";
-import { ValueNotAvailable } from "./ValueNotAvailable";
 import { Either, fromTry, right } from "@sweet-monads/either";
+
 import { TypeCheck } from "@pallad/type-check";
+
+import { ValueNotAvailable } from "./ValueNotAvailable";
 import { runOnOptionalPromise } from "./common/runOnOptionalPromise";
+import { OptionalPromise } from "./utils";
 
 const CHECK = new TypeCheck("@pallad/config/Provider");
 
@@ -61,7 +63,7 @@ export class DefaultValueProvider<T, TOriginal> extends Provider<T | TOriginal> 
 
     getValue(): OptionalPromise<Provider.Value<T | TOriginal>> {
         return runOnOptionalPromise(this.provider.getValue(), result => {
-            if (result.isLeft() && ValueNotAvailable.is(result.value)) {
+            if (result.isLeft() && ValueNotAvailable.isType(result.value)) {
                 return right<Provider.Fail, any>(this.defaultValue);
             }
 
