@@ -8,3 +8,5 @@ compiled
 .terraform
 *.log
 junit.xml
+
+dist

@@ -1,8 +1,10 @@
 import { createPreset } from "@src/preset";
-import { DefaultValueProvider, EnvProvider, FirstAvailableProvider, TransformProvider } from "@pallad/config";
+import DataLoader from "dataloader";
 import * as sinon from "sinon";
+
+import { DefaultValueProvider, EnvProvider, FirstAvailableProvider, TransformProvider } from "@pallad/config";
 import { EnvFileProvider, envFileProviderFactory } from "@pallad/config-envfile";
-import { DataLoader, SSMProvider, ssmProviderFactory } from "@pallad/config-ssm";
+import { SSMProvider, ssmProviderFactory } from "@pallad/config-ssm";
 
 describe("preset", () => {
     const ENV_OPTIONS = {

@@ -1,7 +1,10 @@
+import { left, right } from "@sweet-monads/either";
+// eslint-disable-next-line @typescript-eslint/naming-convention
+import DataLoader from "dataloader";
+
 import { AsyncProvider, Provider, ValueNotAvailable } from "@pallad/config";
+
 import { SecretReference } from "./SecretReference";
-import DataLoader = require("dataloader");
-import { fromPromise, left, right } from "@sweet-monads/either";
 import { ERRORS } from "./errors";
 
 export class SecretManagerProvider extends AsyncProvider<unknown> {

@@ -10,9 +10,12 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@babel/core": "^7.23.9",
+    "@babel/preset-typescript": "^7.23.3",
     "@pallad/errors-dev": "^1.1.0",
     "@pallad/scripts": "^3",
     "@pallad/secret": "^1.1.0",
+    "@preconstruct/cli": "^2.8.3",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/object-path": "^0.11",
     "conditional-type-checks": "^1.0.5",

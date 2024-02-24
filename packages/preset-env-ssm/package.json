@@ -2,13 +2,13 @@
   "name": "@pallad/config-preset-env-ssm",
   "version": "3.0.0",
   "description": "Preset for @pallad/config that loads config from ENV variables, env files and ssm",
-  "main": "compiled/index.js",
-  "types": "compiled/index.d.ts",
+  "main": "dist/pallad-config-preset-env-ssm.cjs.js",
+  "types": "dist/pallad-config-preset-env-ssm.cjs.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "files": [
-    "compiled"
+    "dist"
   ],
   "directories": {
     "test": "test"
@@ -20,10 +20,11 @@
     "tslib": "^2"
   },
   "scripts": {
-    "test": "JEST_JUNIT_OUTPUT_DIR=../../test_results/preset-env-ssm ../../node_modules/.bin/pallad-scripts test",
-    "compile": "../../node_modules/.bin/pallad-scripts compile",
-    "lint": "../../node_modules/.bin/pallad-scripts lint",
-    "prepublishOnly": "npm run compile"
+    "test": "JEST_JUNIT_OUTPUT_DIR=../../test_results/preset-env-ssm npx pallad-scripts test",
+    "compile": "npx preconstruct build",
+    "lint": "npx pallad-scripts lint",
+    "prepublishOnly": "npm run compile",
+    "postinstall": "npx preconstruct dev"
   },
   "repository": {
     "type": "git",

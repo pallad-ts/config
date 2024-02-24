@@ -1,6 +1,8 @@
-import { SSMProvider } from "./SSMProvider";
-import DataLoader = require("dataloader");
 import { SSMClient, Parameter, GetParametersCommand } from "@aws-sdk/client-ssm";
+// eslint-disable-next-line @typescript-eslint/naming-convention
+import DataLoader from "dataloader";
+
+import { SSMProvider } from "./SSMProvider";
 
 export function parameterDeserializer(parameter: Parameter) {
     if (parameter.Type === "StringList") {

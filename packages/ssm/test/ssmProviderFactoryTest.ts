@@ -1,8 +1,10 @@
-import * as sinon from "sinon";
-import { ValueNotAvailable } from "@pallad/config";
 import { ssmProviderFactory } from "@src/ssmProviderFactory";
 import { left, right } from "@sweet-monads/either";
-import { DataLoader } from "@src/index";
+// eslint-disable-next-line @typescript-eslint/naming-convention
+import DataLoader from "dataloader";
+import * as sinon from "sinon";
+
+import { ValueNotAvailable } from "@pallad/config";
 
 describe("ssmProviderFactory", () => {
     describe("ssm", () => {

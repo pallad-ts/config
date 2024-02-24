@@ -2,8 +2,8 @@
   "name": "@pallad/config-aws-secret-manager",
   "version": "3.0.0",
   "description": "AWS Secret Manager provider for @pallad/config",
-  "main": "compiled/index.js",
-  "types": "compiled/index.d.ts",
+  "main": "dist/pallad-config-aws-secret-manager.cjs.js",
+  "types": "dist/pallad-config-aws-secret-manager.cjs.d.ts",
   "keywords": [
     "config",
     "secret-manager",
@@ -17,9 +17,10 @@
   },
   "scripts": {
     "test": "JEST_JUNIT_OUTPUT_DIR=../../test_results/aws-secret-manager npx pallad-scripts test",
-    "compile": "npx pallad-scripts compile",
+    "compile": "npx preconstruct build",
     "lint": "npx pallad-scripts lint",
-    "prepublishOnly": "npm run compile"
+    "prepublishOnly": "npm run compile",
+    "postinstall": "npx preconstruct dev"
   },
   "peerDependencies": {
     "@pallad/config": "*"
@@ -30,7 +31,7 @@
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
   "license": "MIT",
   "files": [
-    "compiled"
+    "dist"
   ],
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.515.0",

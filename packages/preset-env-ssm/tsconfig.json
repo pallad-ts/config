@@ -1,9 +1,9 @@
 {
   "extends": "@pallad/scripts/dist/tsconfig-node.json",
   "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "../compiled",
-    "composite": true
+    "rootDir": "src",
+    "composite": true,
+    "esModuleInterop": true
   },
   "include": [
     "**/*"

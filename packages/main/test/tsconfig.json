@@ -3,6 +3,8 @@
   "compilerOptions": {
     "noEmit": true,
     "baseUrl": "../src",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "paths": {
       "@src/*": [
         "*"

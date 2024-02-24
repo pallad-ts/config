@@ -1,7 +1,7 @@
-import { envProviderFactory } from "@pallad/config/compiled/providersFactory/envProviderFactory";
+import { FirstAvailableProvider, Provider } from "@pallad/config";
+import { envProviderFactory } from "@pallad/config";
 import { envFileProviderFactory } from "@pallad/config-envfile";
 import { ssmProviderFactory } from "@pallad/config-ssm";
-import { FirstAvailableProvider, Provider } from "@pallad/config";
 
 export function createPreset(presetOptions: Preset.Options) {
     const envHelper = envProviderFactory(presetOptions?.env || process.env);

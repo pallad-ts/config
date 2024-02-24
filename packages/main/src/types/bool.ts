@@ -1,4 +1,5 @@
-import yn = require("yn");
+import yn from "yn";
+
 import { ERRORS } from "../errors";
 
 export function bool(x: unknown): boolean {

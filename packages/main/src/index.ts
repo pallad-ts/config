@@ -11,3 +11,4 @@ export * from "./ResolvedConfig";
 export * from "./common/replaceProvidersInConfig";
 export * from "./common/extractProvidersFromConfig";
 export * from "./ValueNotAvailable";
+export * from "./providersFactory";

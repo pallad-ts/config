@@ -1,6 +1,8 @@
-import { AsyncProvider, Provider, ValueNotAvailable } from "@pallad/config";
-import { DataLoader } from "./index";
 import { left, right } from "@sweet-monads/either";
+// eslint-disable-next-line @typescript-eslint/naming-convention
+import DataLoader from "dataloader";
+
+import { AsyncProvider, Provider, ValueNotAvailable } from "@pallad/config";
 
 export class SSMProvider extends AsyncProvider<SSMProvider.Value> {
     constructor(

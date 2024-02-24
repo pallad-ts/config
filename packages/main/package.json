@@ -2,8 +2,8 @@
   "name": "@pallad/config",
   "version": "3.0.0",
   "description": "Create and validate configuration",
-  "main": "compiled/index.js",
-  "types": "compiled/index.d.ts",
+  "main": "dist/pallad-config.cjs.js",
+  "types": "dist/pallad-config.cjs.d.ts",
   "directories": {
     "test": "test"
   },
@@ -11,10 +11,11 @@
     "access": "public"
   },
   "scripts": {
-    "test": "JEST_JUNIT_OUTPUT_DIR=../../test_results/main ../../node_modules/.bin/pallad-scripts test",
-    "compile": "../../node_modules/.bin/pallad-scripts compile",
-    "lint": "../../node_modules/.bin/pallad-scripts lint",
-    "prepublishOnly": "npm run compile"
+    "test": "JEST_JUNIT_OUTPUT_DIR=../../test_results/main npx pallad-scripts test",
+    "compile": "npx preconstruct build",
+    "lint": "npx pallad-scripts lint",
+    "prepublishOnly": "npm run compile",
+    "postinstall": "npx preconstruct dev"
   },
   "repository": {
     "type": "git",
@@ -43,8 +44,7 @@
     "yn": "^4.0.0"
   },
   "files": [
-    "compiled",
-    "docs",
+    "dist",
     "assets"
   ]
 }

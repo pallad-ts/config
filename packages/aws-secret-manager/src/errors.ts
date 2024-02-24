@@ -1,5 +1,5 @@
-import { Domain, ErrorDescriptor, formatCodeFactory } from "@pallad/errors";
 import { ConfigError } from "@pallad/config";
+import { Domain, ErrorDescriptor, formatCodeFactory } from "@pallad/errors";
 
 export const errorsDomain = new Domain();
 

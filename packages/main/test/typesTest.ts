@@ -1,7 +1,7 @@
 import * as validations from "@src/types";
 import { split } from "@src/types";
-import * as sinon from "sinon";
 import { assert, IsExact } from "conditional-type-checks";
+import * as sinon from "sinon";
 
 describe("types", () => {
     describe("string", () => {

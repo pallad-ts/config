@@ -1,8 +1,10 @@
-import { SecretManagerProvider } from "./SecretManagerProvider";
-import DataLoader = require("dataloader");
 import { SecretsManagerClient, BatchGetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
-import { SecretReference } from "./SecretReference";
 import { SecretValueEntry } from "@aws-sdk/client-secrets-manager/dist-types/models/models_0";
+// eslint-disable-next-line @typescript-eslint/naming-convention
+import DataLoader from "dataloader";
+
+import { SecretManagerProvider } from "./SecretManagerProvider";
+import { SecretReference } from "./SecretReference";
 import { ERRORS } from "./errors";
 
 const MAX_BATCH_SIZE = 20;
