@@ -1,16 +1,17 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@4.7
+  node: circleci/node@5.2.0
 
 jobs:
   main_job:
     executor:
       name: node/default
-      tag: "14.18"
+      tag: "18.19"
     steps:
       - checkout
-      - run: "npm ci"
+      - node/install-packages:
+          pkg-manager: npm
       - run:
           command: ./node_modules/.bin/lerna run compile
           name: compilation
