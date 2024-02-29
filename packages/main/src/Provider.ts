@@ -1,5 +1,6 @@
 import { Either, fromTry, right } from "@sweet-monads/either";
 
+import { protect, Secret, secret } from "@pallad/secret";
 import { TypeCheck } from "@pallad/type-check";
 
 import { ValueNotAvailable } from "./ValueNotAvailable";
@@ -32,6 +33,14 @@ export abstract class Provider<TType> {
 
     transform<TNewType>(transformer: (value: TType) => TNewType): TransformProvider<TNewType, TType> {
         return new TransformProvider(this, transformer);
+    }
+
+    optional() {
+        return this.defaultTo(undefined);
+    }
+
+    secret(): TransformProvider<Secret<TType>, TType> {
+        return new TransformProvider(this, value => secret(value));
     }
 
     defaultTo<TNewType>(defaultValue: TNewType): DefaultValueProvider<TNewType, TType> {

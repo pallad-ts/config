@@ -1,0 +1,129 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`resolveConfig loading config from file path 1`] = `
+{
+  "database": {
+    "hostname": "hostname",
+    "password": **Secret value: "database password" **,
+    "port": 5432,
+    "schema": "test",
+    "username": **Secret value: "username" **,
+  },
+  "jwt": {
+    "secret": **Secret value: [
+      "s1",
+      "s2",
+      "s3",
+    ] **,
+  },
+  "scheduler": {
+    "options": {
+      "dns": "http://localhost:8080",
+    },
+    "type": "dynamic",
+  },
+  "usernames": {
+    "fake": [
+      "tommy",
+      "john",
+      "jerry",
+    ],
+  },
+}
+`;
+
+exports[`resolveConfig resolving as async-function 1`] = `
+{
+  "database": {
+    "hostname": "hostname",
+    "password": **Secret value: "database password" **,
+    "port": 5432,
+    "schema": "test",
+    "username": **Secret value: "username" **,
+  },
+  "jwt": {
+    "secret": **Secret value: [
+      "s1",
+      "s2",
+      "s3",
+    ] **,
+  },
+  "scheduler": {
+    "options": {
+      "dns": "http://localhost:8080",
+    },
+    "type": "dynamic",
+  },
+  "usernames": {
+    "fake": [
+      "tommy",
+      "john",
+      "jerry",
+    ],
+  },
+}
+`;
+
+exports[`resolveConfig resolving as function 1`] = `
+{
+  "database": {
+    "hostname": "hostname",
+    "password": **Secret value: "database password" **,
+    "port": 5432,
+    "schema": "test",
+    "username": **Secret value: "username" **,
+  },
+  "jwt": {
+    "secret": **Secret value: [
+      "s1",
+      "s2",
+      "s3",
+    ] **,
+  },
+  "scheduler": {
+    "options": {
+      "dns": "http://localhost:8080",
+    },
+    "type": "dynamic",
+  },
+  "usernames": {
+    "fake": [
+      "tommy",
+      "john",
+      "jerry",
+    ],
+  },
+}
+`;
+
+exports[`resolveConfig resolving as object 1`] = `
+{
+  "database": {
+    "hostname": "hostname",
+    "password": **Secret value: "database password" **,
+    "port": 5432,
+    "schema": "test",
+    "username": **Secret value: "username" **,
+  },
+  "jwt": {
+    "secret": **Secret value: [
+      "s1",
+      "s2",
+      "s3",
+    ] **,
+  },
+  "scheduler": {
+    "options": {
+      "dns": "http://localhost:8080",
+    },
+    "type": "dynamic",
+  },
+  "usernames": {
+    "fake": [
+      "tommy",
+      "john",
+      "jerry",
+    ],
+  },
+}
+`;

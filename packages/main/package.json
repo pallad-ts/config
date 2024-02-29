@@ -36,6 +36,7 @@
   "homepage": "https://pallad.dev/config",
   "dependencies": {
     "@pallad/errors": "^1.0.1",
+    "@pallad/secret": "^1.1.1",
     "@pallad/type-check": "^1.2.0",
     "@sweet-monads/either": "^3",
     "@sweet-monads/maybe": "^3",

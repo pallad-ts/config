@@ -1,19 +1,20 @@
-import { Provider } from "../Provider";
-import * as is from "predicates";
-import { ResolvedConfig } from "../ResolvedConfig";
 import { Either } from "@sweet-monads/either";
+import * as is from "predicates";
+
+import { Provider } from "../Provider";
+import { ResolvedConfig } from "../ResolvedConfig";
 
 /**
  * @internal
  */
 export function replaceProvidersInConfig<T>(
     config: T,
-    resolvedDependencies: Map<Provider<any>, Either<Provider.Fail, any>>
+    resolvedDependencies: Map<Provider<unknown>, Either<Provider.Fail, unknown>>
 ): ResolvedConfig<T> {
     if (is.primitive(config)) {
         return config as any as ResolvedConfig<T>;
     } else if (Provider.isType(config)) {
-        return resolvedDependencies.get(config)!.value;
+        return resolvedDependencies.get(config)!.value as ResolvedConfig<T>;
     } else if (is.array(config)) {
         const newObject = [];
         for (const value of config) {

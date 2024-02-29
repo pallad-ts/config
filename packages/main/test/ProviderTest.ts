@@ -1,7 +1,10 @@
 import { DefaultValueProvider, Provider, TransformProvider } from "@src/Provider";
-import { DummyProvider } from "./dummies/DummyProvider";
-import { assert, IsExact } from "conditional-type-checks";
 import { right } from "@sweet-monads/either";
+import { assert, IsExact } from "conditional-type-checks";
+
+import { secret, Secret } from "@pallad/secret";
+
+import { DummyProvider } from "./dummies/DummyProvider";
 
 describe("Provider", () => {
     const VALUE = { raw: "value" } as const;
@@ -24,6 +27,27 @@ describe("Provider", () => {
             expect(transformedProvider).toBeInstanceOf(DefaultValueProvider);
             expect(transformedProvider.getValue()).toStrictEqual(right(10));
             assert<IsExact<typeof transformedProvider, DefaultValueProvider<number, ValueType>>>(true);
+        });
+    });
+
+    describe("optional", () => {
+        it("wraps value with default provider", () => {
+            const transformedProvider = DummyProvider.syncNotAvailable<ValueType>().optional();
+
+            expect(transformedProvider).toBeInstanceOf(DefaultValueProvider);
+            expect(transformedProvider.getValue()).toStrictEqual(right(undefined));
+            assert<IsExact<typeof transformedProvider, DefaultValueProvider<undefined, ValueType>>>(true);
+        });
+    });
+
+    describe("secret", () => {
+        it("wraps value with secreet", () => {
+            const transformedProvider = DummyProvider.sync({ value: VALUE }).secret();
+
+            expect(transformedProvider).toBeInstanceOf(TransformProvider);
+            const resolvedValue = transformedProvider.getValue();
+            expect(resolvedValue).toStrictEqual(right(secret(VALUE)));
+            assert<IsExact<typeof transformedProvider, TransformProvider<Secret<ValueType>, ValueType>>>(true);
         });
     });
 });
