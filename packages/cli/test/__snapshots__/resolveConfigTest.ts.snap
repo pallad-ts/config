@@ -1,5 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`resolveConfig fails if config returns a function 1`] = `
+{
+  "config": [Function],
+  "providerMap": Map {},
+}
+`;
+
 exports[`resolveConfig loading config from file path 1`] = `
 {
   "database": {
@@ -127,3 +134,5 @@ exports[`resolveConfig resolving as object 1`] = `
   },
 }
 `;
+
+exports[`resolveConfig resolving as primitive 1`] = `"some primitive value"`;

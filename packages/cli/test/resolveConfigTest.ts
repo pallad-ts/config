@@ -5,11 +5,7 @@ import { Maybe } from "@sweet-monads/maybe";
 import { AssertionError } from "node:assert";
 import * as path from "node:path";
 
-import { ViolationsList } from "@pallad/violations";
-
-function assertConfigIsFound(
-    config: Maybe<Either<ViolationsList, LoadedConfig>>
-): Either<ViolationsList, LoadedConfig> {
+function assertConfigIsFound(config: Maybe<Either<Error, LoadedConfig>>): Either<Error, LoadedConfig> {
     if (config.isJust()) {
         return config.value;
     }
@@ -17,7 +13,7 @@ function assertConfigIsFound(
     throw new AssertionError({ message: "Config not found" });
 }
 
-function assertConfigHasNoErrors(config: Either<ViolationsList, LoadedConfig>): LoadedConfig {
+function assertConfigHasNoErrors(config: Either<Error, LoadedConfig>): LoadedConfig {
     if (config.isRight()) {
         return config.value;
     }
@@ -28,7 +24,7 @@ function assertConfigHasNoErrors(config: Either<ViolationsList, LoadedConfig>): 
 describe("resolveConfig", () => {
     const FIXTURES_DIR = path.join(__dirname, "./fixtures");
 
-    it.each([["object"], ["function"], ["async-function"]])("resolving as %s", async type => {
+    it.each([["object"], ["function"], ["async-function"], ["primitive"]])("resolving as %s", async type => {
         const result = await resolveConfig({
             directoryStartPath: path.join(FIXTURES_DIR, `config-as-${type}`),
         });
@@ -36,14 +32,6 @@ describe("resolveConfig", () => {
         const config = assertConfigHasNoErrors(assertConfigIsFound(result));
 
         expect(config.config).toMatchSnapshot();
-    });
-
-    it("fails if config is not found", async () => {
-        const result = await resolveConfig({
-            directoryStartPath: path.join(FIXTURES_DIR, `config-not-found`),
-        });
-
-        expect(result.isNone()).toBe(true);
     });
 
     it("loading config from file path", async () => {
@@ -54,5 +42,24 @@ describe("resolveConfig", () => {
         const config = assertConfigHasNoErrors(assertConfigIsFound(result));
 
         expect(config.config).toMatchSnapshot();
+    });
+
+    describe("fails", () => {
+        it("if config is not found", async () => {
+            const result = await resolveConfig({
+                directoryStartPath: path.join(FIXTURES_DIR, `config-not-found`),
+            });
+
+            expect(result.isNone()).toBe(true);
+        });
+
+        it("if config returns a function", async () => {
+            const result = await resolveConfig({
+                directoryStartPath: path.join(FIXTURES_DIR, `invalid-config`),
+            });
+
+            expect(result.isJust()).toBe(true);
+            expect(result.value!.value).toMatchSnapshot();
+        });
     });
 });

@@ -17,9 +17,14 @@ class ConfigCheck extends Command {
             char: "s",
             description: "Do not display config",
         }),
-        configFilePath: Flags.string({
+        config: Flags.string({
             default: undefined,
+            char: "c",
             description: "Path to the file with configuration",
+        }),
+        configDir: Flags.string({
+            default: undefined,
+            description: "Config directory from which cosmiconfig will search for configuration files",
         }),
     };
 
@@ -45,27 +50,19 @@ class ConfigCheck extends Command {
     async run() {
         const { args, flags } = await this.parse(ConfigCheck);
 
-        const config = await resolveConfig(flags);
+        const config = await resolveConfig({
+            filePath: flags.config,
+            directoryStartPath: flags.configDir,
+        });
         if (config.isNone()) {
             this.error(
-                "No location of configuration provided. Please refer to https://pallad.dev/config/cli#setup for more information"
+                "No configuration found. Please refer to https://pallad.dev/config/cli#setup for more information"
             );
         }
 
         if (config.value.isLeft()) {
             const error = config.value.value;
-            const message = [
-                error.message,
-                ...error.violationList.violations.map(x => {
-                    let result = "";
-                    if (x.path) {
-                        result += `${x.path.join(".")} - `;
-                    }
-
-                    return result + x.message;
-                }),
-            ].join("\n");
-            this.error(message, {
+            this.error(error.message, {
                 suggestions: ["Refer to https://pallad.dev/config/cli#configuration-options for more information"],
             });
         }
