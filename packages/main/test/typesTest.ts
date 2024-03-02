@@ -111,20 +111,8 @@ describe("types", () => {
             expect(result).toEqual([]);
         });
 
-        it("applies transformer if provided", () => {
-            const transformer = sinon.stub().callsFake(value => `${value}!`);
-
-            const result = split.by({
-                transformer,
-            })("foo,bar, ,");
-
-            expect(result).toEqual(["foo!", "bar!"]);
-        });
-
         it("uses provided separator", () => {
-            const result = split.by({
-                separator: ":",
-            })("foo,bar:baz ");
+            const result = split.by(":")("foo,bar:baz ");
 
             expect(result).toEqual(["foo,bar", "baz"]);
         });
@@ -134,15 +122,6 @@ describe("types", () => {
                 const value = split("test,test2");
                 type Expected = string[];
 
-                assert<IsExact<typeof value, Expected>>(true);
-            });
-
-            it("with transformer", () => {
-                const value = split.by({
-                    transformer: x => parseInt(x, 10),
-                })("test,test2");
-
-                type Expected = number[];
                 assert<IsExact<typeof value, Expected>>(true);
             });
         });
