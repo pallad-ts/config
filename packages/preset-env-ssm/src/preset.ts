@@ -8,21 +8,21 @@ export function createPreset(presetOptions: Preset.Options) {
     const envFileHelper = presetOptions.envFile ? envFileProviderFactory(presetOptions.envFile) : undefined;
     const ssmHelper = presetOptions.ssm ? ssmProviderFactory(presetOptions.ssm) : undefined;
 
-    return (key: Preset.Key) => {
-        const providers: Array<Provider<any>> = [];
-
+    function* generator(key: Preset.Key) {
         if (key.env) {
-            providers.push(envHelper(key.env));
+            yield envHelper(key.env);
             if (envFileHelper) {
-                providers.push(envFileHelper(key.env));
+                yield envFileHelper(key.env);
             }
         }
 
         if (key.ssmKey && ssmHelper) {
-            providers.push(ssmHelper(key.ssmKey));
+            yield ssmHelper(key.ssmKey);
         }
+    }
 
-        return new FirstAvailableProvider(...providers);
+    return (key: Preset.Key) => {
+        return new FirstAvailableProvider(...generator(key));
     };
 }
 

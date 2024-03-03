@@ -1,8 +1,8 @@
 import { createPreset } from "@src/preset";
+// eslint-disable-next-line @typescript-eslint/naming-convention
 import DataLoader from "dataloader";
-import * as sinon from "sinon";
 
-import { DefaultValueProvider, EnvProvider, FirstAvailableProvider, TransformProvider } from "@pallad/config";
+import { EnvProvider, FirstAvailableProvider } from "@pallad/config";
 import { EnvFileProvider, envFileProviderFactory } from "@pallad/config-envfile";
 import { SSMProvider, ssmProviderFactory } from "@pallad/config-ssm";
 
