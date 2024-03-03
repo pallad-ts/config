@@ -1,15 +1,17 @@
-import { Provider } from "../Provider";
-import { isPromise } from "../common/isPromise";
-import { OptionalPromise } from "../utils";
-import { ValueNotAvailable } from "../ValueNotAvailable";
 import { left } from "@sweet-monads/either";
 
+import { Provider } from "../Provider";
+import { ValueNotAvailable } from "../ValueNotAvailable";
+import { isPromise } from "../common/isPromise";
+import { OptionalPromise } from "../utils";
+
 export class FirstAvailableProvider<T extends Array<Provider<any>>> extends Provider<FirstAvailableProvider.Unwrap<T>> {
-    private providers: Array<Provider<T>>;
+    readonly providers: Array<Provider<T>>;
 
     constructor(...providers: T) {
         super();
         this.providers = providers;
+        Object.freeze(this.providers);
     }
 
     getValue(): OptionalPromise<Provider.Value<FirstAvailableProvider.Unwrap<T>>> {
