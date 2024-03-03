@@ -1,5 +1,6 @@
 import * as is from "predicates";
-import { Provider } from "../Provider";
+
+import { Provider } from "./Provider";
 
 /**
  * @internal

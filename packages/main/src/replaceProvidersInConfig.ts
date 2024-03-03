@@ -1,8 +1,8 @@
 import { Either } from "@sweet-monads/either";
 import * as is from "predicates";
 
-import { Provider } from "../Provider";
-import { ResolvedConfig } from "../ResolvedConfig";
+import { Provider } from "./Provider";
+import { ResolvedConfig } from "./ResolvedConfig";
 
 /**
  * @internal

@@ -1,11 +1,12 @@
-import { OptionalPromise } from "../utils";
-import { runOnOptionalPromise } from "./runOnOptionalPromise";
-import { extractProvidersFromConfig } from "./extractProvidersFromConfig";
-import { replaceProvidersInConfig } from "./replaceProvidersInConfig";
-import { Provider } from "../Provider";
-import { isPromise } from "./isPromise";
-import { ResolvedConfig } from "../ResolvedConfig";
 import { Either, left, right } from "@sweet-monads/either";
+
+import { Provider } from "../Provider";
+import { ResolvedConfig } from "../ResolvedConfig";
+import { extractProvidersFromConfig } from "../extractProvidersFromConfig";
+import { replaceProvidersInConfig } from "../replaceProvidersInConfig";
+import { OptionalPromise } from "../utils";
+import { isPromise } from "./isPromise";
+import { runOnOptionalPromise } from "./runOnOptionalPromise";
 
 /**
  * @internal

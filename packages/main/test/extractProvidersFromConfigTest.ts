@@ -1,6 +1,6 @@
 import { Provider } from "@src/Provider";
-import { extractProvidersFromConfig } from "@src/common/extractProvidersFromConfig";
-import { DummyProvider } from "../dummies/DummyProvider";
+import { extractProvidersFromConfig } from "@src/extractProvidersFromConfig";
+import { DummyProvider } from "./dummies/DummyProvider";
 
 describe("extractProvidersFromConfig", () => {
     describe("no providers", () => {

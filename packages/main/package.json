@@ -12,7 +12,8 @@
   },
   "scripts": {
     "test": "JEST_JUNIT_OUTPUT_DIR=../../test_results/main npx pallad-scripts test",
-    "compile": "npx preconstruct build",
+    "generate-barrels": "npx barrelsby -l below -s flat --delete -d ./src",
+    "compile": "npm run generate-barrels && npx preconstruct build",
     "lint": "npx pallad-scripts lint",
     "prepublishOnly": "npm run compile",
     "postinstall": "npx preconstruct dev"
