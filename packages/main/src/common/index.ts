@@ -6,3 +6,4 @@ export * from "./handleConfigLoadResult";
 export * from "./isPromise";
 export * from "./loadConfig";
 export * from "./runOnOptionalPromise";
+export * from "./runOnlyOnceWrapper";

@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@pallad/errors": "^1.0.1",
+    "@pallad/config-common": "*",
     "@sweet-monads/either": "^3",
     "@sweet-monads/maybe": "^3",
     "dotenv": "^16",
