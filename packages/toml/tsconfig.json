@@ -1,0 +1,12 @@
+{
+  "extends": "@pallad/scripts/dist/tsconfig-node.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "composite": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "**/*"
+  ]
+}

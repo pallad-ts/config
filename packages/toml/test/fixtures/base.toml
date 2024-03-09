@@ -1,0 +1,14 @@
+test = 1
+
+foo = 'bar'
+
+[section]
+value = 1
+
+[[jwt]]
+key = 'key'
+value = 'value'
+
+[[jwt]]
+key = 'key2'
+value = 'value2'

@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FilePathEntry normalization: { path: 'file.txt', required: false } 1`] = `
+{
+  "path": "file.txt",
+  "required": false,
+}
+`;
+
+exports[`FilePathEntry normalization: { path: 'file.txt', required: true } 1`] = `
+{
+  "path": "file.txt",
+  "required": true,
+}
+`;
+
+exports[`FilePathEntry normalization: file.txt 1`] = `
+{
+  "path": "file.txt",
+  "required": true,
+}
+`;

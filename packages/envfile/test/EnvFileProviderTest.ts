@@ -18,6 +18,18 @@ describe("EnvFileProvider", () => {
         });
     });
 
+    it("fails if loading env file fails", () => {
+        const error = new Error("test");
+
+        const provider = new EnvFileProvider("FOO", () => {
+            throw error;
+        });
+
+        const value = provider.getValue();
+        expect(value.isLeft()).toBe(true);
+        expect(value.value).toBe(error);
+    });
+
     it("success", () => {
         expect(new EnvFileProvider("FOO", () => ({ FOO: "bar" })).getValue()).toStrictEqual(right("bar"));
     });

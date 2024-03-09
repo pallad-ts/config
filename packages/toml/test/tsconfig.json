@@ -1,0 +1,19 @@
+{
+  "extends": "@pallad/scripts/dist/tsconfig-node.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "../src",
+    "paths": {
+      "@src/*": [
+        "*"
+      ]
+    }
+  },
+  "references": [
+    {
+      "path": "../src"
+    }
+  ]
+}

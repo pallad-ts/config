@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`tomlProviderFactory loading basic loading 1`] = `
+{
+  "foo": "bar",
+  "jwt": [
+    {
+      "key": "key",
+      "value": "value",
+    },
+    {
+      "key": "key2",
+      "value": "value2",
+    },
+  ],
+  "section": {
+    "value": 1,
+  },
+  "test": 1,
+}
+`;

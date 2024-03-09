@@ -1,0 +1,55 @@
+{
+  "name": "@pallad/config-toml",
+  "version": "3.0.0",
+  "description": "TOML config handling for @pallad/config",
+  "main": "dist/pallad-config-toml.cjs.js",
+  "types": "dist/pallad-config-toml.cjs.d.ts",
+  "scripts": {
+    "test": "JEST_JUNIT_OUTPUT_DIR=../../test_results/envfile npx pallad-scripts test",
+    "generate-barrels": "npx barrelsby -l all --delete -d ./src",
+    "compile": "npm run generate-barrels && npx preconstruct build",
+    "lint": "npx pallad-scripts lint",
+    "prepublishOnly": "npm run compile",
+    "postinstall": "npx preconstruct dev"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "config",
+    "env",
+    "envfile"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pallad-ts/config.git",
+    "directory": "packages/toml"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
+  "homepage": "https://pallad.dev/config",
+  "bugs": {
+    "url": "https://github.com/pallad-ts/config/issues"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@pallad/config": "*"
+  },
+  "devDependencies": {
+    "@pallad/config": "^3.0.0"
+  },
+  "dependencies": {
+    "@pallad/errors": "^1.0.1",
+    "@sweet-monads/either": "^3",
+    "@sweet-monads/maybe": "^3",
+    "deepmerge": "^4.3.1",
+    "js-toml": "^1.0.0",
+    "object-path": "^0.11.8",
+    "tslib": "^2"
+  }
+}
