@@ -2,7 +2,7 @@ import { parse } from "dotenv";
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 
-import { runOnlyOnceWrapper } from "@pallad/config-common";
+import { FilePathEntry, runOnlyOnceWrapper } from "@pallad/config-common";
 
 import { EnvFileProvider } from "./EnvFileProvider";
 import { ERRORS } from "./errors";
@@ -15,17 +15,16 @@ export function envFileProviderFactory(
 
         const cwd = options?.cwd ?? process.cwd();
 
-        const paths = Array.isArray(options.paths) ? options.paths : [options.paths];
+        const files = Array.isArray(options.files) ? options.files : [options.files];
 
-        for (const path of paths) {
-            const resolvedPathData: envFileProviderFactory.PathEntryObject =
-                typeof path === "string" ? { path: path, required: true } : path;
+        for (const filePathEntry of files) {
+            const { path, required } = FilePathEntry.normalize(filePathEntry);
 
-            const filePath = resolve(cwd, resolvedPathData.path);
+            const filePath = resolve(cwd, path);
 
             if (!existsSync(filePath)) {
-                if (resolvedPathData.required) {
-                    throw ERRORS.ENV_FILE_DOES_NOT_EXIST.create(resolvedPathData.path);
+                if (required) {
+                    throw ERRORS.ENV_FILE_DOES_NOT_EXIST.create(path);
                 }
                 continue;
             }
@@ -76,18 +75,11 @@ export namespace envFileProviderFactory {
     }
 
     export interface Options {
-        paths: PathEntry | PathEntry[];
+        files: FilePathEntry | FilePathEntry[];
         /**
          * Working directory. By default `process.cwd()`
          */
         cwd?: string;
-    }
-
-    export type PathEntry = string | PathEntryObject;
-
-    export interface PathEntryObject {
-        path: string;
-        required: boolean;
     }
 
     export interface PopulateToEnvPredicate {

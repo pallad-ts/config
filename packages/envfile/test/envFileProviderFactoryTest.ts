@@ -4,12 +4,12 @@ import { left, right } from "@sweet-monads/either";
 import { assert, IsExact } from "conditional-type-checks";
 import * as sinon from "sinon";
 
-import { DefaultValueProvider, ValueNotAvailable } from "@pallad/config";
+import { ValueNotAvailable } from "@pallad/config";
 
 describe("envFileProviderFactory", () => {
     describe("types", () => {
         const factory = envFileProviderFactory({
-            paths: "./example/base.env",
+            files: "./example/base.env",
             cwd: __dirname,
         });
 
@@ -24,7 +24,7 @@ describe("envFileProviderFactory", () => {
 
     it("simple case", () => {
         const factory = envFileProviderFactory({
-            paths: "./example/base.env",
+            files: "./example/base.env",
             cwd: __dirname,
         });
 
@@ -35,7 +35,7 @@ describe("envFileProviderFactory", () => {
 
     it("overriding env from previous files", () => {
         const factory = envFileProviderFactory({
-            paths: ["./example/base.env", "./example/override.env"],
+            files: ["./example/base.env", "./example/override.env"],
             cwd: __dirname,
         });
 
@@ -45,7 +45,7 @@ describe("envFileProviderFactory", () => {
     it("fails if env file does not exist and ignoring is disabled", () => {
         expect(() => {
             envFileProviderFactory({
-                paths: "./example/test.env",
+                files: "./example/test.env",
                 cwd: __dirname,
             }).load();
         }).toThrowErrorMatchingSnapshot();
@@ -53,7 +53,7 @@ describe("envFileProviderFactory", () => {
 
     it("silently ignores file if it is not required", () => {
         const factory = envFileProviderFactory({
-            paths: { path: "./example/test.env", required: false },
+            files: { path: "./example/test.env", required: false },
             cwd: __dirname,
         });
 
@@ -72,7 +72,7 @@ describe("envFileProviderFactory", () => {
 
         it("all env", () => {
             const factory = envFileProviderFactory({
-                paths: "./example/populate.env",
+                files: "./example/populate.env",
                 cwd: __dirname,
             });
 
@@ -83,7 +83,7 @@ describe("envFileProviderFactory", () => {
 
         it("only the ones accepted by predicate", () => {
             const factory = envFileProviderFactory({
-                paths: "./example/populate.env",
+                files: "./example/populate.env",
                 cwd: __dirname,
             });
 
