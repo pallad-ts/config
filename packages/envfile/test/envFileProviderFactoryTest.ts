@@ -1,8 +1,10 @@
-import { envFileProviderFactory } from "@src/envFileProviderFactory";
-import { DefaultValueProvider, ValueNotAvailable } from "@pallad/config";
-import { assert, IsExact } from "conditional-type-checks";
 import { EnvFileProvider } from "@src/EnvFileProvider";
+import { envFileProviderFactory } from "@src/envFileProviderFactory";
 import { left, right } from "@sweet-monads/either";
+import { assert, IsExact } from "conditional-type-checks";
+import * as sinon from "sinon";
+
+import { DefaultValueProvider, ValueNotAvailable } from "@pallad/config";
 
 describe("envFileProviderFactory", () => {
     describe("types", () => {
@@ -45,7 +47,7 @@ describe("envFileProviderFactory", () => {
             envFileProviderFactory({
                 paths: "./example/test.env",
                 cwd: __dirname,
-            });
+            }).load();
         }).toThrowErrorMatchingSnapshot();
     });
 
@@ -58,13 +60,41 @@ describe("envFileProviderFactory", () => {
         expect(factory("FOO").getValue()).toStrictEqual(left(new ValueNotAvailable('"FOO" from ENV file(s)')));
     });
 
-    it("populates process env if set", () => {
-        envFileProviderFactory({
-            paths: "./example/populate.env",
-            cwd: __dirname,
-            populateToEnv: true,
+    describe("populating to env", () => {
+        let originalEnv = process.env;
+        beforeEach(() => {
+            originalEnv = { ...process.env };
         });
 
-        expect(process.env.PALLAD_CONFIG_TEST_VALUE).toStrictEqual("test");
+        afterEach(() => {
+            process.env = { ...originalEnv };
+        });
+
+        it("all env", () => {
+            const factory = envFileProviderFactory({
+                paths: "./example/populate.env",
+                cwd: __dirname,
+            });
+
+            factory.populateToEnv();
+            expect(process.env.PALLAD_CONFIG_TEST_VALUE).toStrictEqual("test");
+            expect(process.env.PALLAD_CONFIG_TEST_VALUE2).toStrictEqual("test2");
+        });
+
+        it("only the ones accepted by predicate", () => {
+            const factory = envFileProviderFactory({
+                paths: "./example/populate.env",
+                cwd: __dirname,
+            });
+
+            const stub = sinon.stub().callsFake((key: string) => key === "PALLAD_CONFIG_TEST_VALUE2");
+            factory.populateToEnv(stub);
+
+            expect(process.env.PALLAD_CONFIG_TEST_VALUE).toBeUndefined();
+            expect(process.env.PALLAD_CONFIG_TEST_VALUE2).toStrictEqual("test2");
+
+            sinon.assert.calledWith(stub, "PALLAD_CONFIG_TEST_VALUE", "test");
+            sinon.assert.calledWith(stub, "PALLAD_CONFIG_TEST_VALUE2", "test2");
+        });
     });
 });
