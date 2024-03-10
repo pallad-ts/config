@@ -28,27 +28,28 @@ class ConfigCheck extends Command {
         }),
     };
 
-    static args = {
-        configPath: Args.string({
-            name: "configPath",
-            required: false,
-            // eslint-disable-next-line @typescript-eslint/require-await
-            async parse(value: string) {
-                if (is.startsWith("-", value)) {
-                    throw new Error(
-                        `Property path: ${value} is rather a typo. Please use property path that does not start with "-"`
-                    );
-                }
-                return value;
-            },
-            description: "config property path to display",
-        }),
-    };
+    // to bring back within https://github.com/pallad-ts/config/issues/53
+    // static args = {
+    //     configPath: Args.string({
+    //         name: "configPath",
+    //         required: false,
+    //         // eslint-disable-next-line @typescript-eslint/require-await
+    //         async parse(value: string) {
+    //             if (is.startsWith("-", value)) {
+    //                 throw new Error(
+    //                     `Property path: ${value} is rather a typo. Please use property path that does not start with "-"`
+    //                 );
+    //             }
+    //             return value;
+    //         },
+    //         description: "config property path to display",
+    //     }),
+    // };
 
     static strict = true;
 
     async run() {
-        const { args, flags } = await this.parse(ConfigCheck);
+        const { flags } = await this.parse(ConfigCheck);
 
         const config = await resolveConfig({
             filePath: flags.config,
@@ -73,7 +74,6 @@ class ConfigCheck extends Command {
             this.log(
                 renderConfig(resolvedConfig, {
                     revealSecrets: flags.revealSecrets,
-                    propertyPath: args.configPath,
                 })
             );
         }

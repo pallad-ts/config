@@ -62,6 +62,5 @@ export function renderConfig(config: unknown, options: displayConfig.Options) {
 export namespace displayConfig {
     export interface Options {
         revealSecrets: boolean;
-        propertyPath?: string;
     }
 }
