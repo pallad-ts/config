@@ -1,4 +1,9 @@
+import { formatISODuration } from "date-fns/formatISODuration";
+import { Duration } from "iso8601-duration";
+
 import { Domain, ErrorDescriptor, formatCodeFactory } from "@pallad/errors";
+import { enchant, Range } from "@pallad/range";
+
 import { ConfigError } from "./ConfigError";
 import { ConfigLoadError } from "./ConfigLoadError";
 
@@ -52,4 +57,70 @@ export const ERRORS = errorsDomain.addErrorsDescriptorsMap({
             `Protocol "${protocol}" is not allowed. Allowed: ${validProtocolList.join(", ")}`,
         ConfigError
     ),
+    CANNOT_CONVERT_TO_DURATION: ErrorDescriptor.useMessageFormatter(
+        code(10),
+        (value: unknown, errorMessage: string) =>
+            `Value "${value}" cannot be converted to ISO duration - ${errorMessage}`,
+        ConfigError
+    ),
+    DURATION_INVALID_VALUE_IN_RANGE: ErrorDescriptor.useMessageFormatter(
+        code(11),
+        (value: Duration, range: Range<Duration>) => {
+            const rangeString = enchant(range).map({
+                end: ({ end }) => "up to " + formatDuration(end),
+                start: ({ start }) => "from " + formatDuration(start),
+                full: ({ start, end }) => "between " + formatDuration(start) + " and " + formatDuration(end),
+            });
+
+            return `Duration "${formatDuration(value)}" is not in valid range ${rangeString}`;
+        },
+        ConfigError
+    ),
 });
+
+function formatDuration(duration: Duration) {
+    return Array.from(formatDurationParts(duration)).join("");
+}
+
+function* formatDurationParts({
+    years = 0,
+    months = 0,
+    days = 0,
+    weeks = 0,
+    hours = 0,
+    seconds = 0,
+    minutes = 0,
+}: Duration) {
+    yield "P";
+
+    if (years > 0) {
+        yield `${years}Y`;
+    }
+
+    if (months > 0) {
+        yield `${months}M`;
+    }
+
+    if (weeks > 0) {
+        yield `${weeks}W`;
+    }
+
+    if (days > 0) {
+        yield `${days}D`;
+    }
+
+    if (hours > 0 || minutes > 0 || seconds > 0) {
+        yield "T";
+        if (hours > 0) {
+            yield `${hours}H`;
+        }
+
+        if (minutes > 0) {
+            yield `${minutes}M`;
+        }
+
+        if (seconds > 0) {
+            yield `${seconds}S`;
+        }
+    }
+}

@@ -1,3 +1,5 @@
+import { fromTry, left, right } from "@sweet-monads/either";
+
 import { ConfigError } from "../ConfigError";
 import { ERRORS } from "../errors";
 
@@ -12,26 +14,27 @@ function factory(options?: { protocols?: string[] | string }) {
         );
     }
 
-    return (x: any): string => {
-        let url: URL;
-        try {
-            url = new URL(x);
-        } catch (e: any) {
-            throw new ConfigError(e.message);
-        }
+    return (x: unknown): string => {
+        return fromTry<Error, URL>(() => {
+            return new URL((x as string) + "");
+        })
+            .mapLeft(e => new ConfigError(e.message))
+            .chain(url => {
+                if (finalOptions.protocols) {
+                    const protocol = url.protocol.replace(/:$/, "");
+                    if (!finalOptions.protocols.includes(protocol)) {
+                        return left(ERRORS.TYPE_URL_INVALID_PROTOCOL.create(protocol, finalOptions.protocols));
+                    }
+                }
 
-        if (finalOptions.protocols) {
-            const protocol = url.protocol.replace(/:$/, "");
-            if (!finalOptions.protocols.includes(protocol)) {
-                throw ERRORS.TYPE_URL_INVALID_PROTOCOL.create(protocol, finalOptions.protocols);
-            }
-        }
-        return x;
+                return right(x as string);
+            })
+            .unwrap(e => e);
     };
 }
 
 export interface Url {
-    (value: any): string;
+    (value: unknown): string;
 
     options: typeof factory;
 }

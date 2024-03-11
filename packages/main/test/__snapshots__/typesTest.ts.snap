@@ -2,6 +2,28 @@
 
 exports[`types bool throws error if cannot be converted to bool 1`] = `"Value "some strange value" cannot be converted to bool"`;
 
+exports[`types duration converts to duration 1`] = `
+{
+  "days": 0,
+  "hours": 1,
+  "minutes": 0,
+  "months": 0,
+  "seconds": 0,
+  "weeks": 0,
+  "years": 0,
+}
+`;
+
+exports[`types duration options invalid PT10M - PT20M 1`] = `"Duration "PT30M" is not in valid range between PT10M and PT20M"`;
+
+exports[`types duration options invalid PT50M - undefined 1`] = `"Duration "PT30M" is not in valid range from PT50M"`;
+
+exports[`types duration options invalid undefined - PT20M 1`] = `"Duration "PT30M" is not in valid range up to PT20M"`;
+
+exports[`types duration options passing invalid options fails min and max are not valid durations 1`] = `"invalid duration: invalid"`;
+
+exports[`types duration options passing invalid options fails min higher than max 1`] = `""start" cannot be greater than "end""`;
+
 exports[`types int fails if not a number 1`] = `"Value "foo" cannot be converted to int"`;
 
 exports[`types number fails if not a number 1`] = `"Value "foo" cannot be converted to number"`;

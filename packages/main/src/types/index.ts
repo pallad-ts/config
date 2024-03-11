@@ -3,6 +3,7 @@
  */
 
 export * from "./bool";
+export * from "./duration";
 export * from "./int";
 export * from "./number";
 export * from "./split";

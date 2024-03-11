@@ -1,7 +1,11 @@
+import { ERRORS } from "@src/errors";
 import * as validations from "@src/types";
 import { split } from "@src/types";
 import { assert, IsExact } from "conditional-type-checks";
+import { parse } from "iso8601-duration";
 import * as sinon from "sinon";
+
+import "@pallad/errors-dev";
 
 describe("types", () => {
     describe("string", () => {
@@ -123,6 +127,59 @@ describe("types", () => {
                 type Expected = string[];
 
                 assert<IsExact<typeof value, Expected>>(true);
+            });
+        });
+    });
+
+    describe("duration", () => {
+        it("converts to duration", () => {
+            const duration = validations.duration("PT1H");
+            expect(duration).toMatchSnapshot();
+        });
+
+        it("fails for invalid duration", () => {
+            expect(() => {
+                validations.duration("10 seconds");
+            }).toThrowErrorWithCode(ERRORS.CANNOT_CONVERT_TO_DURATION);
+        });
+
+        describe("options", () => {
+            it.each<[string | undefined, string | undefined]>([
+                ["PT50M", undefined],
+                ["PT10M", "PT20M"],
+                [undefined, "PT20M"],
+            ])("invalid %s - %s", (min, max) => {
+                const type = validations.duration.options({ min, max });
+                expect(() => {
+                    type("PT30M");
+                }).toThrowErrorWithCode(ERRORS.DURATION_INVALID_VALUE_IN_RANGE);
+                expect(() => {
+                    type("PT30M");
+                }).toThrowErrorMatchingSnapshot();
+            });
+
+            it.each<[string | undefined, string | undefined]>([
+                ["PT10M", undefined],
+                ["PT10M", "PT1H"],
+                [undefined, "PT50M"],
+            ])("valid %s - %s", (min, max) => {
+                const type = validations.duration.options({ min, max });
+
+                expect(type("PT30M")).toEqual(parse("PT30M"));
+            });
+
+            describe("passing invalid options fails", () => {
+                it("min higher than max", () => {
+                    expect(() => {
+                        validations.duration.options({ min: "PT10M", max: "PT1M" });
+                    }).toThrowErrorMatchingSnapshot();
+                });
+
+                it("min and max are not valid durations", () => {
+                    expect(() => {
+                        validations.duration.options({ min: "invalid" });
+                    }).toThrowErrorMatchingSnapshot();
+                });
             });
         });
     });

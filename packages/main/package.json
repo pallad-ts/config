@@ -37,10 +37,12 @@
   "homepage": "https://pallad.dev/config",
   "dependencies": {
     "@pallad/errors": "^1.0.1",
+    "@pallad/range": "^3.1.0",
     "@pallad/secret": "^1.1.1",
     "@pallad/type-check": "^1.2.0",
     "@sweet-monads/either": "^3",
     "@sweet-monads/maybe": "^3",
+    "iso8601-duration": "^2.1.2",
     "predicates": "^2.0.3",
     "tslib": "^2",
     "yn": "^4.0.0"
