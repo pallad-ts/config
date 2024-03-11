@@ -5,7 +5,7 @@ import { extractProvidersFromConfig, Provider, replaceProvidersInConfig } from "
 import { LoadedConfig } from "../types";
 
 export async function loadConfigFromShape(configShape: unknown): Promise<LoadedConfig> {
-    const map = new Map<Provider<any>, Provider.Value<any>>();
+    const map = new Map<Provider<unknown>, Provider.Value<unknown>>();
     if (is.primitive(configShape)) {
         return { config: configShape, providerMap: map };
     }

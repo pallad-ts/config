@@ -36,6 +36,7 @@
   },
   "homepage": "https://pallad.dev/config",
   "dependencies": {
+    "@pallad/compare": "^1.2.0",
     "@pallad/errors": "^1.0.1",
     "@pallad/range": "^3.1.0",
     "@pallad/secret": "^1.1.1",

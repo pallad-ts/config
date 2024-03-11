@@ -49,7 +49,7 @@ export abstract class Provider<TType> {
 }
 
 export namespace Provider {
-    export type Value<T> = Either<Fail, T>;
+    export type Value<T> = Either<Fail | Fail[], T>;
 
     export type Fail = ValueNotAvailable | Error;
 }

@@ -79,7 +79,10 @@ class ConfigCheck extends Command {
         } else if (flags.display === "fails-only") {
             for (const providerValue of providerMap.values()) {
                 if (providerValue.isLeft()) {
-                    this.error(mapProviderFailToError(providerValue.value), { exit: false });
+                    const mappedError = mapProviderFailToError(providerValue.value);
+                    for (const error of Array.isArray(mappedError) ? mappedError : [mappedError]) {
+                        this.error(error, { exit: false });
+                    }
                 }
             }
         }

@@ -9,7 +9,7 @@ import { ResolvedConfig } from "./ResolvedConfig";
  */
 export function replaceProvidersInConfig<T>(
     config: T,
-    resolvedDependencies: Map<Provider<unknown>, Either<Provider.Fail, unknown>>
+    resolvedDependencies: Map<Provider<unknown>, Provider.Value<unknown>>
 ): ResolvedConfig<T> {
     if (is.primitive(config)) {
         return config as any as ResolvedConfig<T>;

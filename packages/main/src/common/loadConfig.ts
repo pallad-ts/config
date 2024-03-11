@@ -11,10 +11,10 @@ import { runOnOptionalPromise } from "./runOnOptionalPromise";
 /**
  * @internal
  */
-export function loadConfig<T>(config: T): OptionalPromise<Either<Provider.Fail, ResolvedConfig<T>>> {
+export function loadConfig<T>(config: T): OptionalPromise<Either<Provider.Fail[], ResolvedConfig<T>>> {
     return runOnOptionalPromise(resolveProviders(Array.from(extractProvidersFromConfig(config))), resolved => {
         if (resolved.size === 0) {
-            return right<Provider.Fail, ResolvedConfig<T>>(config as any);
+            return right<Provider.Fail[], ResolvedConfig<T>>(config as any);
         }
 
         const fails = Array.from(resolved.values()).reduce((result, entry) => {
@@ -23,7 +23,7 @@ export function loadConfig<T>(config: T): OptionalPromise<Either<Provider.Fail, 
                 return result.concat(Array.isArray(fail) ? fail : [fail]);
             }
             return result;
-        }, [] as Provider.Fail.Entry[]);
+        }, [] as Provider.Fail[]);
 
         if (fails.length) {
             return left(fails);
