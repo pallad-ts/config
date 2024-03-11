@@ -1,6 +1,7 @@
 import { Command, Flags, Args } from "@oclif/core";
 import * as is from "predicates";
 
+import { mapProviderFailToError } from "./utils/mapProviderFailToError";
 import { renderConfig } from "./utils/renderConfig";
 import { resolveConfig } from "./utils/resolveConfig";
 
@@ -12,10 +13,10 @@ class ConfigCheck extends Command {
             default: false,
             description: "Reveal secret values from @pallad/secret",
         }),
-        silent: Flags.boolean({
-            default: false,
-            char: "s",
-            description: "Do not display config",
+        display: Flags.string({
+            char: "d",
+            options: ["none", "fails-only", "all"] as const,
+            default: "all",
         }),
         config: Flags.string({
             default: undefined,
@@ -28,27 +29,27 @@ class ConfigCheck extends Command {
         }),
     };
 
-    static args = {
-        configPath: Args.string({
-            name: "configPath",
-            required: false,
-            // eslint-disable-next-line @typescript-eslint/require-await
-            async parse(value: string) {
-                if (is.startsWith("-", value)) {
-                    throw new Error(
-                        `Property path: ${value} is rather a typo. Please use property path that does not start with "-"`
-                    );
-                }
-                return value;
-            },
-            description: "config property path to display",
-        }),
-    };
+    // static args = {
+    //     configPath: Args.string({
+    //         name: "configPath",
+    //         required: false,
+    //         // eslint-disable-next-line @typescript-eslint/require-await
+    //         async parse(value: string) {
+    //             if (is.startsWith("-", value)) {
+    //                 throw new Error(
+    //                     `Property path: ${value} is rather a typo. Please use property path that does not start with "-"`
+    //                 );
+    //             }
+    //             return value;
+    //         },
+    //         description: "config property path to display",
+    //     }),
+    // };
 
     static strict = true;
 
     async run() {
-        const { args, flags } = await this.parse(ConfigCheck);
+        const { flags } = await this.parse(ConfigCheck);
 
         const config = await resolveConfig({
             filePath: flags.config,
@@ -69,13 +70,18 @@ class ConfigCheck extends Command {
 
         const { config: resolvedConfig, providerMap } = config.value.value;
 
-        if (!flags.silent) {
+        if (flags.display === "all") {
             this.log(
                 renderConfig(resolvedConfig, {
                     revealSecrets: flags.revealSecrets,
-                    propertyPath: args.configPath,
                 })
             );
+        } else if (flags.display === "fails-only") {
+            for (const providerValue of providerMap.values()) {
+                if (providerValue.isLeft()) {
+                    this.error(mapProviderFailToError(providerValue.value), { exit: false });
+                }
+            }
         }
 
         const hasFailures = Array.from(providerMap.values()).some(x => x.isLeft());
