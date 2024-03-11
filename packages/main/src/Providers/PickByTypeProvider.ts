@@ -1,10 +1,11 @@
+import { Either, left, right } from "@sweet-monads/either";
+
 import { Provider } from "../Provider";
+import { ResolvedConfig } from "../ResolvedConfig";
+import { loadConfig } from "../common/loadConfig";
 import { runOnOptionalPromise } from "../common/runOnOptionalPromise";
 import { ERRORS } from "../errors";
-import { loadConfig } from "../common/loadConfig";
 import { OptionalPromise } from "../utils";
-import { ResolvedConfig } from "../ResolvedConfig";
-import { Either, left, right } from "@sweet-monads/either";
 
 export class PickByTypeProvider<T> extends Provider<T> {
     private options = new Map<string, any>();
@@ -45,7 +46,7 @@ export class PickByTypeProvider<T> extends Provider<T> {
         });
     }
 
-    private getType(): OptionalPromise<Either<Provider.Fail, string>> {
+    private getType(): OptionalPromise<Provider.Value<string>> {
         return runOnOptionalPromise(this.typeProvider.getValue(), type => {
             return type.chain(type => {
                 if (!this.options.has(type)) {

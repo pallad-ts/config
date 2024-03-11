@@ -7,7 +7,7 @@ import { Either } from "@sweet-monads/either";
 /**
  * @internal
  */
-export function handleConfigLoadResult<T>(result: Either<Provider.Fail, T>) {
+export function handleConfigLoadResult<T>(result: Either<Provider.Fail[], T>) {
     if (result.isLeft()) {
         const fail = result.value;
         const errorList: Array<ConfigError | Error> = (Array.isArray(fail) ? fail : [fail]).map(x => {

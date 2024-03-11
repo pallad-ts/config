@@ -1,6 +1,6 @@
 import { Provider } from "@src/Provider";
-import { OptionalPromise } from "@src/utils";
 import { ValueNotAvailable } from "@src/ValueNotAvailable";
+import { OptionalPromise } from "@src/utils";
 import { left, right } from "@sweet-monads/either";
 
 export class DummyProvider<T> extends Provider<T> {
@@ -17,7 +17,7 @@ export class DummyProvider<T> extends Provider<T> {
     getValue(): OptionalPromise<Provider.Value<T>> {
         const value = (() => {
             if (this.options.error) {
-                return left<Provider.Fail, T>(this.options.error);
+                return left<Provider.Fail | Provider.Fail[], T>(this.options.error);
             }
 
             if (this.options.value) {
