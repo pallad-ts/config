@@ -68,9 +68,14 @@ describe("SecretManagerProvider", () => {
 		});
 	});
 
-	it("integration", () => {
+	it("integration", async () => {
+		const client = new SecretsManagerClient();
+
+		const spy = sinon.spy(client, "send");
+
 		const factory = secretManagerProviderFactory({
 			prefix: "pallad-config-",
+			client,
 		});
 
 		const config = {
@@ -82,6 +87,8 @@ describe("SecretManagerProvider", () => {
 
 		const loaded = loadAsync(config);
 
-		return expect(loaded).resolves.toMatchSnapshot();
+		await expect(loaded).resolves.toMatchSnapshot();
+
+		sinon.assert.calledOnce(spy);
 	});
 });
