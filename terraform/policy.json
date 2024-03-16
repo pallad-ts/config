@@ -5,6 +5,11 @@
       "Effect": "Allow",
       "Action": "ssm:GetParameters",
       "Resource": "arn:aws:ssm:*:*:parameter/pallad-config-*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "secretsmanager:BatchGetSecretValue",
+      "Resource": "arn:aws:secretsmanager:*:*:secret:pallad-config-*"
     }
   ]
 }

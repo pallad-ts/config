@@ -1,4 +1,3 @@
-import { formatISODuration } from "date-fns/formatISODuration";
 import { Duration } from "iso8601-duration";
 
 import { Domain, ErrorDescriptor, formatCodeFactory } from "@pallad/errors";

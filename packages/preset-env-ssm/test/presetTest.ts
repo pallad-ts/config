@@ -12,7 +12,7 @@ describe("preset", () => {
     };
 
     const ENV_FILE_OPTIONS: envFileProviderFactory.Options = {
-        paths: [{ path: "./envFiles/test.env", required: false }],
+        files: [{ path: "./envFiles/test.env", required: false }],
     };
 
     const SSM_OPTIONS: ssmProviderFactory.Options = {

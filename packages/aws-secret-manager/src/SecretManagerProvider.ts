@@ -1,6 +1,7 @@
 import { left, right } from "@sweet-monads/either";
 // eslint-disable-next-line @typescript-eslint/naming-convention
 import DataLoader from "dataloader";
+import { get } from "object-path";
 
 import { AsyncProvider, Provider, ValueNotAvailable } from "@pallad/config";
 
@@ -34,9 +35,9 @@ export class SecretManagerProvider extends AsyncProvider<unknown> {
 		if (this.reference.property) {
 			// eslint-disable-next-line no-null/no-null
 			if (typeof value === "object" && value !== null) {
-				const resolvedValue = (value as Record<string, unknown>)[this.reference.property];
+				const resolvedValue = get(value, this.reference.property);
 				// eslint-disable-next-line no-null/no-null
-				if (resolvedValue === undefined || resolvedValue === "" || resolvedValue === null) {
+				if (resolvedValue === undefined || resolvedValue === null) {
 					const description = SecretReference.computeDescription(this.reference);
 					return left(new ValueNotAvailable(description));
 				}

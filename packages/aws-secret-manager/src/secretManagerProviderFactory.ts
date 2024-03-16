@@ -37,7 +37,7 @@ export function secretManagerProviderFactory({
 	prefix,
 	createDataLoader,
 	deserialize = defaultDeserialize,
-}: secretManagerProviderFactory.Options) {
+}: secretManagerProviderFactory.Options = {}) {
 	const batchFn = async (keys: readonly string[]) => {
 		if (keys.length > MAX_BATCH_SIZE) {
 			throw ERRORS.MISCONFIGURED_DATALOADER.create(MAX_BATCH_SIZE);

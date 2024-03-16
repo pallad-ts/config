@@ -1,11 +1,15 @@
-import DataLoader = require("dataloader");
-import * as sinon from "sinon";
+import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { SecretManagerProvider } from "@src/SecretManagerProvider";
-import { left, right } from "@sweet-monads/either";
-import { ValueNotAvailable } from "@pallad/config";
 import { SecretReference } from "@src/SecretReference";
-import "@pallad/errors-dev";
 import { ERRORS } from "@src/errors";
+import { secretManagerProviderFactory } from "@src/secretManagerProviderFactory";
+import { left, right } from "@sweet-monads/either";
+import * as sinon from "sinon";
+
+import { loadAsync, ValueNotAvailable } from "@pallad/config";
+import "@pallad/errors-dev";
+
+import DataLoader = require("dataloader");
 
 describe("SecretManagerProvider", () => {
 	const REF_WITHOUT_PROPERTY = { secretName: "foo" };
@@ -62,5 +66,22 @@ describe("SecretManagerProvider", () => {
 
 			expect(value.value).toBeErrorWithCode(ERRORS.CANNOT_EXTRACT_PROPERTY_FROM_NON_OBJECT.code);
 		});
+	});
+
+	it("integration", () => {
+		const factory = secretManagerProviderFactory({
+			prefix: "pallad-config-",
+		});
+
+		const config = {
+			fullJson: factory({ secretName: "json" }),
+			fromJson: factory({ secretName: "json", property: "foo" }),
+			fromJsonNested: factory({ secretName: "json", property: "nested.baz" }),
+			raw: factory({ secretName: "raw" }),
+		};
+
+		const loaded = loadAsync(config);
+
+		return expect(loaded).resolves.toMatchSnapshot();
 	});
 });
