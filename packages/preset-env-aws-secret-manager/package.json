@@ -1,0 +1,37 @@
+{
+  "name": "@pallad/config-preset-env-aws-secret-manager",
+  "version": "3.0.0",
+  "description": "Preset for @pallad/config that loads config from ENV variables, env files and AWS Secret manager",
+  "main": "dist/pallad-config-preset-env-aws-secret-manager.cjs.js",
+  "types": "dist/pallad-config-preset-env-aws-secret-manager.cjs.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "@pallad/config": "^3.0.0",
+    "@pallad/config-envfile": "^3.0.0",
+    "@pallad/config-aws-secret-manager": "^3.0.0",
+    "tslib": "^2"
+  },
+  "scripts": {
+    "test": "JEST_JUNIT_OUTPUT_DIR=../../test_results/preset-env-ssm npx pallad-scripts test",
+    "generate-barrels": "npx barrelsby -l all --delete -d ./src",
+    "compile": "npm run generate-barrels && npx preconstruct build",
+    "lint": "npx pallad-scripts lint",
+    "prepublishOnly": "npm run compile",
+    "postinstall": "npx preconstruct dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pallad-ts/config.git",
+    "directory": "packages/preset-env-aws-secret-manager"
+  },
+  "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
+  "license": "MIT"
+}

@@ -12,8 +12,8 @@ import "@pallad/errors-dev";
 import DataLoader = require("dataloader");
 
 describe("SecretManagerProvider", () => {
-	const REF_WITHOUT_PROPERTY = { secretName: "foo" };
-	const REF_WITH_PROPERTY = { secretName: "foo", property: "bar" };
+	const REF_WITHOUT_PROPERTY: SecretReference = { name: "foo" };
+	const REF_WITH_PROPERTY: SecretReference = { name: "foo", property: "bar" };
 
 	describe("without property", () => {
 		it("should return value for provided secret name", async () => {
@@ -23,7 +23,7 @@ describe("SecretManagerProvider", () => {
 			const provider = new SecretManagerProvider(REF_WITHOUT_PROPERTY, dataLoader);
 
 			await expect(provider.getValue()).resolves.toEqual(right("foo"));
-			sinon.assert.calledOnceWithExactly(batchFunction, [REF_WITHOUT_PROPERTY.secretName]);
+			sinon.assert.calledOnceWithExactly(batchFunction, [REF_WITHOUT_PROPERTY.name]);
 		});
 
 		it("returns ValueNotAvailable error if secret does not exist", () => {
@@ -45,7 +45,7 @@ describe("SecretManagerProvider", () => {
 			const provider = new SecretManagerProvider(REF_WITH_PROPERTY, dataLoader);
 
 			await expect(provider.getValue()).resolves.toEqual(right("foo"));
-			sinon.assert.calledOnceWithExactly(batchFunction, [REF_WITH_PROPERTY.secretName]);
+			sinon.assert.calledOnceWithExactly(batchFunction, [REF_WITH_PROPERTY.name]);
 		});
 		it("returns ValueNotAvailable error if property does not exist", () => {
 			const dataLoader = new DataLoader<string, Record<string, string> | undefined>(() => Promise.resolve([{}]));
@@ -74,10 +74,10 @@ describe("SecretManagerProvider", () => {
 		});
 
 		const config = {
-			fullJson: factory({ secretName: "json" }),
-			fromJson: factory({ secretName: "json", property: "foo" }),
-			fromJsonNested: factory({ secretName: "json", property: "nested.baz" }),
-			raw: factory({ secretName: "raw" }),
+			fullJson: factory({ name: "json" }),
+			fromJson: factory({ name: "json", property: "foo" }),
+			fromJsonNested: factory({ name: "json", property: "nested.baz" }),
+			raw: factory({ name: "raw" }),
 		};
 
 		const loaded = loadAsync(config);

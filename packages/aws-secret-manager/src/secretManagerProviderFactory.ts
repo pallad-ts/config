@@ -61,7 +61,7 @@ export function secretManagerProviderFactory({
 	return (reference: SecretReference) => {
 		return new SecretManagerProvider(
 			{
-				secretName: (prefix ?? "") + reference.secretName,
+				name: (prefix ?? "") + reference.name,
 				property: reference.property,
 			},
 			dataLoader

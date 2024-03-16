@@ -1,0 +1,10 @@
+{
+  "extends": "@pallad",
+  "root": true,
+  "parserOptions": {
+    "project": [
+      "tsconfig.json",
+      "test/tsconfig.json"
+    ]
+  }
+}

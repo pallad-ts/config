@@ -3,8 +3,8 @@ import { createPreset } from "@src/preset";
 import DataLoader from "dataloader";
 
 import { EnvProvider, FirstAvailableProvider } from "@pallad/config";
+import { SSMProvider, ssmProviderFactory } from "@pallad/config-aws-ssm";
 import { EnvFileProvider, envFileProviderFactory } from "@pallad/config-envfile";
-import { SSMProvider, ssmProviderFactory } from "@pallad/config-ssm";
 
 describe("preset", () => {
     const ENV_OPTIONS = {

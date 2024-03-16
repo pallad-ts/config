@@ -4,12 +4,12 @@ describe("SecretReference", () => {
 	it.each<[SecretReference]>([
 		[
 			{
-				secretName: "s1",
+				name: "s1",
 			},
 		],
 		[
 			{
-				secretName: "s2",
+				name: "s2",
 				property: "p2",
 			},
 		],

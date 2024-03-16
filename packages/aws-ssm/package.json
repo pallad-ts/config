@@ -1,9 +1,9 @@
 {
-  "name": "@pallad/config-ssm",
+  "name": "@pallad/config-aws-ssm",
   "version": "3.0.0",
   "description": "SSM provider for @pallad/config",
-  "main": "dist/pallad-config-ssm.cjs.js",
-  "types": "dist/pallad-config-ssm.cjs.d.ts",
+  "main": "dist/pallad-config-aws-ssm.cjs.js",
+  "types": "dist/pallad-config-aws-ssm.cjs.d.ts",
   "keywords": [
     "config",
     "ssm",

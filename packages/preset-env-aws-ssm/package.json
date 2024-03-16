@@ -16,7 +16,7 @@
   "dependencies": {
     "@pallad/config": "^3.0.0",
     "@pallad/config-envfile": "^3.0.0",
-    "@pallad/config-ssm": "^3.0.0",
+    "@pallad/config-aws-ssm": "^3.0.0",
     "tslib": "^2"
   },
   "scripts": {

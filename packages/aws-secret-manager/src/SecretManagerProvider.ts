@@ -21,7 +21,7 @@ export class SecretManagerProvider extends AsyncProvider<unknown> {
 	}
 
 	private async loadValue() {
-		const value = await this.dataLoader.load(this.reference.secretName);
+		const value = await this.dataLoader.load(this.reference.name);
 
 		if (value === undefined) {
 			const description = SecretReference.computeDescription(this.reference);

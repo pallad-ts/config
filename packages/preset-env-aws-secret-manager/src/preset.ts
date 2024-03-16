@@ -1,12 +1,14 @@
-import { FirstAvailableProvider, Provider } from "@pallad/config";
+import { FirstAvailableProvider } from "@pallad/config";
 import { envProviderFactory } from "@pallad/config";
+import { secretManagerProviderFactory, SecretReference } from "@pallad/config-aws-secret-manager";
 import { envFileProviderFactory } from "@pallad/config-envfile";
-import { ssmProviderFactory } from "@pallad/config-ssm";
 
 export function createPreset(presetOptions: Preset.Options) {
     const envHelper = envProviderFactory(presetOptions?.env || process.env);
     const envFileHelper = presetOptions.envFile ? envFileProviderFactory(presetOptions.envFile) : undefined;
-    const ssmHelper = presetOptions.ssm ? ssmProviderFactory(presetOptions.ssm) : undefined;
+    const secretManagerHelper = presetOptions.secretManager
+        ? secretManagerProviderFactory(presetOptions.secretManager)
+        : undefined;
 
     function* generator(key: Preset.Key) {
         if (key.env) {
@@ -16,8 +18,8 @@ export function createPreset(presetOptions: Preset.Options) {
             }
         }
 
-        if (key.ssmKey && ssmHelper) {
-            yield ssmHelper(key.ssmKey);
+        if (key.secretReference && secretManagerHelper) {
+            yield secretManagerHelper(key.secretReference);
         }
     }
 
@@ -29,12 +31,12 @@ export function createPreset(presetOptions: Preset.Options) {
 export namespace Preset {
     export interface Key {
         env?: string;
-        ssmKey?: string;
+        secretReference?: SecretReference;
     }
 
     export interface Options {
         envFile?: envFileProviderFactory.Options;
         env?: (typeof process)["env"];
-        ssm?: ssmProviderFactory.Options;
+        secretManager?: secretManagerProviderFactory.Options;
     }
 }

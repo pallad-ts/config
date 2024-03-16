@@ -1,10 +1,10 @@
 export interface SecretReference {
-	secretName: string;
+	name: string;
 	property?: string;
 }
 
 export namespace SecretReference {
-	export function computeDescription({ secretName, property }: SecretReference) {
-		return `Secret name: ${secretName}${property ? `, property: ${property}` : ""}`;
+	export function computeDescription({ name, property }: SecretReference) {
+		return `Secret name: ${name}${property ? `, property: ${property}` : ""}`;
 	}
 }
