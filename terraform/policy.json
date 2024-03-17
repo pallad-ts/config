@@ -7,8 +7,13 @@
       "Resource": "arn:aws:ssm:*:*:parameter/pallad-config-*"
     },
     {
-      "Effect": "Allow",
       "Action": "secretsmanager:BatchGetSecretValue",
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "secretsmanager:GetSecretValue",
       "Resource": "arn:aws:secretsmanager:*:*:secret:pallad-config-*"
     }
   ]
