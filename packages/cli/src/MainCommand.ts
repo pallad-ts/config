@@ -1,11 +1,10 @@
 import { Command, Flags, Args } from "@oclif/core";
-import * as is from "predicates";
 
 import { mapProviderFailToError } from "./utils/mapProviderFailToError";
 import { renderConfig } from "./utils/renderConfig";
 import { resolveConfig } from "./utils/resolveConfig";
 
-class ConfigCheck extends Command {
+class MainCommand extends Command {
     static description = "Display config created with @pallad/config";
 
     static flags = {
@@ -21,11 +20,13 @@ class ConfigCheck extends Command {
         config: Flags.string({
             default: undefined,
             char: "c",
+            required: true,
             description: "Path to the file with configuration",
         }),
-        configDir: Flags.string({
-            default: undefined,
-            description: "Config directory from which cosmiconfig will search for configuration files",
+        configProperty: Flags.string({
+            char: "p",
+            description:
+                "Name of property, from config module, to use for configuration shape. If not provided `default` or module main export will be used.",
         }),
     };
 
@@ -49,26 +50,21 @@ class ConfigCheck extends Command {
     static strict = true;
 
     async run() {
-        const { flags } = await this.parse(ConfigCheck);
+        const { flags } = await this.parse(MainCommand);
 
         const config = await resolveConfig({
             filePath: flags.config,
-            directoryStartPath: flags.configDir,
+            moduleConfigProperty: flags.configProperty,
         });
-        if (config.isNone()) {
-            this.error(
-                "No configuration found. Please refer to https://pallad.dev/config/cli#setup for more information"
-            );
-        }
 
-        if (config.value.isLeft()) {
-            const error = config.value.value;
+        if (config.isLeft()) {
+            const error = config.value;
             this.error(error.message, {
                 suggestions: ["Refer to https://pallad.dev/config/cli#configuration-options for more information"],
             });
         }
 
-        const { config: resolvedConfig, providerMap } = config.value.value;
+        const { config: resolvedConfig, providerMap } = config.value;
 
         if (flags.display === "all") {
             this.log(
@@ -92,4 +88,4 @@ class ConfigCheck extends Command {
     }
 }
 
-export = ConfigCheck;
+export = MainCommand;

@@ -1,5 +1,5 @@
 import { LoadedConfig } from "@src/types";
-import { resolveConfig } from "@src/utils/resolveConfig";
+import { resolveConfigShape } from "@src/utils/resolveConfigShape";
 import { Either } from "@sweet-monads/either";
 import { Maybe } from "@sweet-monads/maybe";
 import { AssertionError } from "node:assert";
@@ -25,7 +25,7 @@ describe("resolveConfig", () => {
     const FIXTURES_DIR = path.join(__dirname, "./fixtures");
 
     it.each([["object"], ["function"], ["async-function"], ["primitive"]])("resolving as %s", async type => {
-        const result = await resolveConfig({
+        const result = await resolveConfigShape({
             directoryStartPath: path.join(FIXTURES_DIR, `config-as-${type}`),
         });
 
@@ -35,7 +35,7 @@ describe("resolveConfig", () => {
     });
 
     it("loading config from file path", async () => {
-        const result = await resolveConfig({
+        const result = await resolveConfigShape({
             filePath: path.join(FIXTURES_DIR, `custom-config-path/custom-config.ts`),
         });
 
@@ -46,7 +46,7 @@ describe("resolveConfig", () => {
 
     describe("fails", () => {
         it("if config is not found", async () => {
-            const result = await resolveConfig({
+            const result = await resolveConfigShape({
                 directoryStartPath: path.join(FIXTURES_DIR, `config-not-found`),
             });
 
@@ -54,7 +54,7 @@ describe("resolveConfig", () => {
         });
 
         it("if config returns a function", async () => {
-            const result = await resolveConfig({
+            const result = await resolveConfigShape({
                 directoryStartPath: path.join(FIXTURES_DIR, `invalid-config`),
             });
 

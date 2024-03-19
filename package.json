@@ -7,7 +7,8 @@
     "compile": "lerna run compile"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "examples/*"
   ],
   "devDependencies": {
     "@babel/core": "^7.23.9",

@@ -1,13 +1,11 @@
-import { cosmiconfig } from "cosmiconfig";
+import { Either } from "@sweet-monads/either";
 
+import { LoadedConfig } from "../types";
 import { loadConfigFromShape } from "./loadConfigFromShape";
-import { resolveConfigurationShapeCosmiConfig } from "./resolveConfigurationShapeCosmiConfig";
+import { resolveConfigShape } from "./resolveConfigShape";
 
-export async function resolveConfig(options: resolveConfigurationShapeCosmiConfig.Options) {
-    const explorer = cosmiconfig("pallad-config");
-    return (await resolveConfigurationShapeCosmiConfig(explorer, options)).asyncMap(configShape => {
-        return configShape.asyncMap(shape => {
-            return loadConfigFromShape(shape);
-        });
+export async function resolveConfig(options: resolveConfigShape.Options): Promise<Either<Error, LoadedConfig>> {
+    return (await resolveConfigShape(options)).asyncMap(configShape => {
+        return loadConfigFromShape(configShape);
     });
 }

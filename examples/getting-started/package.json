@@ -1,16 +1,16 @@
 {
-  "name": "@palla/config-example-getting-started",
+  "name": "@pallad/config-example-getting-started",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
   "license": "MIT",
+  "scripts": {
+    "config": "node -r ts-node/register ../../packages/cli/bin/run.js -c ./src/config.ts -p createConfig"
+  },
   "dependencies": {
     "@pallad/config": "^3",
     "@pallad/config-cli": "^3",
     "@pallad/secret": "^1"
-  },
-  "pallad-config": {
-    "file": "src/config.js",
-    "property": "createConfig"
   }
 }
