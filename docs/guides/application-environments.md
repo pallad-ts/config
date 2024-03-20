@@ -19,7 +19,7 @@ import {secret} from '@pallad/secret';
 export function createConfig() {
     const param = createPreset({
         envFile: {
-            paths: [
+            files: [
                 // common config
                 {path: './config/common.env', required: false},
                 // use config/production.env or config/ci.env if available

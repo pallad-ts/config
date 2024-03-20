@@ -38,7 +38,7 @@ import {env, FirstAvailableProvider} from '@pallad/config';
 import {envFileProviderFactory} from '@pallad/config-envfile';
 
 const envFile = envFileProviderFactory({
-    paths: ['.env']
+    files: ['.env']
 });
 
 // gets value from env variable FOO, if that is not available fallback to FOO from envfile

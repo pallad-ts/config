@@ -26,7 +26,7 @@ import {secret} from '@pallad/secret';
 const param = createPreset({
     // defines configuration for envFile provider, if not provided then envfile will be ignored
     envFile: { 
-        paths: ['.env'],
+        files: ['.env'],
     },
     // defines configuration for SSM, if not provided then ssm will be ignored
     ssm: {
@@ -84,7 +84,7 @@ import {FirstAvailableProvider, Provider, wrapWithDefaultAndTransformer} from '@
 function createPreset() {
     // setup provider factory for envFile data
     const envFile = envFileProviderFactory({
-        paths: [
+        files: [
             `./config/${env}.env` // this file is required
         ],
     });

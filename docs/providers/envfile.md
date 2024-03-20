@@ -17,7 +17,7 @@ Creating envfile helper.
 import {envFileProviderFactory} from '@pallad/config-envfile';
 
 const envFile = envFileProviderFactory({
-    paths: ['.env'] // loads ".env" from current working directory
+    files: ['.env'] // loads ".env" from current working directory
 })
 
 envFile('FOO') // uses `FOO` variable from ".env" file
