@@ -57,6 +57,12 @@ describe("tomlProviderFactory", () => {
 
             expect(factoryBase.load()).toHaveProperty("section.value", 1);
             expect(factory.load()).toHaveProperty("section.value", 2);
+
+            expect(factory.load()).toHaveProperty("jwt", [
+                { key: "key", value: "value" },
+                { key: "key2", value: "value2" },
+                { key: "key3", value: "value3" },
+            ]);
         });
 
         it("customizing deep merge", () => {

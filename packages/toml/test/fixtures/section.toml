@@ -1,2 +1,7 @@
 [section]
 value = 2
+
+[[jwt]]
+key = 'key3'
+value = 'value3'
+

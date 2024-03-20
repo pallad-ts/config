@@ -37,7 +37,7 @@ The example policy allows retrieving only parameters from prefix `"env/prod/"`.
 
 :::
 
-Installation
+# Installation
 
 ```bash npm2yarn
 npm install @pallad/config-ssm

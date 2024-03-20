@@ -136,3 +136,6 @@ function upperCase(value: string) {
 
 env('FOO', {transformer: upperCase});
 ```
+
+## Validation
+// TODO

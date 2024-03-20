@@ -15,7 +15,9 @@ Some providers can also behave like hybrids that use sync or async way depending
 
 - [Environment variables](./environment-variables)
 - [Envfiles](./envfile)
-- [AWS SSM Parameter Store](./ssm)
+- [TOML files](./toml)
+- [AWS SSM Parameter Store](./aws-ssm)
+- [AWS Secret Manager](./aws-secret-manager)
 
 If you need to load values from different source you can define your own [custom provider](#custom-provider).
 
