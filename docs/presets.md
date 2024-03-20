@@ -124,8 +124,8 @@ export function createConfig() {
     return {
         database: {
             hostname: param('database.hostname'),
-            password: param('database.password', {transformer: secret}),
-            username: param('database.username', {transformer: secret}),
+            password: param('database.password').secret(),
+            username: param('database.username').secret(),
         }
     } 
 }

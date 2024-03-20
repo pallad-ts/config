@@ -12,13 +12,10 @@ few [hybrid](./#introduction-to-providers) providers for composition.
 Uses default value if injected provider's value is not available.
 
 ```ts
-import {DefaultValueProvider, env} from '@palla/config';
+import {DefaultValueProvider, env} from '@pallad/config';
 
 // uses 1000 if there is no `FOO` env variable available
-const provider = new DefaultValueProvider(
-    env('FOO'),
-    1000
-);
+env('FOO').defaultTo(1000);
 ```
 
 ## Transform
@@ -30,11 +27,7 @@ Transforms value (if available) using provided transforming function.
 ```ts
 import {TransformProvider, env} from '@pallad/config';
 
-// for env variable FOO=world returns "WORLD"
-const provider = new TransformProvider(
-    env('FOO'),
-    value => value.toUpperCase()
-);
+env('FOO').transform(value => value.toUpperCase());
 ```
 
 ## First available
@@ -54,26 +47,3 @@ const provider = new FirstAvailableProvider(
     envFile('FOO')
 );
 ```
-
-## Default with transformer
-
-Just simple helper to easily wrap any provider with default value and/or transformer.
-
-```ts
-import {wrapWithDefaultAndTransformer, env, type} from '@pallad/config';
-
-const envProvider = env('FOO');
-
-// returns just envProvider since there is no default or transformer
-wrapWithDefaultAndTransformer(envProvider)
-
-// returns envProvider wrapped with DefaultValueProvider
-wrapWithDefaultAndTransformer(envProvider, {default: 'BAR'})
-
-// returns envProvider wrapped with DefaultValueProvider and TransformProvider
-wrapWithDefaultAndTransformer(envProvider, {default: 'BAR', transform: type.int})
-
-// returns envProvider wrapped with TransformProvider
-wrapWithDefaultAndTransformer(envProvider, { transform: type.int})
-```
-

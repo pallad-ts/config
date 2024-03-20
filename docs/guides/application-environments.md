@@ -39,8 +39,8 @@ export function createConfig() {
             // for production - SSM included as well
             hostname: param({env: 'DATABASE_HOSTNAME', ssmKey: 'database/hostname'}),
             port: 5432,
-            username: env({env: 'DATABASE_USERNAME', ssmKey: 'database/username'}, {transformer: secret}),
-            password: env({env: 'DATABASE_PASSWORD', ssmKey: 'database/password'}, {transformer: secret})
+            username: env({env: 'DATABASE_USERNAME', ssmKey: 'database/username'}).secret(),
+            password: env({env: 'DATABASE_PASSWORD', ssmKey: 'database/password'}).secret()
         }
     }
 }

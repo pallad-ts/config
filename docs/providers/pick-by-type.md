@@ -19,10 +19,10 @@ const provider = pickByType(env('EMAIL_STRATEGY'))
         }
     })
     .registerOptions('logs', {
-        path: env('EMAIL_LOGS_LOCATION', {default: '/tmp/email_logs'})
+        path: env('EMAIL_LOGS_LOCATION').defaultTo('/tmp/email_logs')
     })
     .registerOptions('forward', {
-        path: env('EMAIL_FORWARD_ADDRESS', {default: 'dev@example.com'})
+        path: env('EMAIL_FORWARD_ADDRESS').defaultTo('dev@example.com')
     });
 
 

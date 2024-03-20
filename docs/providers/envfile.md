@@ -23,10 +23,10 @@ const envFile = envFileProviderFactory({
 envFile('FOO') // uses `FOO` variable from ".env" file
 
 // converts to int
-envFile('FOO', {transformer: type.int});
+envFile('FOO').transform(type.int);
 
 // converts it to int, if not available uses: 1000
-envFile('FOO', {transformer: type.int, default: 1000}); 
+envFile('FOO').transform(type.int).defaultTo(1000); 
 ```
 
 ## Customization
@@ -34,7 +34,7 @@ envFile('FOO', {transformer: type.int, default: 1000});
 import {envFileProviderFactory} from '@pallad/config-envfile';
 
 const envFile = envFileProviderFactory({
-    paths: [
+    files: [
         // ignores if does not exist
         {path: 'development.env', required: false},
         // additionally loads production envfile and overrides all variables with same name defined in previous files
@@ -42,6 +42,31 @@ const envFile = envFileProviderFactory({
         '.env' // requires file to exist
     ],
     cwd: '../config', // custom working directory - default process.cwd
-    populateToEnv: false // whether to populate loaded envfile variables to `process.env` - default false
 });
+```
+
+
+## Populating to ENV
+
+Variables loaded from ENV files are not by default applied to `process.env`.
+
+You can however populate them by calling `populateToEnv`
+```ts
+const envFile = envFileProviderFactory({
+    files: [
+        // ignores if does not exist
+        {path: 'development.env', required: false},
+        // additionally loads production envfile and overrides all variables with same name defined in previous files
+        {path: 'production.env', required: false},  
+        '.env' // requires file to exist
+    ],
+    cwd: '../config', // custom working directory - default process.cwd
+});
+
+envFile.populateToEnv(); // populates all loaded variables to process.env
+
+// populates only the ones that satisfy the predicate
+envFile.populateToEnv((key) => {
+    return key === 'AWS_REGION';
+})
 ```

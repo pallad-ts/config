@@ -35,10 +35,10 @@ import {env} from '@pallad/config';
 export function createConfig() {
     return {
         database: {
-            hostname: env('DATABASE_HOSTNAME', {default: 'localhost'}),
+            hostname: env('DATABASE_HOSTNAME').defaultTo('localhost'),
             password: env('DATABASE_PASSWORD'),
-            port: env('DATABASE_PORT', {default: 5432}),
-            username: env('DATABASE_USERNAME', {default: 'postgres'})
+            port: env('DATABASE_PORT').defaultTo(5432),
+            username: env('DATABASE_USERNAME').defaultTo('postgres')
         }
     };
 }

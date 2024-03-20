@@ -4,7 +4,6 @@ sidebar_position: 20
 
 # Typescript
 
-We've spent a lot of energy and time to make `@pallad/config` as much type-friendly as possible.
 There is a good chance that your entire configuration shape might be inferred by typescript automatically.
 
 ```ts
@@ -16,8 +15,8 @@ export function createConfig() {
         mailer: {
             email: env('EMAIL_FROM'),
             smtp: {
-                port: env('EMAIL_SMTP_PORT', {transformer: type.int}),
-                password: env('EMAIL_SMTP_PASSWORD', {default: undefined})
+                port: env('EMAIL_SMTP_PORT').transform(type.int),
+                password: env('EMAIL_SMTP_PASSWORD').defaultTo(undefined)
             }
         }
     }
@@ -53,8 +52,8 @@ please ensure that `default` and/or `transformer` properties are properly typed.
 export function createConfig() {
     return {
         ssl: {
-            // we cannot infer shape of privateKey
-            config: env('SSL_CONFIG', {transformer: JSON.parse})
+            // we cannot infer shape of JSON
+            config: env('SSL_CONFIG').transform(JSON.parse)
         }
     }
 }
@@ -78,7 +77,7 @@ function parseSSLConfig(config: string) {
 export function createConfig() {
     return {
         ssl: {
-            config: env('SSL_CONFIG', {transformer: JSON.parse})
+            config: env('SSL_CONFIG').transform(parseSSLConfig)
         }
     }
 }

@@ -37,8 +37,8 @@ export function createConfig() {
         database: {
             hostname: env('DATABASE_HOSTNAME'),
             port: 5432,
-            username: env('DATABASE_USERNAME', {transformer: secret}),
-            password: env('DATABASE_PASSWORD', {transformer: secret})
+            username: env('DATABASE_USERNAME').secret(),
+            password: env('DATABASE_PASSWORD').secret()
         }
     };
 }
@@ -56,8 +56,8 @@ exports.createConfig = () => {
         database: {
             hostname: env('DATABASE_HOSTNAME'),
             port: 5432,
-            username: env('DATABASE_USERNAME', {transformer: secret}),
-            password: env('DATABASE_PASSWORD', {transformer: secret})
+            username: env('DATABASE_USERNAME').secret(),
+            password: env('DATABASE_PASSWORD').secret()
         }
     };
 }
@@ -199,8 +199,8 @@ export function createConfig() {
         database: {
             hostname: env('DATABASE_HOSTNAME'),
             port: 5432,
-            username: env('DATABASE_USERNAME', {transformer: secret}),
-            password: env('DATABASE_PASSWORD', {transformer: secret})
+            username: env('DATABASE_USERNAME').secret(),
+            password: env('DATABASE_PASSWORD').secret()
         }
     };
 }

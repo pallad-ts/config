@@ -13,8 +13,8 @@ import {env, type} from '@pallad/config';
 env('FOO');
 
 // retrieves `FOO` environment variable and converts it to int
-env('FOO', {transformer: type.int});
+env('FOO').transform(type.int);
 
 // retrieves `FOO` environment variable and converts it to int, if not available uses: 1000
-env('FOO', {transformer: type.int, default: 1000}); 
+env('FOO').transform(type.int).defaultTo(1000); 
 ```

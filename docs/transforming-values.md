@@ -14,7 +14,7 @@ Converts value to int. Throws an error if cannot be converted.
 ```ts
 import {env, type} from '@pallad/config';
 
-env('FOO', {transformer: type.int});
+env('FOO').transform(type.int);
 ```
 
 ## Number
@@ -24,7 +24,7 @@ Converts value to number. Throws an error if cannot be converted.
 ```ts
 import {env, type} from '@pallad/config';
 
-env('FOO', {transformer: type.number});
+env('FOO')(type.number);
 ```
 
 ## Boolean
@@ -35,18 +35,29 @@ library so boolean-ish values like `yes`, `no`, `y`, `on`, `off` etc are allowed
 ```ts
 import {env, type} from '@pallad/config';
 
-env('FOO', {transformer: type.bool});
+env('FOO').transform(type.bool);
 ```
 
 ## String
+
+:::note
+
+Note about type safety.
+
+Many providers does not provide type safety. 
+For example, environment variables are always strings but values from aws-secret-manager are not therefore 
+enforcing type of `string` by using transformer is advised way to ensure type safety.
+
+:::
 
 Ensures that value is a string and got trimmed from whitespaces at the beginning and the end.
 
 ```ts
 import {env, type} from '@pallad/config';
 
-env('FOO', {transformer: type.string});
+env('FOO')(type.string);
 ```
+
 
 ## URL
 
@@ -55,7 +66,7 @@ Ensures that value is an URL, throws an error otherwise.
 ```ts
 import {env, type} from '@pallad/config';
 
-env('FOO', {transformer: type.url});
+env('FOO').transform(type.url);
 ```
 
 You can enforce certain protocols like `http` or `https`
@@ -63,18 +74,18 @@ You can enforce certain protocols like `http` or `https`
 ```ts
 import {env, type} from '@pallad/config';
 
-env('FOO', {transformer: type.url.options({protocols: ['http', 'https']})});
+env('FOO').transform(type.url.options({protocols: ['http', 'https']}));
 ```
 
 ## Splitting by separator
 
-Splits value into an array by given seperator (by default ","). All array values are trimmed and empty values got
+Splits value into an array by given separator (by default ","). All array values are trimmed and empty values got
 removed.
 
 ```ts
 import {env, type} from '@pallad/config';
 
-env('FOO', {transformer: type.split});
+env('FOO').transform(type.split);
 ```
 
 Custom separator
@@ -82,20 +93,7 @@ Custom separator
 ```ts
 import {env, type} from '@pallad/config';
 
-env('FOO', {transformer: type.split.by({separator: ':'})});
-```
-
-Uses custom separator and additionally transforms every array value to int
-
-```ts
-import {env, type} from '@pallad/config';
-
-env('FOO', {
-    transformer: type.split.by({
-        separator: ':',
-        transformer: type.int
-    })
-});
+env('FOO').transform(type.split.by( ':'));
 ```
 
 ## Protecting from accidental leak via `@pallad/secret`
@@ -109,7 +107,7 @@ Wrapping value with `Secret`
 import {env} from '@pallad/config';
 import {secret} from '@pallad/config';
 
-env('FOO', {transformer: secret});
+env('FOO').secret();
 ```
 
 Converts value to int and wraps with secret
@@ -118,13 +116,13 @@ Converts value to int and wraps with secret
 import {env, type} from '@pallad/config';
 import {protect} from '@pallad/config';
 
-env('FOO', {transformer: protect(type.int)});
+env('FOO').transform(type.int).secret();
 ```
 
-## Custom transformer
+## Custom transformer and validation
 
-As mentioned before, transformer is just a simple mapping function that accepts loaded value as input and returns
-transformed value.
+As mentioned before, transformer is just a simple mapping function that accepts loaded value as input, returns
+transformed value or throw an error if value is invalid.
 
 ```ts
 import {env} from '@pallad/config';
@@ -134,8 +132,6 @@ function upperCase(value: string) {
     return value.toUpperCase();
 }
 
-env('FOO', {transformer: upperCase});
+env('FOO').transform(upperCase);
 ```
 
-## Validation
-// TODO
