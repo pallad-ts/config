@@ -24,10 +24,21 @@ Easily manage configurations for different environments like CI, production, or 
 * 🧑‍🤝‍🧑 Type friendly
 * ❤️ Easy integration with any kind of applications
 
-## Community
-
-Join our [discord server](https://discord.gg/KCvnfzhNAq)
-
 ## Screenshots
-![Code](./assets/code.png)
+Define config
+```ts title="/src/config.ts"
+
+import {env} from '@pallad/config';
+
+export function createConfig() {
+    return {
+        database: {
+            hostname: env('DATABASE_HOSTNAME'),
+            port: 5432,
+            username: env('DATABASE_USERNAME').secret(),
+            password: env('DATABASE_PASSWORD').secret()
+        }
+    };
+}
+```
 ![Shell](./assets/shell.png)

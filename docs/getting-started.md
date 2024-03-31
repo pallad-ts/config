@@ -30,7 +30,6 @@ env, env files or ssm.
 
 ```ts title="/src/config.ts"
 import {env} from '@pallad/config';
-import {secret} from '@pallad/secret';
 
 export function createConfig() {
     return {
@@ -49,7 +48,6 @@ export function createConfig() {
 
 ```js title="/src/config.js"
 const {env} = require('@pallad/config')
-const {secret} = require('@pallad/secret');
 
 exports.createConfig = () => {
     return {

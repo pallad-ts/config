@@ -40,13 +40,13 @@ The example policy allows retrieving only parameters from prefix `"env/prod/"`.
 # Installation
 
 ```bash npm2yarn
-npm install @pallad/config-ssm
+npm install @pallad/config-aws-ssm
 ```
 
 The simplest example
 
 ```ts
-import {ssmProviderFactory} from '@pallad/config-ssm';
+import {ssmProviderFactory} from '@pallad/config-aws-ssm';
 import {secret} from '@pallad/secret';
 
 const ssm = ssmProviderFactory();
@@ -66,10 +66,10 @@ While SSM provider is great by itself it might be more beneficial to use it with
 
 ## Customization
 
-Prefix all parameter names
+### Prefix all parameter names
 
 ```ts
-import {ssmProviderFactory} from '@pallad/config-ssm';
+import {ssmProviderFactory} from '@pallad/config-aws-ssm';
 
 const ssm = ssmProviderFactory({
     prefix: '/env/prod/'
@@ -79,10 +79,10 @@ const ssm = ssmProviderFactory({
 ssm('database/password')
 ```
 
-Use custom instance of SSM
+### Use custom instance of SSM
 
 ```ts
-import {ssmProviderFactory} from '@pallad/config-ssm';
+import {ssmProviderFactory} from '@pallad/config-aws-ssm';
 import {SSM} from 'aws-sdk';
 
 const ssm = ssmProviderFactory({
@@ -94,10 +94,3 @@ const ssm = ssmProviderFactory({
 
 ssm('database/password');
 ```
-
-## Transforming values
-
-As every provider factory, SSM is no different and allows for values transformation
-
-
-For example in order to

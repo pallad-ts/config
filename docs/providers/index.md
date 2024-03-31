@@ -14,7 +14,7 @@ Some providers can also behave like hybrids that use sync or async way depending
 `@pallad/config` supports retrieving values from:
 
 - [Environment variables](./environment-variables)
-- [Envfiles](./envfile)
+- [ENV files](./envfile)
 - [TOML files](./toml)
 - [AWS SSM Parameter Store](./aws-ssm)
 - [AWS Secret Manager](./aws-secret-manager)

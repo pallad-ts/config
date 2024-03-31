@@ -15,7 +15,7 @@ const provider = pickByType(env('EMAIL_STRATEGY'))
     .registerOptions('real', {
         smtp: {
             hostname: env('EMAIL_SMTP_HOSTNAME'),
-            password: env('EMAIL_SMTP_PASSWORD', {transformer: secret})
+            password: env('EMAIL_SMTP_PASSWORD').secret()
         }
     })
     .registerOptions('logs', {

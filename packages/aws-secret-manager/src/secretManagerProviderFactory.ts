@@ -1,11 +1,14 @@
-import { SecretsManagerClient, BatchGetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
-import { SecretValueEntry } from "@aws-sdk/client-secrets-manager/dist-types/models/models_0";
+import { SecretsManagerClient, BatchGetSecretValueCommand, SecretValueEntry } from "@aws-sdk/client-secrets-manager";
+import { fromTry } from "@sweet-monads/either";
 // eslint-disable-next-line @typescript-eslint/naming-convention
 import DataLoader from "dataloader";
+
+
 
 import { SecretManagerProvider } from "./SecretManagerProvider";
 import { SecretReference } from "./SecretReference";
 import { ERRORS } from "./errors";
+
 
 const MAX_BATCH_SIZE = 20;
 
@@ -21,12 +24,12 @@ export function defaultDeserialize(entry: SecretValueEntry) {
 	}
 
 	if (entry.SecretString) {
-		const string = entry.SecretString;
-		if (string.startsWith("{") || string.startsWith("[") || string.startsWith('"')) {
-			return JSON.parse(entry.SecretString);
-		}
-
-		return entry.SecretString;
+		return fromTry(() => JSON.parse(entry.SecretString!)).fold(
+			() => {
+				return entry.SecretString!;
+			},
+			x => x
+		);
 	}
 
 	throw new Error("Unsupported secret. Missing required `SecretBinary` or `SecretString` field.");
