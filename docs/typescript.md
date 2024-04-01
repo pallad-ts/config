@@ -46,7 +46,7 @@ export function createMailer(config: Config['mailer']) {
 
 ## Inferring problems
 If for some reason config shape cannot be properly inferred then 
-please ensure that `default` and/or `transformer` properties are properly typed.
+please ensure that `.default()` and/or `.transform()`  is being called and transform function has valid return type.
 
 ```ts
 export function createConfig() {

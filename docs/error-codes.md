@@ -55,3 +55,16 @@ As message states. Use configuration value suitable for given type.
 `Protocol "%s" is not allowed. Allowed: %s`
 
 Value provided to [url transformer](transforming-values#url) is an url but uses invalid protocol.
+
+
+## E_CONF_10
+
+`Value "%s" cannot be converted to ISO duration`
+
+Value provided to [duration transformer](transforming-values#duration) is not a valid ISO duration string.
+
+## E_CONF_11
+
+`Duration "%s" is not in valid range %s`
+
+Provided duration does not fit configured range.

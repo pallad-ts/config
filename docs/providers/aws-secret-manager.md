@@ -107,7 +107,7 @@ import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 const secretManager = secretManagerProviderFactory({
     client: new SecretsManagerClient({region: 'us-east-1'})
 });
-// retrieves "/env/prod/database" secret from `us-east-1` region
+// retrieves "database" secret from `us-east-1` region
 secretManager('database')
 ```
 

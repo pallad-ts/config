@@ -77,6 +77,51 @@ import {env, type} from '@pallad/config';
 env('FOO').transform(type.url.options({protocols: ['http', 'https']}));
 ```
 
+## Duration
+
+Ensures that value is a valid ISO duration string and transforms it to `Duration` object. Throws an error otherwise.
+
+```ts
+import {env, type} from '@pallad/config';
+
+env('CACHE_TTL').transform(type.duration);
+```
+
+Type of `Duration` object
+```ts
+export interface Duration {
+    years?: number;
+    months?: number;
+    weeks?: number;
+    days?: number;
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
+}
+```
+
+See docs for `iso8601-duration` package docs for more 
+details [https://www.npmjs.com/package/iso8601-duration](https://www.npmjs.com/package/iso8601-duration) 
+and helpers function such `toSeconds` that allow to convert duration object to seconds.
+
+:::note
+
+I wish we could use new standard [Temporal's Duration](https://tc39.es/proposal-temporal/docs/#Temporal-Duration) but polyfill is experimental and not ready for production yet.
+
+:::
+
+### Validate duration min and max values
+
+Ensures that value is between a second or a day. `min` and `max` options are optional.
+```ts
+import {env, type} from '@pallad/config';
+
+env('CACHE_TTL').transform(type.duration.options({
+    min: {seconds: 1}, // or `PT1S`
+    max: {days: 1} // or `P1D`
+}));
+```
+
 ## Splitting by separator
 
 Splits value into an array by given separator (by default ","). All array values are trimmed and empty values got
@@ -93,7 +138,7 @@ Custom separator
 ```ts
 import {env, type} from '@pallad/config';
 
-env('FOO').transform(type.split.by( ':'));
+env('FOO').transform(type.split.by(':'));
 ```
 
 ## Protecting from accidental leak via `@pallad/secret`

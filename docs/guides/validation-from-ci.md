@@ -9,9 +9,9 @@ configuration check to your CI setup.
 
 Just run
 ```bash
-pallad-config --silent
+pallad-config -d fails-only
 ```
-`--silent` flag disables output of configuration and if everything is fine then command exit with code 0,
+`-f fails-only` flag disables output of configuration and if everything is fine then command exit with code 0,
 otherwise exits with code 1 and therefore causing CI to fail.
 
 ## Security aspect of checking configuration in CI
@@ -23,7 +23,7 @@ I'll answer the same as other great people in IT: `It depends`.
 2) Are you running migration from CI? Then your CI already has the access to application environment so that's not a problem.
 3) If none of above points is feasible for you then you can skip this step and there is nothing wrong with that! That's just your choice :)
 
-## What about providing secrets for tasks in kuberneters or other container management solutions?
+## What about providing secrets for tasks in kubernetes or other container management solutions?
 I guess we're talking about approach of having task definition with env variables injected, mapped values from secret storages etc.
 
 I just simply don't like this approach since it is more error-prone.

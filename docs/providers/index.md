@@ -8,8 +8,10 @@ slug: /providers/
 Provider is an object responsible for loading config value from any source like env variables, files or external
 services.
 
-Provider can retrieve values in synchronous, asynchronous way. 
-Some providers can also behave like hybrids that use sync or async way depending on additional conditions.
+Provider can retrieve values in synchronous or asynchronous way. 
+Some providers can behave like hybrids that use sync or async approach depending on additional conditions. 
+Example of such provider is [transform provider](../transforming-values) that takes provided provider (sync or async)
+ then resolves value in the same way as injected provider.
 
 `@pallad/config` supports retrieving values from:
 

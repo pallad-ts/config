@@ -6,16 +6,16 @@ sidebar_position: 5
 
 This quick guide will show you how to setup basic configuration for database, load it from the app and display from CLI.
 
+:::info
+
+This guide uses commonjs javascript modules but you can use typescript or ecma script modules as well.
+
+:::
+
 ## Installation
 
 ```bash npm2yarn
 npm install @pallad/config @pallad/config-cli
-```
-
-It is worth to install `@pallad/secret` to protect sensitive data (like passwords, jwt keys etc.) from accidental leak.
-
-```bash npm2yarn
-npm install @pallad/secret
 ```
 
 ## Create config file
@@ -24,32 +24,11 @@ Config file should define a function that creates an object with your entire con
 that will never change or [providers](./providers) that are responsible for retrieving values from other sources like
 env, env files or ssm.
 
-````mdx-code-block
-<Tabs>
-<TabItem value="ts" label="Typescript">
-
-```ts title="/src/config.ts"
-import {env} from '@pallad/config';
-
-export function createConfig() {
-    return {
-        database: {
-            hostname: env('DATABASE_HOSTNAME'),
-            port: 5432,
-            username: env('DATABASE_USERNAME').secret(),
-            password: env('DATABASE_PASSWORD').secret()
-        }
-    };
-}
-```
-
-</TabItem>
-<TabItem value="js" label="Javascript">
-
 ```js title="/src/config.js"
-const {env} = require('@pallad/config')
 
-exports.createConfig = () => {
+const {env} = require('@pallad/config');
+
+modules.exports = function createConfig() {
     return {
         database: {
             hostname: env('DATABASE_HOSTNAME'),
@@ -60,10 +39,6 @@ exports.createConfig = () => {
     };
 }
 ```
-
-</TabItem>
-</Tabs>
-````
 
 ## Loading
 
@@ -76,52 +51,21 @@ See [usage section](./usage#loading-configuration) for more information.
 
 :::
 
-````mdx-code-block
-<Tabs>
-<TabItem value="ts" label="Typescript">
-
-```ts title="/src/app.ts"
-import {createConfig} from './config';
-
-const config = loadSync(createConfig())
-// your config is available
-// if something went wrong then `loadSync` would have thrown an error
-```
-
-</TabItem>
-<TabItem value="js" label="Javascript">
 
 ```js title="/src/app.js"
-const {loadSync} = require('@pallad/config')
 const {createConfig} = require('./config');
 
 const config = loadSync(createConfig())
 // your config is available
-// if something went wrong then `loadSync` would have thrown an error
-
+// in case of error `loadSync` throws an error
 ```
-
-</TabItem>
-</Tabs>
-````
 
 ## Display config in CLI
 
-Provide information for `@pallad/config-cli` about location of your configuration function. Edit `package.json` and add
-following code
-
-```json
-{
-    "pallad-config": {
-        "file": "src/config.js"
-    }
-}
-```
-
-Now run
+Run CLI with location of a file that exports config (`-c`)
 
 ```bash
-pallad-config
+pallad-config -c ./src/config.js
 ```
 
 You should see something like this
@@ -143,7 +87,7 @@ As you see not all env variables are defined. Let's define them just for testing
 DATABASE_USERNAME=my-username \
 DATABASE_PASSWORD=superSecret123! \
 DATABASE_HOSTNAME=localhost \
-pallad-config
+pallad-config -c ./src/config.js
 ```
 
 ```shell
@@ -165,7 +109,7 @@ Secret values are not visible by default. In order to show them you need to add 
 DATABASE_USERNAME=my-username \
 DATABASE_PASSWORD=superSecret123! \
 DATABASE_HOSTNAME=localhost \
-pallad-config --revealSecrets
+pallad-config -c ./src/config.js --revealSecrets
 ```
 
 ```shell

@@ -18,6 +18,16 @@ import {DefaultValueProvider, env} from '@pallad/config';
 env('FOO').defaultTo(1000);
 ```
 
+### Making value optional
+
+If value is not required you can default it to `undefined` by calling `.optional()`.
+
+```ts
+env('FOO').optional();
+// the same as
+env('FOO').defaultTo(undefined);
+```
+
 ## Transform
 
 Transforms value (if available) using provided transforming function.
@@ -29,6 +39,14 @@ import {TransformProvider, env} from '@pallad/config';
 
 env('FOO').transform(value => value.toUpperCase());
 ```
+
+
+:::info
+
+Using `.transform()` is a main way to ensure type safety since the inferred value type comes from return type of function passed to it.
+Use it in case of any problems with type inference.
+
+:::
 
 ## First available
 Returns first available value. If non is available then fails. It's great for creating your own presets of providers.

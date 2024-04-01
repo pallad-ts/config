@@ -8,11 +8,11 @@ The main goal of `@pallad/config` is to be helpful at every stage of application
 
 **Development for programmers**
 
-Configuration must be accessible in type-safe manner for typescript based codebase. That will limit amount of errors or bugs
+Configuration must be accessible in type-safe manner for typescript based codebase. That limits amount of errors or bugs
 caused by typos or configuration misuse. 
 
-If you want to have an access to database configuration then you can be sure that ```config.database.username``` will be
-available. Moreover if you've protected that value with `@pallad/secret` then you can also be sure
+If you want to have access to database configuration then you can be sure that ```config.database.username``` will be
+available. Moreover if you've marked value as `.secret()` then you can also be sure
 that ```config.database.username.getValue()``` will always work since typescript will tell you that username is
 a `Secret` object.
 

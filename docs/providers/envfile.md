@@ -48,7 +48,7 @@ const envFile = envFileProviderFactory({
 
 ## Populating to ENV
 
-Variables loaded from ENV files are not by default applied to `process.env`.
+Variables loaded from ENV files are not applied to `process.env` by default.
 
 You can however populate them by calling `populateToEnv`
 ```ts

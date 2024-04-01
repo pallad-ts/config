@@ -13,37 +13,9 @@ Installation first
 npm install @pallad/config-cli
 ```
 
-## Setup
-
-Now you need to define where your configuration is actually stored. CLI
-uses [cosmiconfig](https://www.npmjs.com/package/cosmiconfig) so you can define configuration in the way that is most
-suitable for you.
-
-Just few of available options:
-
-- under `pallad-config` key in `package.json`
-- in `.pallad-configrc` file
-- in `pallad-config.js` file
-- in `pallad-config.config.js` like
-
-
-### Configuration options
-
-`file` property has to be defined to indicate location of configuration file module.
-
-`@pallad/config` will try to find first available function in that module and use it as configuration source. If that
-fails then you need to provide `property` to clearly indicate property of module containing function responsible for
-creating configuration.
-
-```json title=pallad-config.json
-{
-    "file": "./src/config", 
-}
-```
-
 ## Example usage
 ```bash
-pallad-config
+pallad-config -c ./src/config.mjs
 ```
 
 Displays
@@ -58,23 +30,71 @@ Object {
 }
 ```
 
-## Exit code
+## Specifying configuration file
 
-If loading configuration fails then command return exit code 1, otherwise returns 0.
-
-This allows for easy CI integration and check very early at deployment process whether configuration is valid.
-
-## Displaying subset of configuration
-
-You can display only subset of your configuration by providing path to property you wish to display
-
-```bash
-pallad-config database.hostname
+Loads configuration shape defined as `default` export.
+```shell
+pallad-config -c ./src/config.js
 ```
+
+Uses `createConfig` function (that suppose to return configuration shape) as configuration source.
+```shell
+pallad-config -c ./src/config.js -p createConfig
+```
+
+### Loading typescript file
+Node.js itself cannot load typescript files therefore you need to use `ts-node` (or others). 
+See [ts-node documentation](https://www.npmjs.com/package/ts-node#node-flags-and-other-tools) for more details.
 
 ```shell
-localhost
+NODE_OPTIONS='-r ts-node/register' pallad-config -c ./src/config.ts
 ```
+
+## Display modes
+
+### `all`
+Default mode in which values and errors are displayed
+
+Example output with errors
+```shell
+Object {
+  "database": Object {
+    "hostname": Value not available: ENV: DATABASE_HOSTNAME,
+    "password": Value not available: ENV: DATABASE_PASSWORD,
+    "port": 5432,
+    "username": Value not available: ENV: DATABASE_USERNAME,
+  },
+}
+```
+
+Example output without errors
+```shell
+Object {
+  "database": Object {
+    "hostname": "database.internal",
+    "password": **SECRET** (secret),
+    "port": 5432,
+    "username": **SECRET** (secret),
+  },
+}
+```
+
+### `fails-only`
+Displays only errors. Useful for CI/CD pipelines to quickly check whether configuration is valid and prevent logging configuration.
+
+```shell
+    ConfigError: Value not available: ENV: DATABASE_USERNAME
+    Code: E_CONF_2
+    ConfigError: Value not available: ENV: DATABASE_PASSWORD
+    Code: E_CONF_2
+```
+
+### `none`
+Displays nothing even in case of failure. Use [exit code](#exit-code) to check whether loading was successful. 
+
+## Exit code
+
+CLI uses exit code 1 when loading configuration fails, otherwise returns 0.
 
 ## CLI options
 
@@ -82,12 +102,13 @@ localhost
 Display config created with @pallad/config
 
 USAGE
-  $ pallad-config [CONFIGPATH]
+  $ pallad-config  -c <value> [--revealSecrets] [-d none|fails-only|all] [-p <value>]
 
-ARGUMENTS
-  CONFIGPATH  config property path to display
-
-OPTIONS
-  -s, --silent     Do not display config
-  --revealSecrets  Whether to reveal secret values from @pallad/secret
+FLAGS
+  -c, --config=<value>          (required) Path to the file with configuration
+  -d, --display=<option>        [default: all]
+                                <options: none|fails-only|all>
+  -p, --configProperty=<value>  Name of property, from config module, to use for configuration shape. If not provided
+                                `default` or module main export will be used.
+      --revealSecrets           Reveal secret values from @pallad/secret
 ```
