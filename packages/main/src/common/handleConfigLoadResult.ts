@@ -1,8 +1,9 @@
-import { Provider } from "../Provider";
-import { ERRORS } from "../errors";
-import { ConfigError } from "../ConfigError";
-import { ValueNotAvailable } from "../ValueNotAvailable";
 import { Either } from "@sweet-monads/either";
+
+import { ConfigError } from "../ConfigError";
+import { Provider } from "../Provider";
+import { ValueNotAvailable } from "../ValueNotAvailable";
+import { ERRORS } from "../errors";
 
 /**
  * @internal

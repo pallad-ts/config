@@ -14,7 +14,7 @@ export function replaceProvidersInConfig<T>(
     if (is.primitive(config)) {
         return config as any as ResolvedConfig<T>;
     } else if (Provider.isType(config)) {
-        return resolvedDependencies.get(config) as ResolvedConfig<T>;
+        return resolvedDependencies.get(config)!.value as ResolvedConfig<T>;
     } else if (is.array(config)) {
         const newObject = [];
         for (const value of config) {
