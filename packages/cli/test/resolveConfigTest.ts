@@ -5,7 +5,6 @@ import { AssertionError } from "node:assert";
 import * as path from "node:path";
 
 function assertConfigHasNoErrors(config: Either<Error, LoadedConfig>): LoadedConfig {
-    console.log(config);
     if (config.isRight()) {
         return config.value;
     }
