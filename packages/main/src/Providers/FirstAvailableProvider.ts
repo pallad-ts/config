@@ -15,6 +15,12 @@ export class FirstAvailableProvider<T extends Array<Provider<any>>> extends Prov
     }
 
     getValue(): OptionalPromise<Provider.Value<FirstAvailableProvider.Unwrap<T>>> {
+        // This piece of code is pretty complex since it needs to ensure to resolve value in sync way if all of providers are sync
+        // if any of the providers is async then the resolution should by async as well
+        // it is not an easy task to achieve it without using async/await therefore the code is a bit complex
+        // I've tried to optimize it once and I've failed
+        // increase counter below to warn anybody else who tries to optimize it
+        // total_wasted_hours_to_improve_it = 2
         const iterator = this.providers[Symbol.iterator]();
         const descriptions: string[] = [];
         for (const provider of iterator) {

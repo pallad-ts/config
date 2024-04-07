@@ -1,0 +1,7 @@
+{
+  "extends": "@pallad/scripts/dist/tsconfig-node.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  }
+}

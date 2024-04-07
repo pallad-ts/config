@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@pallad/config": "^3",
-    "@pallad/config-cli": "^3",
-    "@pallad/secret": "^1"
+    "@pallad/config-cli": "^3"
   }
 }

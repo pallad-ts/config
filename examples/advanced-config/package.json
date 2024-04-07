@@ -1,0 +1,18 @@
+{
+  "name": "@pallad/config-example-advanced-config",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
+  "license": "MIT",
+  "scripts": {
+    "config": "node -r ts-node/register ../../packages/cli/bin/run.js -c ./src/createConfig.ts"
+  },
+  "dependencies": {
+    "@pallad/config": "^3",
+    "@pallad/app-env": "^3.3.0",
+    "@pallad/config-aws-ssm": "*",
+    "@pallad/config-toml": "*",
+    "zod": "^3.22.4"
+  }
+}

@@ -1,0 +1,14 @@
+[app]
+port = 3000
+loggingLevel = "debug"
+
+[database]
+hostname = "localhost"
+port = 5432
+username = "postgres"
+password = "postgres"
+
+[mailer]
+type = "file-storage"
+file = "logs/email.log"
+

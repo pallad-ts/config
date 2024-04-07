@@ -7,9 +7,7 @@ sidebar_position: 18
 Providers presets are helpers that bundles few providers into one for easier usage.
 
 ## Env + Envfile + SSM {#env-ssm}
-
-Currently, the only available preset. Attempts to take value from environment variables, env file variables and in the
-end from SSM.
+Attempts to take value from environment variables, env file variables and in the end from AWS Parameter Store.
 
 ### Installation
 
@@ -21,7 +19,6 @@ npm install @pallad/config-preset-env-ssm
 
 ```typescript
 import {createPreset} from '@pallad/config-preset-env-ssm';
-import {secret} from '@pallad/secret';
 
 const param = createPreset({
     // defines configuration for envFile provider, if not provided then envfile will be ignored
@@ -37,7 +34,7 @@ const param = createPreset({
 
 General usage
 ```ts
-param({env: 'DATABASE_PASSWORD', ssm: 'database/password'}, {transform: secret});
+param({env: 'DATABASE_PASSWORD', ssm: 'database/password'}).secret();
 ```
 
 This fella attempts to load value from:
@@ -59,75 +56,99 @@ Use only SSM, ignore env and envfile.
 param({ssm: 'database/password'})
 ```
 
+## Env + Envfile + AWS Secret Manager {#env-secret-manager}
+Attempts to take value from environment variables, env file variables and in the end from AWS Secret Manager.
 
-## Creating custom preset {#custom-preset}
 
-Custom preset is a great way to simplify creation of config for you needs. 
-Thanks for availability of [composition providers](./providers/composition) you can quickly implement even advanced scenarios.
+### Installation
 
-There is no need to create some advanced setup for preset. You just need a function.
-For example purposes let's create a preset that loads data from env files (based on environment) and automatically converts provided string to ssm key.
-
-For example by calling 
+```bash npm2yarn
+npm install @pallad/config-preset-env-aws-secret-manager
 ```
-param('database.hostname')
+
+### Usage
+
+```typescript
+import {createPreset} from '@pallad/config-preset-env-aws-secret-manager';
+
+const param = createPreset({
+    // defines configuration for envFile provider, if not provided then envfile will be ignored
+    envFile: { 
+        files: ['.env'],
+    },
+    // defines configuration for AWS Secret Manager, if not provided then AWS Secret Manager will be ignored
+    secretManager: {
+        prefix: '/env/prod'
+    }
+});
 ```
-it loads data from `DATABASE_HOSTNAME` env variables and from SSM `/env/{environment}/database/hostname` for production.
+
+General usage
+```ts
+param({env: 'DATABASE_PASSWORD', secretReference: {name: 'database', property: 'password'}}).secret();
+```
+
+This fella attempts to load value from:
+- env variable `DATABASE_PASSWORD`
+- if that fails then try to load `DATABASE_PASSWORD` from envfiles
+- if that fails then try to load `env/prod/database` secret from AWS Secret Manager and extract property `password` from it
+
+At the end wraps value with [secret](https://npmjs.com/package/@pallad/secret).
+
+#### Other cases
+
+Use only env variables and envfile. Ignore AWS Secret Manager.
+```ts
+param({env: 'DATABASE_PASSWORD'})
+```
+
+Use only AWS Secret manager, ignore env and envfile.
+```ts
+param({secretReference: {name: 'database', property: 'password'}});
+```
+
+
+## Custom preset
+
+It is very easy to define your own preset. Let's use one from [advanced config](./guides/advanced-config) example that loads values from TOML files and AWS Secret Manager is value is not provided in TOML.
 
 ```ts
-import {env, isProduction} from '@pallad/app-env';
-import {envFileProviderFactory} from '@pallad/config-envfile';
-import {ssmProviderFactory} from '@pallad/config-envfile';
-import {FirstAvailableProvider, Provider, wrapWithDefaultAndTransformer} from '@pallad/config';
+import { info } from "@pallad/app-env";
+import { secretManagerProviderFactory } from "@pallad/config-aws-secret-manager";
+import { tomlProviderFactory } from "@pallad/config-toml";
+import { FirstAvailableProvider } from "@pallad/config";
 
-
-function createPreset() {
-    // setup provider factory for envFile data
-    const envFile = envFileProviderFactory({
+export function createConfig() {
+    
+    const toml = tomlProviderFactory({
         files: [
-            `./config/${env}.env` // this file is required
+            `./config/main.toml`,
+            { path: `./config/${info.name}.toml`, required: false },
         ],
     });
 
-    // setup provider factory for SSM data but for production only
-    const ssm = isProduction ? ssmProviderFactory({
-        prefix: '/env/${env}/'
-    }) : undefined;
-
-    // returns a function that allows to wrap returned provider with transform and default values
-    return wrapWithDefaultAndTransformer.wrap((key: string) => {
-        // convert 'database.hostname' to 'DATABASE_HOSTNAME'
-        const envKey = key.toUpperCase().replace(/\.+/g, '_');
-        const providers: Provider<any>[] = [
-            envFile(envKey)
-        ];
-        
-        // only in production (otherwise ssm is not available)
-        if (ssm) {
-            // convert 'database.hostname' to 'database/hostname'
-            const ssmKey = key.replace(/\.+/g, '/');
-            providers.push(ssm(ssmKey));
-        }
-        
-        return new FirstAvailableProvider(...providers);
+    const secretManager = secretManagerProviderFactory({
+        prefix: `/${info.name}/`,
     });
-}
-```
-
-Example usage
-```ts
-import {secret} from '@pallad/secret';
-
-export function createConfig() {
-    const param = createPreset();
+    
+    // generator is a really nice way to define preset
+    function* tomlAndSecretManagerGenerator(key: string) {
+        // always read from toml (to allow override)
+        yield toml(key);
+    
+        // take from secret manager (for production and staging only)
+        if (info.is("production", "staging")) {
+            yield secretManager({name: key});
+        }
+    }
+    
+    function tomlAndSecretManager(key: string) {
+        return new FirstAvailableProvider(...tomlAndSecretManagerGenerator(key));
+    }
     
     return {
-        database: {
-            hostname: param('database.hostname'),
-            password: param('database.password').secret(),
-            username: param('database.username').secret(),
-        }
-    } 
+        // loads property `example` from TOML files or `/[envName]/example` from AWS Secret Manager
+        example: tomlAndSecretManager('example')
+    }
 }
 ```
-So elegant!
