@@ -1,72 +1,54 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`resolveConfig fails if config returns a function 1`] = `
-{
-  "config": [Function],
-  "providerMap": Map {},
-}
-`;
+exports[`resolveConfig fails if config returns a function 1`] = `[Error: Configuration shape must be an object, primitive or array. Got function]`;
 
-exports[`resolveConfig loading config from file path 1`] = `
-{
-  "database": {
-    "hostname": "hostname",
-    "password": **Secret value: "database password" **,
-    "port": 5432,
-    "schema": "test",
-    "username": **Secret value: "username" **,
-  },
-  "jwt": {
-    "secret": **Secret value: [
-      "s1",
-      "s2",
-      "s3",
-    ] **,
-  },
-  "scheduler": {
-    "options": {
-      "dns": "http://localhost:8080",
-    },
-    "type": "dynamic",
-  },
-  "usernames": {
-    "fake": [
-      "tommy",
-      "john",
-      "jerry",
-    ],
-  },
-}
-`;
+exports[`resolveConfig loading common js default export 1`] = `"bar"`;
+
+exports[`resolveConfig loading common js with custom property 1`] = `"bar"`;
 
 exports[`resolveConfig resolving as async-function 1`] = `
 {
   "database": {
     "hostname": "hostname",
-    "password": **Secret value: "database password" **,
+    "password": EitherConstructor {
+      "type": "Right",
+      "value": **Secret value: "database password" **,
+    },
     "port": 5432,
-    "schema": "test",
+    "schema": EitherConstructor {
+      "type": "Right",
+      "value": "test",
+    },
     "username": **Secret value: "username" **,
   },
   "jwt": {
-    "secret": **Secret value: [
-      "s1",
-      "s2",
-      "s3",
-    ] **,
-  },
-  "scheduler": {
-    "options": {
-      "dns": "http://localhost:8080",
+    "secret": EitherConstructor {
+      "type": "Right",
+      "value": **Secret value: [
+        "s1",
+        "s2",
+        "s3",
+      ] **,
     },
-    "type": "dynamic",
+  },
+  "scheduler": EitherConstructor {
+    "type": "Right",
+    "value": {
+      "options": {
+        "dns": "http://localhost:8080",
+      },
+      "type": "dynamic",
+    },
   },
   "usernames": {
-    "fake": [
-      "tommy",
-      "john",
-      "jerry",
-    ],
+    "fake": EitherConstructor {
+      "type": "Right",
+      "value": [
+        "tommy",
+        "john",
+        "jerry",
+      ],
+    },
   },
 }
 `;
@@ -75,30 +57,45 @@ exports[`resolveConfig resolving as function 1`] = `
 {
   "database": {
     "hostname": "hostname",
-    "password": **Secret value: "database password" **,
+    "password": EitherConstructor {
+      "type": "Right",
+      "value": **Secret value: "database password" **,
+    },
     "port": 5432,
-    "schema": "test",
+    "schema": EitherConstructor {
+      "type": "Right",
+      "value": "test",
+    },
     "username": **Secret value: "username" **,
   },
   "jwt": {
-    "secret": **Secret value: [
-      "s1",
-      "s2",
-      "s3",
-    ] **,
-  },
-  "scheduler": {
-    "options": {
-      "dns": "http://localhost:8080",
+    "secret": EitherConstructor {
+      "type": "Right",
+      "value": **Secret value: [
+        "s1",
+        "s2",
+        "s3",
+      ] **,
     },
-    "type": "dynamic",
+  },
+  "scheduler": EitherConstructor {
+    "type": "Right",
+    "value": {
+      "options": {
+        "dns": "http://localhost:8080",
+      },
+      "type": "dynamic",
+    },
   },
   "usernames": {
-    "fake": [
-      "tommy",
-      "john",
-      "jerry",
-    ],
+    "fake": EitherConstructor {
+      "type": "Right",
+      "value": [
+        "tommy",
+        "john",
+        "jerry",
+      ],
+    },
   },
 }
 `;
@@ -107,32 +104,94 @@ exports[`resolveConfig resolving as object 1`] = `
 {
   "database": {
     "hostname": "hostname",
-    "password": **Secret value: "database password" **,
+    "password": EitherConstructor {
+      "type": "Right",
+      "value": **Secret value: "database password" **,
+    },
     "port": 5432,
-    "schema": "test",
+    "schema": EitherConstructor {
+      "type": "Right",
+      "value": "test",
+    },
     "username": **Secret value: "username" **,
   },
   "jwt": {
-    "secret": **Secret value: [
-      "s1",
-      "s2",
-      "s3",
-    ] **,
-  },
-  "scheduler": {
-    "options": {
-      "dns": "http://localhost:8080",
+    "secret": EitherConstructor {
+      "type": "Right",
+      "value": **Secret value: [
+        "s1",
+        "s2",
+        "s3",
+      ] **,
     },
-    "type": "dynamic",
+  },
+  "scheduler": EitherConstructor {
+    "type": "Right",
+    "value": {
+      "options": {
+        "dns": "http://localhost:8080",
+      },
+      "type": "dynamic",
+    },
   },
   "usernames": {
-    "fake": [
-      "tommy",
-      "john",
-      "jerry",
-    ],
+    "fake": EitherConstructor {
+      "type": "Right",
+      "value": [
+        "tommy",
+        "john",
+        "jerry",
+      ],
+    },
   },
 }
 `;
 
 exports[`resolveConfig resolving as primitive 1`] = `"some primitive value"`;
+
+exports[`resolveConfig using moduleConfigProperty 1`] = `
+{
+  "database": {
+    "hostname": "hostname",
+    "password": EitherConstructor {
+      "type": "Right",
+      "value": **Secret value: "database password" **,
+    },
+    "port": 5432,
+    "schema": EitherConstructor {
+      "type": "Right",
+      "value": "test",
+    },
+    "username": **Secret value: "username" **,
+  },
+  "jwt": {
+    "secret": EitherConstructor {
+      "type": "Right",
+      "value": **Secret value: [
+        "s1",
+        "s2",
+        "s3",
+      ] **,
+    },
+  },
+  "scheduler": EitherConstructor {
+    "type": "Right",
+    "value": {
+      "options": {
+        "dns": "http://localhost:8080",
+      },
+      "type": "dynamic",
+    },
+  },
+  "usernames": {
+    "fake": EitherConstructor {
+      "type": "Right",
+      "value": [
+        "tommy",
+        "john",
+        "jerry",
+      ],
+    },
+  },
+}
+`;

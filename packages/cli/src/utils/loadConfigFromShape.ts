@@ -20,7 +20,7 @@ export async function loadConfigFromShape(configShape: unknown): Promise<LoadedC
     );
 
     return {
-        config: replaceProvidersInConfig(configShape, map as any),
+        config: replaceProvidersInConfig(configShape, map, value => value),
         providerMap: map,
     };
 }

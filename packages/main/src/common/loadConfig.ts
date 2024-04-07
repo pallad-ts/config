@@ -28,7 +28,7 @@ export function loadConfig<T>(config: T): OptionalPromise<Either<Provider.Fail[]
         if (fails.length) {
             return left(fails);
         }
-        return right(replaceProvidersInConfig(config, resolved));
+        return right(replaceProvidersInConfig(config, resolved, value => value.value) as ResolvedConfig<T>);
     });
 }
 

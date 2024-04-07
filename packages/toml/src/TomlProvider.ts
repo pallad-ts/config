@@ -16,7 +16,7 @@ export class TomlProvider extends Provider<unknown> {
         return fromTry<Provider.Fail, Record<string, unknown>>(this.configFactory).chain(config => {
             return fromNullable(get(config, this.propertyPath)).fold(
                 () => {
-                    return left(new ValueNotAvailable(`TOML Config at property path: ${this.propertyPath}`));
+                    return left(new ValueNotAvailable(`TOML config at property path: ${this.propertyPath}`));
                 },
                 (value: unknown) => right(value)
             );

@@ -5,6 +5,6 @@ export interface SecretReference {
 
 export namespace SecretReference {
 	export function computeDescription({ name, property }: SecretReference) {
-		return `Secret name: ${name}${property ? `, property: ${property}` : ""}`;
+		return `AWS Secret Manager secret name: ${name}${property ? `, property: ${property}` : ""}`;
 	}
 }

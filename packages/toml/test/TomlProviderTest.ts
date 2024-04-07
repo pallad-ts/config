@@ -9,7 +9,7 @@ describe("TomlProvider", () => {
         const resolvedValue = provider.getValue();
 
         expect(resolvedValue.isLeft()).toBe(true);
-        expect(resolvedValue.value).toEqual(new ValueNotAvailable("TOML Config at property path: foo"));
+        expect(resolvedValue.value).toEqual(new ValueNotAvailable("TOML config at property path: foo"));
     });
 
     it("returns value at given path", () => {

@@ -1,32 +1,31 @@
-import { Either } from "@sweet-monads/either";
 import * as is from "predicates";
 
 import { Provider } from "./Provider";
-import { ResolvedConfig } from "./ResolvedConfig";
 
 /**
  * @internal
  */
-export function replaceProvidersInConfig<T>(
-    config: T,
-    resolvedDependencies: Map<Provider<unknown>, Provider.Value<unknown>>
-): ResolvedConfig<T> {
+export function replaceProvidersInConfig(
+    config: unknown,
+    resolvedDependencies: Map<Provider<unknown>, Provider.Value<unknown>>,
+    transformValue: (value: Provider.Value<unknown>) => unknown
+): unknown {
     if (is.primitive(config)) {
-        return config as any as ResolvedConfig<T>;
+        return config;
     } else if (Provider.isType(config)) {
-        return resolvedDependencies.get(config)!.value as ResolvedConfig<T>;
+        return transformValue(resolvedDependencies.get(config)!);
     } else if (is.array(config)) {
         const newObject = [];
         for (const value of config) {
-            newObject.push(replaceProvidersInConfig(value, resolvedDependencies));
+            newObject.push(replaceProvidersInConfig(value, resolvedDependencies, transformValue));
         }
-        return newObject as any as ResolvedConfig<T>;
+        return newObject;
     } else if (is.plainObject(config)) {
         const newObject: Record<any, any> = {};
         for (const [key, value] of Object.entries(config)) {
-            newObject[key] = replaceProvidersInConfig(value, resolvedDependencies);
+            newObject[key] = replaceProvidersInConfig(value, resolvedDependencies, transformValue);
         }
-        return newObject as ResolvedConfig<T>;
+        return newObject;
     }
-    return config as ResolvedConfig<T>;
+    return config;
 }

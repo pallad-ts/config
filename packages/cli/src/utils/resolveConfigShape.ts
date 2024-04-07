@@ -1,4 +1,5 @@
 import { Either, fromPromise } from "@sweet-monads/either";
+import { Maybe, none } from "@sweet-monads/maybe";
 import { realpath } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
@@ -18,7 +19,7 @@ export namespace resolveConfigShape {
 }
 
 // this is highly inspired from https://github.com/cosmiconfig/cosmiconfig/blob/main/src/loaders.ts
-async function loadModule(modulePath: string) {
+async function loadModule(modulePath: string): Promise<Maybe<unknown>> {
     const realModulePath = await realpath(modulePath);
     try {
         const fileUrl = pathToFileURL(realModulePath);
@@ -47,7 +48,8 @@ function extractConfigFromModule(module: any, property?: string) {
     if (module instanceof Function) {
         return module;
     }
-    if ("default" in module) {
+    if (typeof module === "object" && "default" in module) {
         return module.default;
     }
+    return module;
 }

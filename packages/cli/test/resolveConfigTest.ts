@@ -1,19 +1,11 @@
 import { LoadedConfig } from "@src/types";
-import { resolveConfigShape } from "@src/utils/resolveConfigShape";
+import { resolveConfig } from "@src/utils/resolveConfig";
 import { Either } from "@sweet-monads/either";
-import { Maybe } from "@sweet-monads/maybe";
 import { AssertionError } from "node:assert";
 import * as path from "node:path";
 
-function assertConfigIsFound(config: Maybe<Either<Error, LoadedConfig>>): Either<Error, LoadedConfig> {
-    if (config.isJust()) {
-        return config.value;
-    }
-
-    throw new AssertionError({ message: "Config not found" });
-}
-
 function assertConfigHasNoErrors(config: Either<Error, LoadedConfig>): LoadedConfig {
+    console.log(config);
     if (config.isRight()) {
         return config.value;
     }
@@ -25,41 +17,56 @@ describe("resolveConfig", () => {
     const FIXTURES_DIR = path.join(__dirname, "./fixtures");
 
     it.each([["object"], ["function"], ["async-function"], ["primitive"]])("resolving as %s", async type => {
-        const result = await resolveConfigShape({
-            directoryStartPath: path.join(FIXTURES_DIR, `config-as-${type}`),
+        const result = await resolveConfig({
+            filePath: path.resolve(FIXTURES_DIR, `config-as-${type}.ts`),
         });
 
-        const config = assertConfigHasNoErrors(assertConfigIsFound(result));
+        const config = assertConfigHasNoErrors(result);
 
         expect(config.config).toMatchSnapshot();
     });
 
-    it("loading config from file path", async () => {
-        const result = await resolveConfigShape({
-            filePath: path.join(FIXTURES_DIR, `custom-config-path/custom-config.ts`),
+    it("using moduleConfigProperty", async () => {
+        const result = await resolveConfig({
+            filePath: path.resolve(FIXTURES_DIR, `custom-config.ts`),
+            moduleConfigProperty: "anotherProperty",
         });
 
-        const config = assertConfigHasNoErrors(assertConfigIsFound(result));
+        const config = assertConfigHasNoErrors(result);
 
         expect(config.config).toMatchSnapshot();
+    });
+
+    describe("loading common js", () => {
+        it("default export", async () => {
+            const result = await resolveConfig({
+                filePath: path.resolve(FIXTURES_DIR, `cjs-default-export.js`),
+            });
+
+            const config = assertConfigHasNoErrors(result);
+
+            expect(config.config).toMatchSnapshot();
+        });
+
+        it("with custom property", async () => {
+            const result = await resolveConfig({
+                filePath: path.resolve(FIXTURES_DIR, `cjs-custom-property.js`),
+                moduleConfigProperty: "foo",
+            });
+
+            const config = assertConfigHasNoErrors(result);
+
+            expect(config.config).toMatchSnapshot();
+        });
     });
 
     describe("fails", () => {
-        it("if config is not found", async () => {
-            const result = await resolveConfigShape({
-                directoryStartPath: path.join(FIXTURES_DIR, `config-not-found`),
-            });
-
-            expect(result.isNone()).toBe(true);
-        });
-
         it("if config returns a function", async () => {
-            const result = await resolveConfigShape({
-                directoryStartPath: path.join(FIXTURES_DIR, `invalid-config`),
+            const result = await resolveConfig({
+                filePath: path.join(FIXTURES_DIR, `invalid-config.ts`),
             });
 
-            expect(result.isJust()).toBe(true);
-            expect(result.value!.value).toMatchSnapshot();
+            expect(result.value).toMatchSnapshot();
         });
     });
 });
