@@ -50,6 +50,24 @@ See [ts-node documentation](https://www.npmjs.com/package/ts-node#node-flags-and
 NODE_OPTIONS='-r ts-node/register' pallad-config -c ./src/config.ts
 ```
 
+## Revealing secrets
+
+All secrets (marked as `.secret()`) are by default hidden. You can reveal them by using `--revealSecrets` flag.
+
+```bash
+pallad-config -c ./src/config.js --revealSecrets
+```
+```bash
+Object {
+  "database": Object {
+    "hostname": "database.internal",
+    "password": "$ecretPa$$w0rd" (secret),
+    "port": 5432,
+    "username": "admin" (secret),
+  },
+}
+```
+
 ## Display modes
 
 ### `all`

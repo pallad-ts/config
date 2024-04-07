@@ -16,7 +16,7 @@ Easily manage configurations for different environments like CI, production, or 
 ## Features
 
 * 👷 Built with Typescript
-* 🔥 Supports loading configuration from env, envfiles, ssm
+* 🔥 Supports loading configuration from env, envfiles, TOML, AWS secret manager, AWS parameter store
 * 👌 Supports asynchronous configuration sources
 * 🎒 Helpful presets for easy config definition
 * 👀 Great CLI for browsing and validating final configuration
