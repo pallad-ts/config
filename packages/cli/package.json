@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-cli",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "CLI command that allows to display and verify current configuration",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules JEST_JUNIT_OUTPUT_DIR=../../test_results/cli npx jest",
@@ -32,7 +32,7 @@
     "@pallad/secret": "^1"
   },
   "devDependencies": {
-    "@pallad/config": "^3.0.0",
+    "@pallad/config": "^4.0.0",
     "@pallad/secret": "^1",
     "segfault-handler": "^1.3.0"
   },

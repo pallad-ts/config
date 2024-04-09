@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-aws-ssm",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "SSM provider for @pallad/config",
   "main": "dist/pallad-config-aws-ssm.cjs.js",
   "types": "dist/pallad-config-aws-ssm.cjs.d.ts",
@@ -29,7 +29,7 @@
     "@pallad/config": "*"
   },
   "devDependencies": {
-    "@pallad/config": "^3.0.0"
+    "@pallad/config": "^4.0.0"
   },
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
   "license": "MIT",

@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-envfile",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Envfile handling for @pallad/config",
   "main": "dist/pallad-config-envfile.cjs.js",
   "types": "dist/pallad-config-envfile.cjs.d.ts",
@@ -41,11 +41,11 @@
     "@pallad/config": "*"
   },
   "devDependencies": {
-    "@pallad/config": "^3.0.0"
+    "@pallad/config": "^4.0.0"
   },
   "dependencies": {
+    "@pallad/config-common": "^4.0.0",
     "@pallad/errors": "^1.0.1",
-    "@pallad/config-common": "*",
     "@sweet-monads/either": "^3",
     "@sweet-monads/maybe": "^3",
     "dotenv": "^16",

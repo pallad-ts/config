@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-preset-env-aws-ssm",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Preset for @pallad/config that loads config from ENV variables, env files and ssm",
   "main": "dist/pallad-config-preset-env-aws-ssm.cjs.js",
   "types": "dist/pallad-config-preset-env-aws-ssm.cjs.d.ts",
@@ -14,9 +14,9 @@
     "test": "test"
   },
   "dependencies": {
-    "@pallad/config": "^3.0.0",
-    "@pallad/config-envfile": "^3.0.0",
-    "@pallad/config-aws-ssm": "^3.0.0",
+    "@pallad/config": "^4.0.0",
+    "@pallad/config-aws-ssm": "^4.0.0",
+    "@pallad/config-envfile": "^4.0.0",
     "tslib": "^2"
   },
   "scripts": {

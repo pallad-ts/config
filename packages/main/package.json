@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Create and validate configuration",
   "main": "dist/pallad-config.cjs.js",
   "types": "dist/pallad-config.cjs.d.ts",
