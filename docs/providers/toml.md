@@ -48,8 +48,8 @@ password = 'test'
 
 ## Validation of single value
 
-Easiest way to [validate single value](./transforming-values#validation) is to use `transform` method. 
-See [transform provider docs](./transforming-values) for further customization options.
+Easiest way to [validate single value](../transforming-values#validation) is to use `transform` method. 
+See [transform provider docs](../transforming-values) for further customization options.
 
 ```ts
 import {type} from '@pallad/config';

@@ -4,7 +4,7 @@ sidebar_position: 20
 
 # Advanced configuration
 
-We've learned how to use [simple providers](./providers) or [presets](./presets) to create configuration for our app.
+We've learned how to use [simple providers](../providers) or [presets](../presets) to create configuration for our app.
 Now it is time to learn how to create advanced configuration providers tailored for your needs.
 
 In this example we are going to define configuration where non-secret data are stored in TOML files and secrets in AWS Secret Manager (for production and staging). 
