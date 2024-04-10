@@ -50,5 +50,6 @@
     "@sweet-monads/maybe": "^3",
     "dotenv": "^16",
     "tslib": "^2"
-  }
+  },
+  "gitHead": "540cb009669dc0cb52d078066afcfce9fde8fd3c"
 }

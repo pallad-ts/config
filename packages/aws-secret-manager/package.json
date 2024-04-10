@@ -41,5 +41,6 @@
     "@sweet-monads/either": "^3",
     "dataloader": "^2.2.2",
     "object-path": "^0.11.8"
-  }
+  },
+  "gitHead": "540cb009669dc0cb52d078066afcfce9fde8fd3c"
 }

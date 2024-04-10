@@ -52,5 +52,6 @@
     "js-toml": "^1.0.0",
     "object-path": "^0.11.8",
     "tslib": "^2"
-  }
+  },
+  "gitHead": "540cb009669dc0cb52d078066afcfce9fde8fd3c"
 }

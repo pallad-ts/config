@@ -36,5 +36,6 @@
   "homepage": "https://pallad.dev/config",
   "files": [
     "dist"
-  ]
+  ],
+  "gitHead": "540cb009669dc0cb52d078066afcfce9fde8fd3c"
 }

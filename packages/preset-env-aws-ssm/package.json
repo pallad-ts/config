@@ -33,5 +33,6 @@
     "directory": "packages/preset-env-ssm"
   },
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
-  "license": "MIT"
+  "license": "MIT",
+  "gitHead": "540cb009669dc0cb52d078066afcfce9fde8fd3c"
 }
