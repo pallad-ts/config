@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-aws-secret-manager",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "AWS Secret Manager provider for @pallad/config",
   "main": "dist/pallad-config-aws-secret-manager.cjs.js",
   "types": "dist/pallad-config-aws-secret-manager.cjs.d.ts",
@@ -27,7 +27,7 @@
     "@pallad/config": "*"
   },
   "devDependencies": {
-    "@pallad/config": "^4.0.0",
+    "@pallad/config": "^4.0.1",
     "@types/object-path": "^0.11.4"
   },
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",

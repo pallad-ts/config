@@ -1,6 +1,6 @@
 {
   "name": "@pallad/config-common",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "main": "dist/pallad-config-common.cjs.js",
   "types": "dist/pallad-config-common.cjs.d.ts",
   "directories": {
