@@ -25,7 +25,7 @@
     "compile": "npm run generate-barrels && npx preconstruct build",
     "lint": "npx pallad-scripts lint",
     "prepublishOnly": "npm run compile",
-    "postinstall": "npx preconstruct dev"
+    "setup-dev": "npx preconstruct dev"
   },
   "repository": {
     "type": "git",
