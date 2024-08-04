@@ -53,7 +53,7 @@ describe("SecretManagerProvider", () => {
 			),
 			createValue("raw", "raw_string_secret_value"),
 		]);
-	}, 20000);
+	}, 120000);
 
 	afterAll(() => {
 		return container.stop();

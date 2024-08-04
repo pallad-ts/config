@@ -52,7 +52,7 @@ describe("ssmProviderFactory", () => {
             createParameter("var11", { Value: "HMZNkhmMOxZsylqOaxfNwjeAf9Ju", Type: "String" }),
             createParameter("var12", { Value: "DRJeSQn6CmLVuo5eXHGkVABTsgy", Type: "String" }),
         ]);
-    }, 30000);
+    }, 120000);
 
     beforeEach(() => {
         helper = ssmProviderFactory({
