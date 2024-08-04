@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   node: circleci/node@5.2.0
-  tcc: atomicjar/testcontainers-cloud-orb@0.1.0
 
 jobs:
   main_job:
@@ -10,6 +9,8 @@ jobs:
       name: node/default
       tag: "18.19"
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - checkout
       - node/install-packages:
           pkg-manager: npm
@@ -21,6 +22,8 @@ jobs:
           name: linter
       - run:
           command: ./node_modules/.bin/lerna run test
+          environment:
+            TESTCONTAINERS_HOST_OVERRIDE: localhost
           name: test
       - store_test_results:
           path: ./test_results
@@ -28,6 +31,4 @@ jobs:
 workflows:
   main:
     jobs:
-      - main_job:
-          pre-steps:
-            - tcc/setup
+      - main_job
