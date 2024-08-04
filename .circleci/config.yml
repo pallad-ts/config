@@ -2,12 +2,15 @@ version: 2.1
 
 orbs:
   node: circleci/node@5.2.0
+  tcc: atomicjar/testcontainers-cloud-orb@0.1.0
 
 jobs:
   main_job:
     executor:
       name: node/default
       tag: "18.19"
+    pre-steps:
+      - tcc/setup
     steps:
       - checkout
       - node/install-packages:
