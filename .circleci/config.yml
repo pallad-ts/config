@@ -9,8 +9,6 @@ jobs:
     executor:
       name: node/default
       tag: "18.19"
-    pre-steps:
-      - tcc/setup
     steps:
       - checkout
       - node/install-packages:
@@ -30,4 +28,6 @@ jobs:
 workflows:
   main:
     jobs:
-      - main_job
+      - main_job:
+          pre-steps:
+            - tcc/setup
