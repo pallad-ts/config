@@ -29,7 +29,8 @@
     "@pallad/config": "*"
   },
   "devDependencies": {
-    "@pallad/config": "^4.0.1"
+    "@pallad/config": "^4.0.1",
+    "@testcontainers/localstack": "^10.11.0"
   },
   "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com> (http://wookieb.pl)",
   "license": "MIT",

@@ -1,9 +1,10 @@
-import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
+import { CreateSecretCommand, PutSecretValueCommand, SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { SecretManagerProvider } from "@src/SecretManagerProvider";
 import { SecretReference } from "@src/SecretReference";
 import { ERRORS } from "@src/errors";
 import { secretManagerProviderFactory } from "@src/secretManagerProviderFactory";
 import { left, right } from "@sweet-monads/either";
+import { LocalstackContainer, StartedLocalStackContainer } from "@testcontainers/localstack";
 import * as sinon from "sinon";
 
 import { loadAsync, ValueNotAvailable } from "@pallad/config";
@@ -12,9 +13,51 @@ import "@pallad/errors-dev";
 import DataLoader = require("dataloader");
 
 describe("SecretManagerProvider", () => {
+	let container: StartedLocalStackContainer;
+	let secretsManagerClient: SecretsManagerClient;
+	const PREFIX = "pallad-config-";
+
 	const REF_WITHOUT_PROPERTY: SecretReference = { name: "foo" };
 	const REF_WITH_PROPERTY: SecretReference = { name: "foo", property: "bar" };
 
+	async function createValue(name: string, value: string) {
+		const secret = await secretsManagerClient.send(
+			new CreateSecretCommand({
+				Name: PREFIX + name,
+			})
+		);
+
+		await secretsManagerClient.send(
+			new PutSecretValueCommand({
+				SecretId: secret.ARN,
+				SecretString: value,
+			})
+		);
+	}
+
+	beforeAll(async () => {
+		container = await new LocalstackContainer("localstack/localstack:3.6.0").start();
+		secretsManagerClient = new SecretsManagerClient({
+			endpoint: container.getConnectionUri(),
+		});
+
+		await Promise.all([
+			createValue(
+				"json",
+				JSON.stringify({
+					foo: "bar",
+					nested: {
+						baz: "qux",
+					},
+				})
+			),
+			createValue("raw", "raw_string_secret_value"),
+		]);
+	}, 20000);
+
+	afterAll(() => {
+		return container.stop();
+	});
 	describe("without property", () => {
 		it("should return value for provided secret name", async () => {
 			const batchFunction = sinon.stub().resolves(["foo"]);
@@ -69,12 +112,14 @@ describe("SecretManagerProvider", () => {
 	});
 
 	it("integration", async () => {
-		const client = new SecretsManagerClient();
+		const client = new SecretsManagerClient({
+			endpoint: container.getConnectionUri(),
+		});
 
 		const spy = sinon.spy(client, "send");
 
 		const factory = secretManagerProviderFactory({
-			prefix: "pallad-config-",
+			prefix: PREFIX,
 			client,
 		});
 
